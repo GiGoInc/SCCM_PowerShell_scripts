@@ -1,6 +1,9 @@
-﻿# http://gregramsey.net/?p=882
+# http://gregramsey.net/?p=882
+$statmsgs | Group-Object component | sort count -descending | Out-GridView
+$statmsgs | Select-Object SeverityName, MessageID, Component, MachineName, Time, SiteCode, FullMsgString | Out-GridView
+# http://gregramsey.net/?p=882
 $StatMsgs = @()
-$cnstring = 'Provider=SQLOLEDB;Integrated Security=SSPI;Persist Security Info=False;' + 'Initial Catalog=CM_SS1;Data Source=sccmserverdb.Domain.DOMAIN;User ID=;Password='
+$cnstring = 'Provider=SQLOLEDB;Integrated Security=SSPI;Persist Security Info=False;' + 'Initial Catalog=CM_XX1;Data Source=SERVER.DOMAIN.COM;User ID=;Password='
 Add-Type -Path "D:\MSRS10_50.MSSQLSERVER\Reporting Services\ReportServer\bin\srsresources.dll"
 
 $cmdtext = @"

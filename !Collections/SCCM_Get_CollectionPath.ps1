@@ -1,4 +1,7 @@
-﻿param([string]$CentralSiteServer,[string[]]$CollectionID)
+param([string]$CentralSiteServer,[string[]]$CollectionID)
+$arrOutput | fl *
+Foreach ($item in $arrObjCollectionPath) {$arrOutput += $item.CollectionPath}
+param([string]$CentralSiteServer,[string[]]$CollectionID)
 	Function Get-CollectionName ($CollectionID)
 	{
 		$CollectionName = (Get-WmiObject -ComputerName $CentralSiteProvider -Namespace root\sms\site_$CentralSiteCode -Query "Select * from SMS_Collection where CollectionID = '$CollectionID'").name

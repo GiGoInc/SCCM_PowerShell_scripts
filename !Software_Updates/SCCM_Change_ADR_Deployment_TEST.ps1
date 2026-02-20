@@ -1,4 +1,7 @@
 # Set-CMDeploymentDeadlines script
+}
+    }
+# Set-CMDeploymentDeadlines script
 #   J. Greg Mackinnon, 2014-02-07
 #   Updates all existing software update deployments with a new enforcement deadline.
 #   Requires specification of: 
@@ -8,8 +11,8 @@
 #    -DeadlineTime
 #
 
-$SiteServer = "sccmserver"
-$SiteCode = "SS1"
+$SiteServer = "SERVER"
+$SiteCode = "XX1"
 $DeadlineDate = "20141009"
 $DeadlineTime = "0800"
 

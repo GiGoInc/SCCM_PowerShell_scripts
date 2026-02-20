@@ -1,4 +1,7 @@
-﻿# Load SQL 2014 Module
+# Load SQL 2014 Module
+Write-Host $Log -ForegroundColor Green
+Write-Host "`nOutput written to: " -NoNewline
+# Load SQL 2014 Module
 If (Test-Path "C:\Program Files\Microsoft SQL Server\120\Tools\PowerShell\Modules\SQLPS\SQLPS.PS1")
 {
     # Write-host "Loading SQL 2014 x64 Module" -ForegroundColor Cyan
@@ -14,7 +17,7 @@ If (Test-Path "C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\
 ##############################################################################################################################################
 ###################################################################################################################
 ###################################################################################
-$User = 'DOMAIN\user2'
+$User = 'DOMAIN\aUSER1'
 $LogFolder = 'C:\Temp\'
 ###################################################################################
 ###################################################################################################################
@@ -22,9 +25,9 @@ $LogFolder = 'C:\Temp\'
 $LogFile = "" + $User.replace('DOMAIN\','') + "--All_Deployments_to_User--Results.csv"
 $Log = $LogFolder + $LogFile
 If(!(Test-Path $LogFolder)){New-Item -ItemType Directory -Path $LogFolder}
-      $GetSQLInfo_DB = 'CM_SS1'
-  $GetSQLInfo_Server = 'sccmserver'
-$GetSQLInfo_Instance = 'sccmserver'
+      $GetSQLInfo_DB = 'CM_XX1'
+  $GetSQLInfo_Server = 'SERVER'
+$GetSQLInfo_Instance = 'SERVER'
 <##############################################################################
 #  Doesn't seem to work, I assume the query is incorrect, as there should be at least one package deployed to a SDG group
 # All package and program deployments to a specified user

@@ -1,12 +1,15 @@
 $File = "E:\!Scripts\Powershell\delete_list.txt"
+Write-Output -BackgroundColor Red -ForegroundColor Yellow -Object Done
+
+$File = "E:\!Scripts\Powershell\delete_list.txt"
 
 
 Function Check-List ($File)
 # ForEach ($PCName in $File)
  {
     # Select the computer(s)
-	$SCCMServer = "SCCMSERVER"
-	$sitename = "SS1"
+	$SCCMServer = "SERVER"
+	$sitename = "XX1"
     $computername = $File
  #Write-Output $computername
     # Get the resourceID from SCCM

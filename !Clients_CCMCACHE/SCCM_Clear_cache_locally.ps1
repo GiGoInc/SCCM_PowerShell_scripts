@@ -1,4 +1,7 @@
-﻿$A = Get-WmiObject -Namespace "root\ccm\SoftMgmtAgent" -Class CacheInfoEx -Impersonation 3
+$A = Get-WmiObject -Namespace "root\ccm\SoftMgmtAgent" -Class CacheInfoEx -Impersonation 3
+
+}
+$A = Get-WmiObject -Namespace "root\ccm\SoftMgmtAgent" -Class CacheInfoEx -Impersonation 3
 
 ForEach ($item in $A)
 {

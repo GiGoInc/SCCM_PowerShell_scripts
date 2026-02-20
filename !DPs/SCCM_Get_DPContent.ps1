@@ -1,4 +1,7 @@
-﻿<#
+<#
+}
+    }
+<#
 .Synopsis
    Gets the Objects you specify distributed to a Distribution Point
 .DESCRIPTION
@@ -52,7 +55,7 @@ function Get-DPContent
         #specify the SCCMServer having SMS Namespace provider installed for the site. Default is the local machine.
         [Parameter(Mandatory=$false)]
         [Alias("SMSProvider")]
-        [String]$SCCMServer='SCCMSERVER'
+        [String]$SCCMServer='SERVER'
 
     )
 

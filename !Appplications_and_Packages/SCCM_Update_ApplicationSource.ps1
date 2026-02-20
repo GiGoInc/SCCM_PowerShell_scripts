@@ -1,112 +1,98 @@
-[System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.dll")) | Out-Null
-[System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.Extender.dll")) | Out-Null
-[System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.MsiInstaller.dll")) | Out-Null
- 
-$SiteServer = "<name_of_your_Primary_Site_server>"
-$SiteCode = "<your_site_code>"
-$CurrentContentPath = "\\\\<name_of_server_where_the_content_was_stored_previously\\<folder>\\<folder>"
-$UpdatedContentPath = "\\<name_of_the_server_where_the_content_is_stored_now\<folder>\<folder>"
- 
-$Applications = Get-WmiObject -ComputerName $SiteServer -Namespace root\SMS\site_$SiteCode -class SMS_Application | Where-Object {$_.IsLatest -eq $True}
-$ApplicationCount = $Applications.Count
- 
-Write-Output ""
-Write-Output "INFO: A total of $($ApplicationCount) applications will be modified`n"
-Write-Output "INFO: Value of current content path: $($CurrentContentPath)"
-Write-Output "INFO: Value of updated content path: $($UpdatedContentPath)`n"
-Write-Output "# What would you like to do?"
-Write-Output "# ---------------------------------------------------------------------"
-Write-Output "# 1. Verify first - Verify the applications new path before updating"
-Write-Output "# 2. Update now - Update the path on all applications"
-Write-Output "# ---------------------------------------------------------------------`n"
-$EnumAnswer = Read-Host "Please enter your selection [1,2] and press Enter"
- 
-switch ($EnumAnswer) {
-    1 {$SetEnumAnswer = "Verify"}
-    2 {$SetEnumAnswer = "Update"}
-    Default {$SetEnumAnswer = "Verify"}
+## Import ConfigMgr PS Module 
 }
+    } 
+## Import ConfigMgr PS Module 
+cls
+C:
+CD 'C:\Program Files (x86)\Microsoft Endpoint Manager\AdminConsole\bin'
+Import-Module ".\ConfigurationManager.psd1"
+Start-Sleep -Milliseconds 500
+## Connect to ConfigMgr Site 
+Set-Location XX1:
+CD XX1:
+############################################################
+ Write-Host "#######################################################################" -f Green 
+Write-Host "##        Matts ConfigMgr 2012 SP1 Application Source Modifier       ##" -f Green 
+Write-Host "##                blogs.technet.com/b/ConfigMgrDogs                  ##" -f Green 
+Write-Host "##                                                                   ##" -f Green 
+Write-Host "##                                                                   ##" -f Green 
+Write-Host "##  Please ensure your package source content has been moved to the  ##" -f Green 
+Write-Host "##          new location *prior* to running this script              ##" -f Green 
+Write-Host "##                                                                   ##" -f Green 
+Write-Host "#######################################################################" -f Green 
+Start-Sleep -s 2
+Write-Host "" 
+Write-Host "" 
+############################################################
  
-if ($SetEnumAnswer -like "Verify") {
-    Write-Output ""
-    $Applications | ForEach-Object {
-        $CheckApplication = [wmi]$_.__PATH
-        $CheckApplicationXML = [Microsoft.ConfigurationManagement.ApplicationManagement.Serialization.SccmSerializer]::DeserializeFromString($CheckApplication.SDMPackageXML,$True)
-        foreach ($CheckDeploymentType in $CheckApplicationXML.DeploymentTypes) {
-            $CheckInstaller = $CheckDeploymentType.Installer
-            $CheckContents = $CheckInstaller.Contents[0]
-            $CheckUpdatedPath = $CheckContents.Location -replace "$($CurrentContentPath)","$($UpdatedContentPath)"
-            Write-Output "INFO: Current content path for $($_.LocalizedDisplayName):"
-            Write-Output -ForegroundColor Green "$($CheckContents.Location)"
-            Write-Output "UPDATE: Updated content path will be:"
-            Write-Output -ForegroundColor Red "$($CheckUpdatedPath)`n"
+## Set old Source share 
+    $OriginalSource = "\\cmcontent\Packages"
+ $DestinationSource = "\\SERVER\dfs$\MCM\Packages"
+
+ 
+$ApplicationNames = 'Dell Bios Latitude 7400 2-in-1_1.25.0',
+'Dell BIOS Latitude_5500_1.25.0',
+'Dell BIOS Latitude_5510_1.23.1',
+'Dell BIOS Latitude_5520 - 1.32.1',
+'Dell BIOS Latitude_5530_1.18.0',
+'Dell BIOS Latitude_5540_1.9.0',
+'Dell BIOS Latitude_5580_1.32.2',
+'Dell BIOS Latitude_7390_1.34.0',
+'Dell BIOS Latitude_7400 - 1.28.0',
+'Dell BIOS Latitude_7410_1.25.1',
+'Dell BIOS Latitude_7420 1.30.1',
+'Dell BIOS Latitude_7430_1.18.0',
+'Dell BIOS Optiplex_7000_1.18.1',
+'Dell BIOS Optiplex_7010_1.8.0',
+'Dell BIOS Optiplex_7040 _1.24.0',
+'Dell BIOS Optiplex_7050_1.24.0',
+'Dell BIOS Optiplex_7070 - 1.22.0',
+'Dell BIOS OptiPlex_7080_1.23.0',
+'Dell BIOS Optiplex_7090 1.19.0',
+'Dell BIOS Precision 7740_1.29.0'
+
+$Minutes = '3'
+$Seconds = ([int]$minutes * 60)
+ForEach ($ApplicationName in $ApplicationNames)
+{ 
+    $DeploymentTypeName = Get-CMDeploymentType -ApplicationName $ApplicationName
+    ForEach($DT in $DeploymentTypeName)
+    { 
+        $DTSDMPackageXLM = $DT.SDMPackageXML 
+        $DTSDMPackageXLM = [XML]$DTSDMPackageXLM 
+        
+        ## Get Path for Apps with multiple DTs 
+        $DTCleanPath = $DTSDMPackageXLM.AppMgmtDigest.DeploymentType.Installer.Contents.Content.Location[0]
+   
+        ## Get Path for Apps with single DT 
+        If ($DTCleanPath -eq "\") 
+        { 
+            $DTCleanPath = $DTSDMPackageXLM.AppMgmtDigest.DeploymentType.Installer.Contents.Content.Location
+        } 
+        
+        $DTCleanPath = $DTCleanPath               
+        $DirectoryPath = $DTCleanPath -replace [regex]::Escape($OriginalSource), "$DestinationSource"
+    
+        If ($DirectoryPath -eq $DTCleanPath)
+        {
+            Write-Host "No Change:" -nonewline
+            Write-Host "$ApplicationName" -f green
         }
-    }
-}
- 
-if ($SetEnumAnswer -like "Update") {
-    Write-Output ""
-    $Applications | ForEach-Object {
-        $Application = [wmi]$_.__PATH
-        $ApplicationXML = [Microsoft.ConfigurationManagement.ApplicationManagement.Serialization.SccmSerializer]::DeserializeFromString($Application.SDMPackageXML,$True)
-        foreach ($DeploymentType in $ApplicationXML.DeploymentTypes) {
-            $Installer = $DeploymentType.Installer
-            $Contents = $Installer.Contents[0]
-            $UpdatePath = $Contents.Location -replace "$($CurrentContentPath)","$($UpdatedContentPath)"
-            if ($UpdatePath -ne $Contents.Location) {
-                $UpdateContent = [Microsoft.ConfigurationManagement.ApplicationManagement.ContentImporter]::CreateContentFromFolder($UpdatePath)
-                $UpdateContent.FallbackToUnprotectedDP = $True
-                $UpdateContent.OnFastNetwork = [Microsoft.ConfigurationManagement.ApplicationManagement.ContentHandlingMode]::Download
-                $UpdateContent.OnSlowNetwork = [Microsoft.ConfigurationManagement.ApplicationManagement.ContentHandlingMode]::DoNothing
-                $UpdateContent.PeerCache = $False
-                $UpdateContent.PinOnClient = $False
-                $Installer.Contents[0].ID = $UpdateContent.ID
-                $Installer.Contents[0] = $UpdateContent
-            }
+        Else
+        {
+            ## Modify DT path 
+            
+            Write-Host "Application " -f White -NoNewline; 
+            Write-Host $ApplicationName -F Red -NoNewline; 
+            Write-Host " with Deployment Type " -f White -NoNewline; 
+            Write-Host $DT.LocalizedDisplayName -f Cyan -NoNewline; 
+             
+            Set-CMMsiDeploymentType –ApplicationName "$ApplicationName" –DeploymentTypeName $DT.LocalizedDisplayName –ContentLocation "$DirectoryPath" 
+            
+            Write-Host " has been modified to " -f White -NoNewline; 
+            Write-Host $DirectoryPath -f Yellow
+            Write-Host "Waiting $Minutes minutes..."
+            Start-Sleep -Seconds $Seconds
         }
-        $UpdatedXML = [Microsoft.ConfigurationManagement.ApplicationManagement.Serialization.SccmSerializer]::SerializeToString($ApplicationXML, $True)
-        $Application.SDMPackageXML = $UpdatedXML
-        $Application.Put() | Out-Null
-        Write-Output "INFO: Updated content path for $($_.LocalizedDisplayName)"
-    }
+    } 
 }
-
-
-
-
-<Installer Technology="MSI"><ExecutionContext>System</ExecutionContext>
-	<Contents>
-		<Content ContentId="Content_ac2238bd-aa93-4309-87b2-7b90f0d82983" Version="1">
-		<File Name="CitrixReceiver.exe" Size="28735896"/>
-		<File Name="Install.bat" Size="466"/>
-		<Location>\\SCCMSERVER\Packages\Citrix\CitrixReceiver\</Location>
-		<PeerCache>true</PeerCache>
-		<OnFastNetwork>Download</OnFastNetwork>
-		<OnSlowNetwork>Download</OnSlowNetwork>
-		</Content>
-	</Contents>
-	
-<Requirements>
-	<Rule xmlns="http://schemas.microsoft.com/SystemsCenterConfigurationManager/2009/06/14/Rules" id="Rule_8b1d97cd-091a-4a55-aece-7b240fdc3bfe" Severity="None" NonCompliantWhenSettingIsNotFound="false">
-	<Annotation>
-		<DisplayName Text="Operating system One of {Windows XP SP3 (32-bit), All Windows 7 (64-bit), All Windows 7 (32-bit), Windows 7 (64-bit), Windows 7 SP1 (64-bit), Windows 7 (32-bit), Windows 7 SP1 (32-bit), All Windows 8 (64-bit), All Windows 8 (32-bit), All Windows 8.1 (64-bit), All Windows 8.1 (32-bit)}"/>
-	<Description Text=""/>
-	</Annotation>
-	<OperatingSystemExpression>
-	<Operator>OneOf</Operator>
-	<Operands>
-		<RuleExpression RuleId="Windows/x86_Windows_XP_Professional_Service_Pack_3"/>
-		<RuleExpression RuleId="Windows/All_x64_Windows_7_Client"/>
-		<RuleExpression RuleId="Windows/All_x86_Windows_7_Client"/>
-		<RuleExpression RuleId="Windows/x64_Windows_7_Client"/>
-		<RuleExpression RuleId="Windows/x64_Windows_7_SP1"/>
-		<RuleExpression RuleId="Windows/x86_Windows_7_Client"/>
-		<RuleExpression RuleId="Windows/x86_Windows_7_SP1"/>
-		<RuleExpression RuleId="Windows/All_x64_Windows_8_Client"/>
-		<RuleExpression RuleId="Windows/All_x86_Windows_8_Client"/>
-		<RuleExpression RuleId="Windows/All_x64_Windows_8.1_Client"/>
-		<RuleExpression RuleId="Windows/All_x86_Windows_8.1_Client"/>
-	</Operands>
-	</OperatingSystemExpression>
-	</Rule>
-</Requirements>

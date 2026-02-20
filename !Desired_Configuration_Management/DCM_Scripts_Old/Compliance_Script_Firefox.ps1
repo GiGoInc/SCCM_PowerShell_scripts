@@ -1,4 +1,7 @@
 # "Firefox Deployment Files" Remediation Script #
+}
+      { $_.Exception.Message }
+# "Firefox Deployment Files" Remediation Script #
 
 $ErrorActionPreference = "Stop"
 

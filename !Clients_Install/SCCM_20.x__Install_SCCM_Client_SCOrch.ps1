@@ -1,5 +1,8 @@
-﻿$computer = "\`d.T.~Ed/{39A91BCA-DE07-4C8C-A40B-31E06A6EDDB2}.hostname\`d.T.~Ed/"
-$SCCMshare = "\\SCCMSERVER\Packages\2012_R2_SP1_SCCM_Client"
+$computer = "\`d.T.~Ed/{39A91BCA-DE07-4C8C-A40B-31E06A6EDDB2}.hostname\`d.T.~Ed/"
+}
+    $poweredoff = $computer
+$computer = "\`d.T.~Ed/{39A91BCA-DE07-4C8C-A40B-31E06A6EDDB2}.hostname\`d.T.~Ed/"
+$SCCMshare = "\\SERVER\Packages\2012_R2_SP1_SCCM_Client"
 $destshare = "\\"+ $computer +"\C$\Windows\ccmsetup"
 
 # Test if computer is online
@@ -23,14 +26,14 @@ If ($alive)
         If ($Type -eq "x64-based PC")
         {
             #Install x64 Client
-            Invoke-Command -ScriptBlock {Start-Process -FilePath 'C:\windows\ccmsetup\ccmsetup.exe' -ArgumentList ('/forceinstall /mp:SCCMSERVER.Domain.Com FSP=SCCMSERVER.Domain.Com SMSSLP=SCCMSERVER.Domain.Com SMSCACHESIZE=5240 PATCH=`"C:\Windows\ccmsetup\x64\ClientPatch\configmgr2012ac-sp2r2sp1-kb3135680-x64.msp`"') -Wait} -Session $wsman
+            Invoke-Command -ScriptBlock {Start-Process -FilePath 'C:\windows\ccmsetup\ccmsetup.exe' -ArgumentList ('/forceinstall /mp:SERVER.DOMAIN.COM FSP=SERVER.DOMAIN.COM SMSSLP=SERVER.DOMAIN.COM SMSCACHESIZE=5240 PATCH=`"C:\Windows\ccmsetup\x64\ClientPatch\configmgr2012ac-sp2r2sp1-kb3135680-x64.msp`"') -Wait} -Session $wsman
         }
         
         # 86-bit OS check
         If ($Type -eq "x86-based PC")
         {
             #Install x86 Client
-            Invoke-Command -ScriptBlock {Start-Process -FilePath 'C:\windows\ccmsetup\ccmsetup.exe' -ArgumentList ('/forceinstall /mp:SCCMSERVER.Domain.Com FSP=SCCMSERVER.Domain.Com SMSSLP=SCCMSERVER.Domain.Com SMSCACHESIZE=5240 PATCH=`"C:\Windows\ccmsetup\i386\ClientPatch\configmgr2012ac-sp2r2sp1-kb3135680-i386.msp`"') -Wait} -Session $wsman 
+            Invoke-Command -ScriptBlock {Start-Process -FilePath 'C:\windows\ccmsetup\ccmsetup.exe' -ArgumentList ('/forceinstall /mp:SERVER.DOMAIN.COM FSP=SERVER.DOMAIN.COM SMSSLP=SERVER.DOMAIN.COM SMSCACHESIZE=5240 PATCH=`"C:\Windows\ccmsetup\i386\ClientPatch\configmgr2012ac-sp2r2sp1-kb3135680-i386.msp`"') -Wait} -Session $wsman 
         }  
 }
 else

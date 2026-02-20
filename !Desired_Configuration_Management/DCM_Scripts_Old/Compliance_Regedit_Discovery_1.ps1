@@ -1,4 +1,7 @@
-﻿$sessions = Get-Content "C:\!Projects\Adobe_Flash\pc.txt" | % { New-PSSession -ComputerName $_ -ThrottleLimit 100}
+$sessions = Get-Content "C:\!Projects\Adobe_Flash\pc.txt" | % { New-PSSession -ComputerName $_ -ThrottleLimit 100}
+}
+    }
+$sessions = Get-Content "C:\!Projects\Adobe_Flash\pc.txt" | % { New-PSSession -ComputerName $_ -ThrottleLimit 100}
 
 foreach($session in $sessions)
 {

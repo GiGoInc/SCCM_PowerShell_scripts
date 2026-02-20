@@ -1,5 +1,8 @@
-#	$CollName = "Test - Isaac's VMs"
-#	$CollID = "SS100176"
+#	$CollName = "Test - SuperUser's VMs"
+
+#  -WhatIf									I.E. - CommonParameters
+#	$CollName = "Test - SuperUser's VMs"
+#	$CollID = "XX100176"
 #	$File = "E:\Packages\Powershell_Scripts\applist.txt"
 #	Name = $AppName
 
@@ -17,13 +20,13 @@
 # D:
 # CD 'D:\Program Files\Microsoft Configuration Manager\AdminConsole\bin'
 # Import-Module ".\ConfigurationManager.psd1"
-# Set-Location SS1:
-# CD SS1:
+# Set-Location XX1:
+# CD XX1:
 
 $File = "E:\!Scripts\Powershell\applist.txt"
 
-#	$CollName = "Test - Isaac's VMs"
-# 	  $CollID = "SS100176"
+#	$CollName = "Test - SuperUser's VMs"
+# 	  $CollID = "XX100176"
 
 # $myarray = 
 	

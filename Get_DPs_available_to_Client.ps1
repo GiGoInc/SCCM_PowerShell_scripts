@@ -1,17 +1,21 @@
-﻿# Define main variables:
-    $site = (Get-WmiObject -ComputerName 'sccm1' -Namespace "ROOT\SMS" -Query "Select * from SMS_ProviderLocation" | Select-Object -First 1).SiteCode
+# Define main variables:
+
+
+# Define main variables:
+    $site = (Get-WmiObject -ComputerName 'SERVER' -Namespace "ROOT\SMS" -Query "Select * from SMS_ProviderLocation" | Select-Object -First 1).SiteCode
     $SCCMConsoleInstallDir = (Get-ItemProperty "hklm:\software\WOW6432Node\Microsoft\ConfigMgr10\setup")."UI Installation Directory"
     Import-Module "$SCCMConsoleInstallDir\bin\ConfigurationManager.psd1"
     cd ($site + ":")
 
 
 
-$computers = 'scorch01'
+$computers = 'SERVER'
+# $Computers = 'LASPTN61','LASPTN62','LASPTN63','LASPTN64','LASPTN65','LASPTN66','LASPTN67','LASPTN68'
 
 cls
 ForEach ($computer in $Computers)
 {
-    $ClientObject = Get-WmiObject -ComputerName 'sccm1' -Namespace "ROOT\SMS\site_$site" -Query "select * from SMS_R_System" | Where {$_.ADSiteName -ne $null -and $_.Name -eq $Computer}
+    $ClientObject = Get-WmiObject -ComputerName 'SERVER' -Namespace "ROOT\SMS\site_$site" -Query "select * from SMS_R_System" | Where {$_.ADSiteName -ne $null -and $_.Name -eq $Computer}
     $ClientADSite = $ClientObject.ADSiteName
     
     $ClientBoundary = Get-CMBoundary | Where {$_.DisplayName -like "*$ClientADSite*"} | select displayname,sitesystems

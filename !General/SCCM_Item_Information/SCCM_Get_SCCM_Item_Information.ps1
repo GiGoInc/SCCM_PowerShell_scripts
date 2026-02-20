@@ -1,4 +1,7 @@
-﻿Function GetInfoPackages()
+Function GetInfoPackages()
+#>
+GetInfoPackages | Format-Table -AutoSize
+Function GetInfoPackages()
 {
 $xPackages = Get-CMPackage | Select-object Name, PkgSourcePath, PackageID
 $info = @()
@@ -175,8 +178,8 @@ $object = @()
 C:
 CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 clear-host
 #####################################

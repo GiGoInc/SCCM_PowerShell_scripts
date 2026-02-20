@@ -1,4 +1,7 @@
-﻿# "local-settings.js Content" Discovery Script
+# "local-settings.js Content" Discovery Script
+  }
+      {write-host "Not Compliant"}
+# "local-settings.js Content" Discovery Script
 
 $list = 'pref("general.config.filename", "mozilla.cfg");
 pref("general.config.obscure_value", 0);'

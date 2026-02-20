@@ -1,4 +1,10 @@
-﻿If(!(Test-Path 'C:\Temp')){New-Item -ItemType Directory -Path 'C:\Temp'}
+If(!(Test-Path 'C:\Temp')){New-Item -ItemType Directory -Path 'C:\Temp'}
+#>
+\\COMPUTER00\ROOT\ccm\dcm:SMS_DesiredConfiguration.IsMachineTarget=true,Name="ScopeId_B524C55D-6E5C-465E-82C3-E2B262C19608/Baseline_181bbd84-54a0-4c75-8881-cf72d2a6eb51",Version="3"
+If(!(Test-Path 'C:\Temp')){New-Item -ItemType Directory -Path 'C:\Temp'}
+#>
+\\COMPUTER00\ROOT\ccm\dcm:SMS_DesiredConfiguration.IsMachineTarget=true,Name="ScopeId_B524C55D-6E5C-465E-82C3-E2B262C19608/Baseline_181bbd84-54a0-4c75-8881-cf72d2a6eb51",Version="3"
+If(!(Test-Path 'C:\Temp')){New-Item -ItemType Directory -Path 'C:\Temp'}
 If(!(Test-Path 'C:\Windows\Logs\Software')){New-Item -ItemType Directory -Path 'C:\Windows\Logs\Software'}
   $File = "D:\Powershell\!SCCM_PS_scripts\!Clients_Actions\SCCM_Clean_Client_Baselines--PCList.txt"
 $Output = "D:\Powershell\!SCCM_PS_scripts\!Clients_Actions\SCCM_Clean_Client_Baselines--Results.csv"
@@ -45,7 +51,7 @@ Function RunFunc ($Lines)
 
 
 $ADate = Get-Date
-$Computer = 'L6N5WJ12'
+$Computer = 'COMPUTER00'
 
 # Delete DCM Key
     Get-WmiObject -ComputerName $Computer -Query "Select * From __Namespace Where Name='dcm'" -Namespace "root\ccm" | Remove-WmiObject -Verbose | Out-Host
@@ -91,9 +97,9 @@ $a | Remove-WMIObject
 $a = Get-WmiObject -ComputerName $Computer -Namespace root\ccm\dcm -Query "Select * From SMS_DesiredConfiguration Where Name ='ScopeId_B524C55D-6E5C-465E-82C3-E2B262C19608/Baseline_181bbd84-54a0-4c75-8881-cf72d2a6eb51'"
 $a | Remove-WMIObject
 
-\\L6N5WJ12\ROOT\ccm\dcm:
+\\COMPUTER00\ROOT\ccm\dcm:
 ################################################
-$Computer = 'L6N5WJ12'
+$Computer = 'COMPUTER00'
 $a = Get-WmiObject -ComputerName $Computer -Namespace root\ccm\dcm -Query "Select * From SMS_DesiredConfiguration"
 $a | Remove-WMIObject
 
@@ -111,6 +117,6 @@ $newClass.Put()
 
 
 
-\\L6N5WJ12\ROOT\ccm\dcm:SMS_DesiredConfiguration.IsMachineTarget=true,Name="ScopeId_B524C55D-6E5C-465E-82C3-E2B262C19608/Baseline_d310bd20-3d12-49ef-b6de-e72ea006a944",Version="4"
-\\L6N5WJ12\ROOT\ccm\dcm:SMS_DesiredConfiguration.IsMachineTarget=true,Name="ScopeId_B524C55D-6E5C-465E-82C3-E2B262C19608/Baseline_181bbd84-54a0-4c75-8881-cf72d2a6eb51",Version="3"
+\\COMPUTER00\ROOT\ccm\dcm:SMS_DesiredConfiguration.IsMachineTarget=true,Name="ScopeId_B524C55D-6E5C-465E-82C3-E2B262C19608/Baseline_d310bd20-3d12-49ef-b6de-e72ea006a944",Version="4"
+\\COMPUTER00\ROOT\ccm\dcm:SMS_DesiredConfiguration.IsMachineTarget=true,Name="ScopeId_B524C55D-6E5C-465E-82C3-E2B262C19608/Baseline_181bbd84-54a0-4c75-8881-cf72d2a6eb51",Version="3"
 #>

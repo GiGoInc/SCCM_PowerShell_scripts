@@ -1,4 +1,7 @@
-﻿# "Enterprise Mode" Remediation Script
+# "Enterprise Mode" Remediation Script
+}
+    $_.Exception.Message
+# "Enterprise Mode" Remediation Script
         <#
         1) HKLM\SOFTWARE\Policies\Microsoft\Internet Explorer\Main\EnterpriseMode\SiteList
       1.5) HKLM\SOFTWARE\Policies\Microsoft\Internet Explorer\Main\EnterpriseMode\Enable
@@ -11,8 +14,8 @@
 
 
  $EMLocation = 'file://C:/Misc/sites.xml'
-# $EMLocation = 'http://em.domain.com/sites.xml'
-# $EMLocation = 'http://webserver/sites.xml'
+# $EMLocation = 'http://em.DOMAIN.COM/sites.xml'
+# $EMLocation = 'http://XXXXdsweb1/sites.xml'
 
 
 

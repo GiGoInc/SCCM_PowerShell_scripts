@@ -1,7 +1,10 @@
-Ôªø$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Stop"
+------------------------------------#>
+exit
+$ErrorActionPreference = "Stop"
 $errorCode = $null
 
-$computer = 'MSTBSP02'
+$computer = 'COMPUTER628'
 
 If(Test-Connection $computer -count 1 -quiet -BufferSize 16)
 {
@@ -243,7 +246,7 @@ Else
         					$ElementsToRemove = $CacheElements | where {$_.contentid -eq $ElementID.Name -and $_.ContentVer-ne $Max}
         					foreach ($Element in $ElementsToRemove)
         					{
-        						Write-Host ‚ÄúDeleting‚Äù$Element.ContentID‚Äùwith version‚Äù$Element.ContentVersion -ForegroundColor Red
+        						Write-Host ìDeletingî$Element.ContentIDîwith versionî$Element.ContentVersion -ForegroundColor Red
         						
         						Remove-Item $Element.Location -recurse -Force
         						$Element.Delete()
@@ -331,7 +334,7 @@ Issues I've seen:
 
 LARELT01
 MSRELT04
-BH20B42
+COMPUTER53
 F7QL32
 H9HTP12
 

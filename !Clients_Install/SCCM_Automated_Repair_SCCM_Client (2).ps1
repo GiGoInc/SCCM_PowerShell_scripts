@@ -1,4 +1,7 @@
  #ERROR REPORTING ALL
+ #Finished
+Repair_SCCM 
+ #ERROR REPORTING ALL
 Set-StrictMode -Version latest
 
  #----------------------------------------------------------

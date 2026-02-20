@@ -1,4 +1,7 @@
-﻿Function Get-SCCMClientHasLocalDP
+Function Get-SCCMClientHasLocalDP
+}
+    }
+Function Get-SCCMClientHasLocalDP
 {
     [CmdletBinding()]
     PARAM (

@@ -1,4 +1,7 @@
-﻿$Log = "D:\Powershell\!SCCM_PS_scripts\!Deployments\Deployments_2017-06-27.csv"
+$Log = "D:\Powershell\!SCCM_PS_scripts\!Deployments\Deployments_2017-06-27.csv"
+}
+"$SmsProviderObjectPath,$AssignmentID,$CI_ID,$CollectionID,$CollectionName,$CreationTime,$DeploymentID,$DeploymentIntent,$DeploymentTime,$DesiredConfigType,$EnforcementDeadline,$FeatureType,$ModelName,$ModificationTime,$NumberErrors,$NumberInProgress,$NumberOther,$NumberSuccess,$NumberTargeted,$NumberUnknown,$ObjectTypeID,$PackageID,$PolicyModelID,$ProgramName,$SecuredObjectId,$SoftwareName,$SummarizationTime,$SummaryType" | Add-Content $Log
+$Log = "D:\Powershell\!SCCM_PS_scripts\!Deployments\Deployments_2017-06-27.csv"
 "SmsProviderObjectPath,AssignmentID,CI_ID,CollectionID,CollectionName,CreationTime,DeploymentID,DeploymentIntent,DeploymentTime,DesiredConfigType,EnforcementDeadline,FeatureType,ModelName,ModificationTime,NumberErrors,NumberInProgress,NumberOther,NumberSuccess,NumberTargeted,NumberUnknown,ObjectTypeID,PackageID,PolicyModelID,ProgramName,SecuredObjectId,SoftwareName,SummarizationTime,SummaryType" | Set-Content $Log
 
 $A = Get-CMDeployment

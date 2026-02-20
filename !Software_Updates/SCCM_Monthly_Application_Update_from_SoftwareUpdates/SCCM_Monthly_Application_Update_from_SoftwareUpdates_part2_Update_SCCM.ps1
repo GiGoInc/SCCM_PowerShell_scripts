@@ -1,4 +1,7 @@
-﻿<#
+<#
+Remove-PSDrive -Name $SCCMDrive -Force -PSProvider FileSystem
+Write-Host $SCCMDrive':' -ForegroundColor Magenta
+<#
 .Synopsis
 This script is intended to be used to download the 3rd party updates from SCCM so they can be used to keep the application packages in SCCM up-to-date.
 Specifically it is set to download the download the updates from the Software Update Group 'ADR: 3rd party Updates - Workstations'
@@ -25,8 +28,8 @@ PS C:\> . SCCM_Monthly_Application_Update_from_SoftwareUpdates.ps1
     * Flash Installs - all using fileversion check
         - Update filename and version number 
     * Java Updates - product code
-        - SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{26A24AE4-039D-4CA4-87B4-2F32180172F0}
-        - Greater than or equal to = 8.0.1720.11
+        - SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{26A24AE4-039D-4CA4-87B4-2F32180192.0}
+        - Greater than or equal to = 8.0.192..11
     * Google Chrome - product code and exe Version
         - {9384EF03-9FE5-3EC9-90EF-D311BEEE71A4}
         - %ProgramFiles(x86)%\Google\Chrome\Application\Chrome.exe
@@ -43,7 +46,7 @@ cls
     C:
     CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
     Import-Module ".\ConfigurationManager.psd1"
-    CD SS1:
+    CD XX1:
 ################################################################################################################################
 ################################################################################################################################
 Write-Host "Checking SCCM application versions to be updated..." -ForegroundColor Green
@@ -51,7 +54,7 @@ Write-Host ''
 Write-Host ''
 
 # Set Mapped Drive to SCCM folder
-    $Share = "\\sccmserver\Packages"
+    $Share = "\\SERVER\Packages"
     $DrivesInUse = (Get-PSDrive -PSProvider FileSystem).Name
     Foreach ($Drives in "MNOPQRSTUVWXYZ".ToCharArray())
     {

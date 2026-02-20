@@ -1,4 +1,7 @@
-﻿<#
+<#
+}
+    Invoke-Expression "Get-CMPackageFromContentLibrary $Args"
+<#
 .SYNOPSIS
 
 PackageFromContentLibrary is a set of PowerShell functions that allow an 

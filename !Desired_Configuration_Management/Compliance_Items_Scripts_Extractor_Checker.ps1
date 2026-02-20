@@ -1,4 +1,7 @@
-﻿$VBPath = 'D:\NS2k8'
+$VBPath = 'D:\NS2k8'
+
+  }
+$VBPath = 'D:\NS2k8'
 $Log = 'D:\NS2k8\Security_Compliance_Info.txt'
 $null | Set-Content $Log
 

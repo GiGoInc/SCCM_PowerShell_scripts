@@ -1,4 +1,7 @@
-﻿$computer = '37QJG12'
+$computer = '37QJG12'
+$size -replace ',',''
+$size = "{0:N0}" -f ($colItems.sum / 1MB)
+$computer = '37QJG12'
 
 $colItems = (Get-ChildItem "\\$computer\c$\windows\ccmcache" -recurse | Measure-Object -property length -sum)
 $size = "{0:N0}" -f ($colItems.sum / 1MB)

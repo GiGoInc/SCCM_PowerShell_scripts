@@ -1,7 +1,10 @@
-﻿<#
+<#
+    Write-Host "$GN " -ForegroundColor Red
+    Write-Host "for USER Collection named " -NoNewline
+<#
     It's assumed that the tech:
         ....is using a PowerShell install file named "install.ps1"
-        ...created a folder named the same as "$SourceFolder" in \\sccmserver\PACKAGES
+        ...created a folder named the same as "$SourceFolder" in \\SERVER\PACKAGES
         ...populated that folder with the install contents
 
 To Be Done
@@ -10,14 +13,14 @@ To Be Done
 
 
 # User Input Variables
-        $Appname = "Isaac Test App"
+        $Appname = "SuperUser Test App"
              $GN = "SDG-$Appname Users"
-   $SourceFolder = "Isaac_Test_App"
+   $SourceFolder = "SuperUser_Test_App"
 $DetectionMethod = '(INSERT DETECTION METHOD SCRIPT HERE)'
       $DTRunTime = '5'
    $DTMaxRunTime = '20'
    $LimitingColl = "All Windows Workstation or Professional Systems (DC0)"
-      $QDAppName = "%Isaac%Test%App%"
+      $QDAppName = "%SuperUser%Test%App%"
      $QDAVersion = "20"
 
 
@@ -27,7 +30,7 @@ $DetectionMethod = '(INSERT DETECTION METHOD SCRIPT HERE)'
 
 
 # New-CMApplication Static Variables
-    $ADGPath = "OU=SCCM Deployment Groups,OU=Domain Groups,DC=Domain,DC=DOMAIN"
+    $ADGPath = "OU=SCCM Deployment Groups,OU=Domain Groups,DC=DOMAIN,DC=COM"
 
 # Create User Group in AD
     New-ADGroup `
@@ -43,8 +46,8 @@ $DetectionMethod = '(INSERT DETECTION METHOD SCRIPT HERE)'
     C:
     CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
     Import-Module ".\ConfigurationManager.psd1"
-    Set-Location SS1:
-    CD SS1:
+    Set-Location XX1:
+    CD XX1:
 
 # Static Variables
     # DEVICE Collection - New-CMDeviceCollection Static Variables
@@ -77,7 +80,7 @@ $DetectionMethod = '(INSERT DETECTION METHOD SCRIPT HERE)'
                 SMS_R_USER.UniqueUserName,
                 SMS_R_USER.WindowsNTDomain
                 from SMS_R_User
-                where SMS_R_User.SecurityGroupName = "Domain\\'+$GN+'"'
+                where SMS_R_User.SecurityGroupName = "DOMAIN\\'+$GN+'"'
 
 
     # APPLICATION - New-CMApplication Static Variables
@@ -89,7 +92,7 @@ $DetectionMethod = '(INSERT DETECTION METHOD SCRIPT HERE)'
 
 
     # APPLICATION DeploymentType - Add-CMScriptDeploymentType Static Variables
-        $SourceLocation = "\\sccmserver\Packages\$SourceFolder"
+        $SourceLocation = "\\SERVER\Packages\$SourceFolder"
         $DeploymentTypeName = 'Install'
         $DTInstall = "powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\install.ps1"
         $UninstallDT = "powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\install.ps1"
@@ -122,12 +125,12 @@ $DetectionMethod = '(INSERT DETECTION METHOD SCRIPT HERE)'
 $DCollID = (Get-CMCollection -CollectionType Device -Name $DCollName).CollectionID
 
 # 16777220  DeviceCollection\[SCOrch Installs]
-# 16777532  DeviceCollection\TEST_Isaac
+# 16777532  DeviceCollection\TEST_SuperUser
 [Array]$DeviceCollectionID = $DCollID
 $TargetFolderID = 16777220 # [SCOrch Installs]
 $CurrentFolderID = 0
 $ObjectTypeID = 5000
-Invoke-WmiMethod -Class SMS_ObjectContainerItem -Name MoveMembers -ArgumentList $CurrentFolderID,$DeviceCollectionID,$ObjectTypeID,$TargetFolderID -ComputerName sccmserver -Namespace ROOT\SMS\site_SS1
+Invoke-WmiMethod -Class SMS_ObjectContainerItem -Name MoveMembers -ArgumentList $CurrentFolderID,$DeviceCollectionID,$ObjectTypeID,$TargetFolderID -ComputerName SERVER -Namespace ROOT\SMS\site_XX1
     Write-Host ""
     Write-Host "Moved " -NoNewline
     Write-Host "$DCollName " -NoNewline -ForegroundColor Green
@@ -164,12 +167,12 @@ $UCollID = (Get-CMCollection -CollectionType User -Name $GN).CollectionID
 
 # 16777477  UserCollection\[Software Distribution]
 # 16777458  UserCollection\[Software Distribution]\Active Directory Software Groups
-# 16777533  UserCollection\TEST_Isaac
+# 16777533  UserCollection\TEST_SuperUser
 [Array]$UserCollectionID = $UCollID
 $TargetFolderID = 16777458 # [Software Distribution]
 $CurrentFolderID = 0
 $ObjectTypeID = 5001
-Invoke-WmiMethod -Class SMS_ObjectContainerItem -Name MoveMembers -ArgumentList $CurrentFolderID,$UserCollectionID,$ObjectTypeID,$TargetFolderID -ComputerName sccmserver -Namespace ROOT\SMS\site_SS1
+Invoke-WmiMethod -Class SMS_ObjectContainerItem -Name MoveMembers -ArgumentList $CurrentFolderID,$UserCollectionID,$ObjectTypeID,$TargetFolderID -ComputerName SERVER -Namespace ROOT\SMS\site_XX1
     Write-Host ""
     Write-Host "Moved " -NoNewline
     Write-Host "$GN " -NoNewline -ForegroundColor Green

@@ -1,4 +1,7 @@
-﻿# "Deployment.config Content" Discovery script
+# "Deployment.config Content" Discovery script
+  }
+      {write-host "Not Compliant"}
+# "Deployment.config Content" Discovery script
 
 $list = "deployment.system.config=file:///C:/Windows/Sun/Java/Deployment/deployment.properties`r`n
 deployment.system.config.mandatory=true"

@@ -1,6 +1,9 @@
-﻿$server = 'sccmserverdb'
+$server = 'SERVER'
+$subscriptions | select Status, Path, report, Description, Owner, SubscriptionID, EventType, lastexecuted | where {$_.SubscriptionID -eq $subscriptionid} 
+$subscriptions = $rs2010.ListSubscriptions($site); 
+$server = 'SERVER'
 
-# powershell c:\scripts\FireSubscription.ps1 "sccmserverdb/reportserver" $null "70366e82-2d3c-4edd-a216-b97e51e26de9"
+# powershell c:\scripts\FireSubscription.ps1 "SERVER/reportserver" $null "70366e82-2d3c-4edd-a216-b97e51e26de9"
 
 
 # Parameters

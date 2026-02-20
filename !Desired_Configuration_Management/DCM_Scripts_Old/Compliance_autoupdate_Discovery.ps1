@@ -1,4 +1,7 @@
-ï»¿# "Java AutoUpdate" Discovery Script
+# "Java AutoUpdate" Discovery Script
+     }
+       else {Write-Host 'Non-Compliant'}
+# "Java AutoUpdate" Discovery Script
 
 $OSArchitecture = Get-WmiObject -Class Win32_OperatingSystem | Select-Object OSArchitecture
 $ErrorActionPreference = "Stop"
@@ -11,7 +14,7 @@ If($OSArchitecture.OSArchitecture -ne "32-bit")
          try
            {
              $UpdateCheck = Get-ItemProperty 'HKLM:\SOFTWARE\Wow6432Node\Javasoft\Java Update\Policy' -Name EnableAutoUpdateCheck, EnableJavaUpdate, NotifyDownload, NotifyInstall
-             if (($UpdateCheck.EnableAutoUpdateCheck â€“eq 0) â€“and ($UpdateCheck.EnableJavaUpdate -eq 0) â€“and ($UpdateCheck.NotifyDownload -eq 0) -and ($UpdateCheck.NotifyInstall -eq 0))
+             if (($UpdateCheck.EnableAutoUpdateCheck –eq 0) –and ($UpdateCheck.EnableJavaUpdate -eq 0) –and ($UpdateCheck.NotifyDownload -eq 0) -and ($UpdateCheck.NotifyInstall -eq 0))
                 {Write-Host 'Compliant'}
              else
                 {Write-Host 'Non-Compliant'}
@@ -29,7 +32,7 @@ else
          try
            {
              $UpdateCheck = Get-ItemProperty 'HKLM:\SOFTWARE\JavaSoft\Java Update\Policy' -Name EnableAutoUpdateCheck, EnableJavaUpdate, NotifyDownload, NotifyInstall
-             if (($UpdateCheck.EnableAutoUpdateCheck â€“eq 0) â€“and ($UpdateCheck.EnableJavaUpdate -eq 0) â€“and ($UpdateCheck.NotifyDownload -eq 0) -and ($UpdateCheck.NotifyInstall -eq 0))
+             if (($UpdateCheck.EnableAutoUpdateCheck –eq 0) –and ($UpdateCheck.EnableJavaUpdate -eq 0) –and ($UpdateCheck.NotifyDownload -eq 0) -and ($UpdateCheck.NotifyInstall -eq 0))
                 {Write-Host 'Compliant'}
              else
                 {Write-Host 'Non-Compliant'}

@@ -1,4 +1,7 @@
 # USE EXAMPE 1 TO INIATE CACHE AND ADD LINE INTO CAS.LOG
+#######################################################################################################	
+$CacheInfoQuery
+# USE EXAMPE 1 TO INIATE CACHE AND ADD LINE INTO CAS.LOG
 
 #######################################################################################################		
 ### CACHE - DISCOVERY SCRIPT - RUN LOCAL OR PSSESSION

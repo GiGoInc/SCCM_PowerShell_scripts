@@ -1,0 +1,2111 @@
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <rdl:Language xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">=User!Language</rdl:Language>
+  <DataSources>
+    <DataSource Name="AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_">
+      <DataSourceReference>default_reference</DataSourceReference>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet0">
+      <Fields>
+        <Field Name="Netbios_Name0">
+          <DataField>Netbios_Name0</DataField>
+        </Field>
+        <Field Name="TSRPT_C00">
+          <DataField>TSRPT_C004</DataField>
+        </Field>
+        <Field Name="TSRPT_C00_affada0aebbba">
+          <DataField>TSRPT_C005</DataField>
+        </Field>
+        <Field Name="TSRPT_C00_d0a0ccebddfab">
+          <DataField>TSRPT_C006</DataField>
+        </Field>
+        <Field Name="LastAcceptanceMessageID">
+          <DataField>LastAcceptanceMessageID</DataField>
+        </Field>
+        <Field Name="LastAcceptanceMessageIDName">
+          <DataField>LastAcceptanceMessageIDName</DataField>
+        </Field>
+        <Field Name="LastAcceptanceStatusTime">
+          <DataField>LastAcceptanceStatusTime</DataField>
+        </Field>
+        <Field Name="SMS_Installed_Sites0">
+          <DataField>SMS_Installed_Sites0</DataField>
+        </Field>
+        <Field Name="AdvertisementID">
+          <DataField>AdvertisementID</DataField>
+        </Field>
+        <Field Name="ResourceID">
+          <DataField>ResourceID</DataField>
+        </Field>
+        <Field Name="NumFailures">
+          <DataField>NumFailures</DataField>
+        </Field>
+        <Field Name="LastStatusMessageID">
+          <DataField>LastStatusMessageID</DataField>
+        </Field>
+        <Field Name="LastStatusMessageIDName">
+          <DataField>LastStatusMessageIDName</DataField>
+        </Field>
+        <Field Name="LastStatusTime">
+          <DataField>LastStatusTime</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <CommandText>="
+              declare @State int
+
+              select @State=MessageState
+              from fn_rbac_AdvertisementStatusInformation(@UserSIDs) 
+              where MessageStateName=@StateName and MessageState &lt; 100
+
+              if @State in (0,1,2,3)
+
+              select sys.Netbios_Name0,
+              TSRPT_C004 = NULL,
+              TSRPT_C005 = NULL,
+              TSRPT_C006 = NULL,
+              LastAcceptanceMessageID,
+              LastAcceptanceMessageIDName,
+              LastAcceptanceStatusTime,
+              site.SMS_Installed_Sites0,
+              stat.AdvertisementID,
+              stat.ResourceID,
+              NumFailures = NULL
+              from fn_rbac_ClientAdvertisementStatus(@UserSIDs)  stat
+              join fn_rbac_R_System(@UserSIDs)  sys on stat.ResourceID=sys.ResourceID
+              left join v_RA_System_SMSInstalledSites  site on stat.ResourceID=site.ResourceID
+              where (stat.LastState=0 or stat.LastState=-1) and stat.LastAcceptanceState=@State and stat.AdvertisementID=@AdvertID
+
+              else
+
+              select sys.Netbios_Name0,
+              TSRPT_C004 = tse2.Step+1,
+              TSRPT_C005 = tse2.ActionName,
+              TSRPT_C006 = tse2.GroupName,
+              stat.LastStatusMessageID,
+              stat.LastStatusMessageIDName,
+              LastStatusTime,
+              site.SMS_Installed_Sites0,
+              stat.AdvertisementID,
+              stat.ResourceID,
+              NumFailures = (select COUNT(*)
+              from fn_rbac_TaskExecutionStatus(@UserSIDs) 
+              where LastStatusMessageID=11135 and AdvertisementID=@AdvertID and ResourceID=stat.ResourceID
+              and ExecutionTime &gt;= (select MAX(ExecutionTime)
+              from fn_rbac_TaskExecutionStatus(@UserSIDs) 
+              where LastStatusMessageID=11140 and AdvertisementID=@AdvertID and ResourceID=stat.ResourceID
+              group by AdvertisementID, ResourceID))
+              from fn_rbac_ClientAdvertisementStatus(@UserSIDs)  stat
+              join fn_rbac_R_System(@UserSIDs)  sys on stat.ResourceID=sys.ResourceID
+              left join v_RA_System_SMSInstalledSites  site on stat.ResourceID=site.ResourceID
+              left join (select AdvertisementID, ResourceID, MAX(ExecutionTime) as Time
+              from fn_rbac_TaskExecutionStatus(@UserSIDs) 
+              group by AdvertisementID, ResourceID) as tse1
+              on tse1.AdvertisementID=stat.AdvertisementID and tse1.ResourceID=stat.ResourceID
+              left join v_TaskExecutionStatus  tse2 on tse1.AdvertisementID=tse2.AdvertisementID and tse1.ResourceID=tse2.ResourceID and tse1.Time=tse2.ExecutionTime
+              where stat.LastState=@State and stat.AdvertisementID=@AdvertID
+            "</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@UserSIDs">
+            <Value>=Parameters!UserSIDs.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@StateName">
+            <Value>=Parameters!StateName.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@AdvertID">
+            <Value>=Parameters!AdvertID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+      </Query>
+    </DataSet>
+    <DataSet Name="Parameter_DataSet_StateName">
+      <Fields>
+        <Field Name="MessageStateName">
+          <DataField>MessageStateName</DataField>
+        </Field>
+        <Field Name="LocMessageStateName">
+          <Value>=SrsResources.Localization.GetDBString(Fields!MessageStateName.Value, User!Language, "SMS_AdvertisementStatusInformation-State")</Value>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <CommandText>
+              begin
+              if (@filterwildcard = '')
+              select distinct MessageStateName
+              from fn_rbac_AdvertisementStatusInformation(@UserSIDs) 
+              where MessageState &lt; 100
+              order by MessageStateName
+              else
+              select distinct MessageStateName
+              from fn_rbac_AdvertisementStatusInformation(@UserSIDs) 
+              where MessageState &lt; 100 and MessageStateName like @filterwildcard
+              order by MessageStateName
+              end
+            </CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@UserSIDs">
+            <Value>=Parameters!UserSIDs.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="filterwildcard">
+            <Value />
+          </QueryParameter>
+        </QueryParameters>
+      </Query>
+    </DataSet>
+    <DataSet Name="Parameter_DataSet_AdvertID">
+      <Fields>
+        <Field Name="AdvertisementID">
+          <DataField>AdvertisementID</DataField>
+        </Field>
+        <Field Name="AdvertisementName">
+          <DataField>AdvertisementName</DataField>
+        </Field>
+        <Field Name="Comment">
+          <DataField>Comment</DataField>
+        </Field>
+        <Field Name="AdvertisementIDName">
+          <DataField>AdvertisementIDName</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <CommandText>
+          BEGIN
+          IF (@filterwildcard = '')
+          SELECT adv.AdvertisementName + ' (' + adv.AdvertisementID + ')' AS AdvertisementIDName, adv.AdvertisementID, adv.AdvertisementName, adv.Comment FROM fn_rbac_Advertisement(@UserSIDs)  adv
+          JOIN fn_rbac_TaskSequencePackage(@UserSIDs)  ts ON adv.PackageID=ts.PackageID
+          ORDER BY adv.AdvertisementName
+          ELSE
+          SELECT adv.AdvertisementName + ' (' + adv.AdvertisementID + ')' AS AdvertisementIDName, adv.AdvertisementID, adv.AdvertisementName, adv.Comment FROM fn_rbac_Advertisement(@UserSIDs)  adv
+          JOIN fn_rbac_TaskSequencePackage(@UserSIDs)  ts ON adv.PackageID=ts.PackageID
+          WHERE adv.AdvertisementID LIKE @filterwildcard
+          ORDER BY adv.AdvertisementName
+          END
+        </CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@UserSIDs">
+            <Value>=Parameters!UserSIDs.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="filterwildcard">
+            <Value />
+          </QueryParameter>
+        </QueryParameters>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSetAdminID">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@UserTokenSIDs">
+            <Value>=Parameters!UserTokenSIDs.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select dbo.fn_rbac_GetAdminIDsfromUserSIDs(@UserTokenSIDs) as UserSIDs</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="UserSIDs">
+          <DataField>UserSIDs</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <Body>
+    <ReportItems>
+      <Tablix Name="Table0">
+        <TablixBody>
+          <TablixColumns>
+            <TablixColumn>
+              <Width>1.65in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>1.25in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>1.25in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>1.25in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>2.57in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>2.86in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>3.08in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>1.82in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>2.00in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>1.29in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>2.31in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>2.15in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>2.44in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>2.13in</Width>
+            </TablixColumn>
+          </TablixColumns>
+          <TablixRows>
+            <TablixRow>
+              <Height>0.25in</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_Netbios_Name0">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!Netbios_Name0.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("ComputerName", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_TSRPT_C00">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!TSRPT_C00.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("TSRPT_C004", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_TSRPT_C00_affada0aebbba">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!TSRPT_C00_affada0aebbba.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("TSRPT_C005", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_TSRPT_C00_d0a0ccebddfab">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!TSRPT_C00_d0a0ccebddfab.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("TSRPT_C006", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_LastAcceptanceMessageID">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!LastAcceptanceMessageID.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("LastAcceptanceMessageID", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_LastAcceptanceMessageIDName">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!LastAcceptanceMessageIDName.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("LastAcceptanceMessageIDName", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_LastAcceptanceStatusTime">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!LastAcceptanceStatusTime.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("LastAcceptanceStatusTimeUTC", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_SMS_Installed_Sites0">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!SMS_Installed_Sites0.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("SMS_Installed_Sites0", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_AdvertisementID">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!AdvertisementID.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("AdvertisementID", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_ResourceID">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!ResourceID.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("ResourceID", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_NumFailures">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!NumFailures.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("NumFailures", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_LastStatusMessageID">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!LastStatusMessageID.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("LastStatusMessageID", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_LastStatusMessageIDName">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!LastStatusMessageIDName.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("LastStatusMessageIDName", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Header_Table0_LastStatusTime">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!LastStatusTime.Value</SortExpression>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("LastStatusTimeUTC", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+            <TablixRow>
+              <Height>0.25in</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_Netbios_Name0">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!Netbios_Name0.Value</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>Underline</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <ActionInfo>
+                        <Actions>
+                          <Action>
+                            <Drillthrough>
+                              <ReportName>History of a task sequence deployment on a computer</ReportName>
+                              <Parameters>
+                                <Parameter Name="AdvertID">
+                                  <Value>=Fields!AdvertisementID.Value</Value>
+                                </Parameter>
+                                <Parameter Name="ComputerName">
+                                  <Value>=Fields!Netbios_Name0.Value</Value>
+                                </Parameter>
+                              </Parameters>
+                            </Drillthrough>
+                          </Action>
+                        </Actions>
+                      </ActionInfo>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_TSRPT_C00">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!TSRPT_C00.Value</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>None</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_TSRPT_C00_affada0aebbba">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!TSRPT_C00_affada0aebbba.Value</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>None</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_TSRPT_C00_d0a0ccebddfab">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!TSRPT_C00_d0a0ccebddfab.Value</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>None</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_LastAcceptanceMessageID">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!LastAcceptanceMessageID.Value</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>None</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_LastAcceptanceMessageIDName">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!LastAcceptanceMessageIDName.Value</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>None</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_LastAcceptanceStatusTime">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetLocalTime(Fields!LastAcceptanceStatusTime.Value, User!Language)</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>None</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_SMS_Installed_Sites0">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!SMS_Installed_Sites0.Value</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>None</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_AdvertisementID">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!AdvertisementID.Value</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>None</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_ResourceID">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!ResourceID.Value</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>None</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_NumFailures">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!NumFailures.Value</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>None</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_LastStatusMessageID">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!LastStatusMessageID.Value</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>None</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_LastStatusMessageIDName">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!LastStatusMessageIDName.Value</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>None</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Details_Table0_LastStatusTime">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetLocalTime(Fields!LastStatusTime.Value, User!Language)</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontWeight>Normal</FontWeight>
+                                <TextDecoration>None</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Left</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <Style>
+                        <TopBorder>
+                          <Style>None</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Color>Silver</Color>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <LeftBorder>
+                          <Style>None</Style>
+                        </LeftBorder>
+                        <RightBorder>
+                          <Style>None</Style>
+                        </RightBorder>
+                        <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                        <VerticalAlign>Top</VerticalAlign>
+                        <PaddingLeft>5pt</PaddingLeft>
+                        <PaddingRight>5pt</PaddingRight>
+                        <PaddingTop>5pt</PaddingTop>
+                        <PaddingBottom>5pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+          </TablixRows>
+        </TablixBody>
+        <TablixColumnHierarchy>
+          <TablixMembers>
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+          </TablixMembers>
+        </TablixColumnHierarchy>
+        <TablixRowHierarchy>
+          <TablixMembers>
+            <TablixMember>
+              <KeepWithGroup>After</KeepWithGroup>
+              <RepeatOnNewPage>true</RepeatOnNewPage>
+              <KeepTogether>true</KeepTogether>
+            </TablixMember>
+            <TablixMember>
+              <Group Name="Table0_Details_Group">
+                <DataElementName>Detail</DataElementName>
+              </Group>
+              <TablixMembers>
+                <TablixMember />
+              </TablixMembers>
+              <DataElementName>Detail_Collection</DataElementName>
+              <DataElementOutput>Output</DataElementOutput>
+              <KeepTogether>true</KeepTogether>
+            </TablixMember>
+          </TablixMembers>
+        </TablixRowHierarchy>
+        <DataSetName>DataSet0</DataSetName>
+        <rdl:Left xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">0in</rdl:Left>
+        <Height>0.5in</Height>
+        <Width>17.5in</Width>
+        <Style>
+          <Border>
+            <Style>Solid</Style>
+          </Border>
+          <TopBorder>
+            <Style>None</Style>
+          </TopBorder>
+          <BottomBorder>
+            <Style>None</Style>
+          </BottomBorder>
+          <LeftBorder>
+            <Style>None</Style>
+          </LeftBorder>
+          <RightBorder>
+            <Style>None</Style>
+          </RightBorder>
+          <FontFamily>Tahoma</FontFamily>
+          <FontSize>8pt</FontSize>
+          <FontWeight>Normal</FontWeight>
+          <TextDecoration>None</TextDecoration>
+          <TextAlign>General</TextAlign>
+          <VerticalAlign>Top</VerticalAlign>
+        </Style>
+        <rdl:Top xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">0.33in</rdl:Top>
+      </Tablix>
+      <rdl:Rectangle Name="ReportDescriptionRectangle" xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+        <rdl:ReportItems>
+          <rdl:Tablix Name="ReportDescriptionTablix">
+            <rdl:DataSetName>DataSet0</rdl:DataSetName>
+            <rdl:TablixBody>
+              <rdl:TablixColumns>
+                <rdl:TablixColumn>
+                  <rdl:Width>1.25in</rdl:Width>
+                </rdl:TablixColumn>
+                <rdl:TablixColumn>
+                  <rdl:Width>26.549999237060547in</rdl:Width>
+                </rdl:TablixColumn>
+              </rdl:TablixColumns>
+              <rdl:TablixRows>
+                <rdl:TablixRow>
+                  <rdl:Height>0.4in</rdl:Height>
+                  <rdl:TablixCells>
+                    <rdl:TablixCell>
+                      <rdl:CellContents>
+                        <rdl:Textbox Name="DescriptionLabelTextbox">
+                          <rdl:CanGrow>true</rdl:CanGrow>
+                          <rdl:KeepTogether>true</rdl:KeepTogether>
+                          <rdl:Paragraphs>
+                            <rdl:Paragraph>
+                              <rdl:TextRuns>
+                                <rdl:TextRun>
+                                  <rdl:Value>=SrsResources.Localization.GetString("Description", User!Language)</rdl:Value>
+                                  <rdl:Style>
+                                    <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                    <rdl:FontWeight>Bold</rdl:FontWeight>
+                                    <rdl:FontSize>9pt</rdl:FontSize>
+                                    <rdl:Color>Black</rdl:Color>
+                                  </rdl:Style>
+                                </rdl:TextRun>
+                              </rdl:TextRuns>
+                              <rdl:Style />
+                            </rdl:Paragraph>
+                          </rdl:Paragraphs>
+                          <rd:DefaultName>Textbox16</rd:DefaultName>
+                          <rdl:Style>
+                            <rdl:Border>
+                              <rdl:Color>LightGrey</rdl:Color>
+                              <rdl:Style>Solid</rdl:Style>
+                            </rdl:Border>
+                            <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+                            <rdl:PaddingLeft>2pt</rdl:PaddingLeft>
+                            <rdl:PaddingRight>2pt</rdl:PaddingRight>
+                            <rdl:PaddingTop>2pt</rdl:PaddingTop>
+                            <rdl:PaddingBottom>2pt</rdl:PaddingBottom>
+                          </rdl:Style>
+                        </rdl:Textbox>
+                      </rdl:CellContents>
+                    </rdl:TablixCell>
+                    <rdl:TablixCell>
+                      <rdl:CellContents>
+                        <rdl:Textbox Name="DescriptionTextbox">
+                          <rdl:CanGrow>true</rdl:CanGrow>
+                          <rdl:KeepTogether>true</rdl:KeepTogether>
+                          <rdl:Paragraphs>
+                            <rdl:Paragraph>
+                              <rdl:TextRuns>
+                                <rdl:TextRun>
+                                  <rdl:Value>=SrsResources.Localization.GetString("Report347_Description", User!Language)</rdl:Value>
+                                  <rdl:Style>
+                                    <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                    <rdl:FontSize>9pt</rdl:FontSize>
+                                    <rdl:FontWeight>Normal</rdl:FontWeight>
+                                    <rdl:Color>Black</rdl:Color>
+                                  </rdl:Style>
+                                </rdl:TextRun>
+                              </rdl:TextRuns>
+                              <rdl:Style />
+                            </rdl:Paragraph>
+                          </rdl:Paragraphs>
+                          <rd:DefaultName>Textbox18</rd:DefaultName>
+                          <rdl:Visibility>
+                            <rdl:Hidden>true</rdl:Hidden>
+                            <rdl:ToggleItem>DescriptionLabelTextbox</rdl:ToggleItem>
+                          </rdl:Visibility>
+                          <rdl:Style>
+                            <rdl:Border>
+                              <rdl:Color>LightGrey</rdl:Color>
+                              <rdl:Style>Solid</rdl:Style>
+                            </rdl:Border>
+                            <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+                            <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                            <rdl:PaddingRight>2pt</rdl:PaddingRight>
+                            <rdl:PaddingTop>2pt</rdl:PaddingTop>
+                            <rdl:PaddingBottom>2pt</rdl:PaddingBottom>
+                          </rdl:Style>
+                        </rdl:Textbox>
+                      </rdl:CellContents>
+                    </rdl:TablixCell>
+                  </rdl:TablixCells>
+                </rdl:TablixRow>
+              </rdl:TablixRows>
+            </rdl:TablixBody>
+            <rdl:TablixColumnHierarchy>
+              <rdl:TablixMembers>
+                <rdl:TablixMember />
+                <rdl:TablixMember />
+              </rdl:TablixMembers>
+            </rdl:TablixColumnHierarchy>
+            <rdl:TablixRowHierarchy>
+              <rdl:TablixMembers>
+                <rdl:TablixMember />
+              </rdl:TablixMembers>
+            </rdl:TablixRowHierarchy>
+            <rdl:Top>0.0in</rdl:Top>
+            <rdl:Height>0.2in</rdl:Height>
+            <rdl:Style>
+              <rdl:Border>
+                <rdl:Style>None</rdl:Style>
+              </rdl:Border>
+            </rdl:Style>
+          </rdl:Tablix>
+        </rdl:ReportItems>
+        <rdl:KeepTogether>true</rdl:KeepTogether>
+        <rdl:Left>0in</rdl:Left>
+        <rdl:Height>0.21181in</rdl:Height>
+        <rdl:Top>0.0in</rdl:Top>
+        <rdl:Width>28.049999237060547in</rdl:Width>
+        <rdl:ZIndex>1</rdl:ZIndex>
+        <rdl:Style>
+          <rdl:Border>
+            <rdl:Style>None</rdl:Style>
+          </rdl:Border>
+          <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+        </rdl:Style>
+      </rdl:Rectangle>
+      <rdl:Line Name="ReportDescriptionLine" xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+        <rdl:Top>0.25in</rdl:Top>
+        <rdl:Left>0in</rdl:Left>
+        <rdl:Height>0in</rdl:Height>
+        <rdl:Width>28.049999237060547in</rdl:Width>
+        <rdl:ZIndex>2</rdl:ZIndex>
+        <rdl:Style>
+          <rdl:Border>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:Border>
+          <rdl:TopBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:TopBorder>
+          <rdl:BottomBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:BottomBorder>
+          <rdl:LeftBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:LeftBorder>
+          <rdl:RightBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:RightBorder>
+        </rdl:Style>
+      </rdl:Line>
+    </ReportItems>
+    <Height>1.75in</Height>
+    <Style />
+  </Body>
+  <ReportParameters>
+    <ReportParameter Name="UserTokenSIDs">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=SrsResources.UserIdentity.GetUserSIDs(User!UserID)</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="UserSIDs">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <DataSetReference>
+          <DataSetName>DataSetAdminID</DataSetName>
+          <ValueField>UserSIDs</ValueField>
+        </DataSetReference>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="StateName">
+      <DataType>String</DataType>
+      <Prompt>Task Sequence State</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>Parameter_DataSet_StateName</DataSetName>
+          <ValueField>MessageStateName</ValueField>
+          <LabelField>LocMessageStateName</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="AdvertID">
+      <DataType>String</DataType>
+      <Prompt>Deployment</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>Parameter_DataSet_AdvertID</DataSetName>
+          <ValueField>AdvertisementID</ValueField>
+          <LabelField>AdvertisementIDName</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+  </ReportParameters>
+  <Width>18in</Width>
+  <rdl:Page xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+    <rdl:PageHeader>
+      <rdl:Height>1.1in</rdl:Height>
+      <rdl:PrintOnFirstPage>true</rdl:PrintOnFirstPage>
+      <rdl:PrintOnLastPage>true</rdl:PrintOnLastPage>
+      <rdl:ReportItems>
+        <rdl:Rectangle Name="BackgroundColorRectangle">
+          <rdl:ReportItems>
+            <rdl:Image Name="RightHeaderImage">
+              <rdl:Source>External</rdl:Source>
+              <rdl:Value>/ConfigMgr_DC1/Report Resources/Report_Header_Right.png</rdl:Value>
+              <rdl:Top>0.0in</rdl:Top>
+              <rdl:Left>25.709999322891235in</rdl:Left>
+              <rdl:Height>0.75in</rdl:Height>
+              <rdl:Width>2.3399999141693115in</rdl:Width>
+              <rdl:Style>
+                <rdl:Border>
+                  <rdl:Style>None</rdl:Style>
+                </rdl:Border>
+              </rdl:Style>
+            </rdl:Image>
+            <rdl:Image Name="CenterHeaderImage">
+              <rdl:Source>External</rdl:Source>
+              <rdl:Sizing>Fit</rdl:Sizing>
+              <rdl:Value>/ConfigMgr_DC1/Report Resources/Report_Header_Center.png</rdl:Value>
+              <rdl:Top>0.0in</rdl:Top>
+              <rdl:Left>0.20999999344348907in</rdl:Left>
+              <rdl:Height>0.75in</rdl:Height>
+              <rdl:Width>25.5in</rdl:Width>
+              <rdl:Style>
+                <rdl:Border>
+                  <rdl:Style>None</rdl:Style>
+                </rdl:Border>
+              </rdl:Style>
+            </rdl:Image>
+            <rdl:Image Name="LeftHeaderImage">
+              <rdl:Source>External</rdl:Source>
+              <rdl:Value>/ConfigMgr_DC1/Report Resources/Report_Header_Left.png</rdl:Value>
+              <rdl:Top>0.0in</rdl:Top>
+              <rdl:Left>0.0in</rdl:Left>
+              <rdl:Height>0.75in</rdl:Height>
+              <rdl:Width>0.20999999344348907in</rdl:Width>
+              <rdl:ZIndex>1</rdl:ZIndex>
+              <rdl:Style>
+                <rdl:Border>
+                  <rdl:Style>None</rdl:Style>
+                </rdl:Border>
+              </rdl:Style>
+            </rdl:Image>
+          </rdl:ReportItems>
+          <rdl:KeepTogether>true</rdl:KeepTogether>
+          <rdl:Top>0.0in</rdl:Top>
+          <rdl:Left>0in</rdl:Left>
+          <rdl:Height>0.75in</rdl:Height>
+          <rdl:Width>28.049999237060547in</rdl:Width>
+          <rdl:Style>
+            <rdl:Border>
+              <rdl:Style>None</rdl:Style>
+            </rdl:Border>
+            <rdl:BackgroundColor>#e2e9f2</rdl:BackgroundColor>
+          </rdl:Style>
+        </rdl:Rectangle>
+        <rdl:Textbox Name="ReportTitleTextbox">
+          <rdl:CanGrow>true</rdl:CanGrow>
+          <rdl:KeepTogether>true</rdl:KeepTogether>
+          <rdl:Paragraphs>
+            <rdl:Paragraph>
+              <rdl:TextRuns>
+                <rdl:TextRun>
+                  <rdl:Value>=SrsResources.Localization.GetString("Report347_Name", User!Language) + "  "</rdl:Value>
+                  <rdl:Style>
+                    <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                    <rdl:FontSize>17pt</rdl:FontSize>
+                    <rdl:FontWeight>Bold</rdl:FontWeight>
+                    <rdl:Color>Black</rdl:Color>
+                  </rdl:Style>
+                </rdl:TextRun>
+              </rdl:TextRuns>
+              <rdl:Style />
+            </rdl:Paragraph>
+          </rdl:Paragraphs>
+          <rd:DefaultName>Textbox54</rd:DefaultName>
+          <rdl:Top>0.75in</rdl:Top>
+          <rdl:Left>0in</rdl:Left>
+          <rdl:Height>0.35in</rdl:Height>
+          <rdl:Width>28.049999237060547in</rdl:Width>
+          <rdl:ZIndex>1</rdl:ZIndex>
+          <rdl:Style>
+            <rdl:Border>
+              <rdl:Style>None</rdl:Style>
+            </rdl:Border>
+            <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+            <rdl:PaddingLeft>2pt</rdl:PaddingLeft>
+            <rdl:PaddingRight>2pt</rdl:PaddingRight>
+            <rdl:PaddingTop>2pt</rdl:PaddingTop>
+            <rdl:PaddingBottom>2pt</rdl:PaddingBottom>
+          </rdl:Style>
+        </rdl:Textbox>
+      </rdl:ReportItems>
+      <rdl:Style>
+        <rdl:Border>
+          <rdl:Style>None</rdl:Style>
+        </rdl:Border>
+      </rdl:Style>
+    </rdl:PageHeader>
+    <rdl:PageFooter>
+      <rdl:Height>0.45in</rdl:Height>
+      <rdl:PrintOnFirstPage>true</rdl:PrintOnFirstPage>
+      <rdl:PrintOnLastPage>true</rdl:PrintOnLastPage>
+      <rdl:Style>
+        <rdl:Border>
+          <rdl:Style>None</rdl:Style>
+        </rdl:Border>
+      </rdl:Style>
+    </rdl:PageFooter>
+    <rdl:PageHeight>27.94cm</rdl:PageHeight>
+    <rdl:PageWidth>21.59cm</rdl:PageWidth>
+    <rdl:LeftMargin>2.54cm</rdl:LeftMargin>
+    <rdl:RightMargin>2.54cm</rdl:RightMargin>
+    <rdl:TopMargin>2.54cm</rdl:TopMargin>
+    <rdl:BottomMargin>2.54cm</rdl:BottomMargin>
+    <rdl:Style />
+  </rdl:Page>
+  <rdl:CodeModules xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+    <rdl:CodeModule>SrsResources, culture=neutral</rdl:CodeModule>
+  </rdl:CodeModules>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportID>9e8c3bb8-c12b-4ba9-bf64-1f7a7e4b50a9</rd:ReportID>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+</Report>

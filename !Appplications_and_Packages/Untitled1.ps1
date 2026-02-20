@@ -1,4 +1,7 @@
-﻿$ApplicationName = 'IBM DB2'
+$ApplicationName = 'IBM DB2'
+
+}
+$ApplicationName = 'IBM DB2'
 
 
 

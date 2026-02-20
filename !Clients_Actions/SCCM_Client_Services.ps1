@@ -1,4 +1,7 @@
-﻿$PCName = "10.200.190.77"
+$PCName = "10.200.190.77"
+}
+	Get-Service -Name LanmanWorkstation -ComputerName $PC
+$PCName = "10.200.190.77"
 
 
 ForEach ($PC in $PCName)

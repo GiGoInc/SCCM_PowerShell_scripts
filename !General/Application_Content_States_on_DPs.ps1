@@ -1,5 +1,8 @@
-﻿$(Get-Date -format yyyy-MM-dd)+'__'+ $(Get-Date -UFormat %R).Replace(':','.')
-$PackageStatusDistPointsSummarizer = Get-WmiObject -ComputerName 'SCCMSERVER.Domain.Com' -Namespace root\sms\site_SS1 -Query "SELECT * FROM SMS_PackageStatusDistPointsSummarizer"
+$(Get-Date -format yyyy-MM-dd)+'__'+ $(Get-Date -UFormat %R).Replace(':','.')
+$(Get-Date -format yyyy-MM-dd)+'__'+ $(Get-Date -UFormat %R).Replace(':','.')
+}
+$(Get-Date -format yyyy-MM-dd)+'__'+ $(Get-Date -UFormat %R).Replace(':','.')
+$PackageStatusDistPointsSummarizer = Get-WmiObject -ComputerName 'SERVER.DOMAIN.COM' -Namespace root\sms\site_XX1 -Query "SELECT * FROM SMS_PackageStatusDistPointsSummarizer"
 $(Get-Date -format yyyy-MM-dd)+'__'+ $(Get-Date -UFormat %R).Replace(':','.')
 
 "Server`tPackageID`tStatus" | Set-Content 'D:\Powershell\!SCCM_PS_scripts\!General\Failed_Content_log.txt'

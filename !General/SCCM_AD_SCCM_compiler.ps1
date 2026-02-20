@@ -1,11 +1,14 @@
-﻿$ADate = Get-Date -Format "yyyy-MM-dd__hh.mm.ss.tt"
+$ADate = Get-Date -Format "yyyy-MM-dd__hh.mm.ss.tt"
+	If (Test-Path $AD_UsersXLS){Remove-Item -Path $AD_UsersXLS -Force | Out-Null}
+	If (Test-Path $AD_Users){Remove-Item -Path $AD_Users -Force | Out-Null}
+$ADate = Get-Date -Format "yyyy-MM-dd__hh.mm.ss.tt"
 
  #Get current working paths
 $CurrentDirectory = split-path $MyInvocation.MyCommand.Path
 
  # Variables for file log creation
 
-$creds = Get-Credential DOMAIN\user1
+$creds = Get-Credential DOMAIN\SUPERUSER
 
    $SCCMFile = "C:\Temp\SCCM_Report.csv"
    $SCCMEdit = "C:\Temp\SCCM_Report2.csv"   
@@ -45,7 +48,7 @@ $UserLVar = 'objectClass,displayName,sAMAccountName'
 
  # Generate SCCM Report to current directory
 Write-Output "Generating SCCM report..."
-    Invoke-WebRequest "http://sccmserver/ReportServer?%2fConfigMgr_SS1%2fCorp+Name%2fCOM+-+The+Works+(Machine+to+User+match)&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $creds -outfile $SCCMFile
+    Invoke-WebRequest "http://SERVER/ReportServer?%2fConfigMgr_XX1%2fDOMAIN+Part2%2fCOM+-+The+Works+(Machine+to+User+match)&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $creds -outfile $SCCMFile
 
  # Generate AD computers list
 Write-Output "Generating AD PC Workstations report..."

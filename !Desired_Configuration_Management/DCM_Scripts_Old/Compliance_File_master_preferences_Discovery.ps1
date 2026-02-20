@@ -1,4 +1,7 @@
-﻿# "File Content" Discovery Script
+# "File Content" Discovery Script
+{write-host "Not Compliant"}
+Else
+# "File Content" Discovery Script
 
 $list = '{
 	"homepage": "http://thesource",

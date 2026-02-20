@@ -1,12 +1,15 @@
 [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.dll")) | Out-Null
+#>
+}
+[System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.dll")) | Out-Null
 [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.Extender.dll")) | Out-Null
 [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.MsiInstaller.dll")) | Out-Null
  
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
-$SiteServer = "SCCMSERVER"
-$SiteCode = "SS1"
+$SiteServer = "SERVER"
+$SiteCode = "XX1"
 
 $FileName = "D:\Powershell\!SCCM_PS_scripts\!Appplications_and_Packages\!Appplications_and_Packages\Application_Information_$(Get-Date -f yyyy-MM-dd).txt"
 Write-Host "Getting all application names...this will take a few minutes" -ForegroundColor Cyan
@@ -24,8 +27,8 @@ Function FAKEFUNCTION ($FAKE)
 [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.Extender.dll")) | Out-Null
 [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.MsiInstaller.dll")) | Out-Null
  
-$SiteServer = "SCCMSERVER"
-$SiteCode = "SS1"
+$SiteServer = "SERVER"
+$SiteCode = "XX1"
 $CurrentContentPath = "\\\\<name_of_server_where_the_content_was_stored_previously\\<folder>\\<folder>"
 $UpdatedContentPath = "\\<name_of_the_server_where_the_content_is_stored_now\<folder>\<folder>"
  

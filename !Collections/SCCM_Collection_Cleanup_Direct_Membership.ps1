@@ -1,8 +1,11 @@
 D:
+(Get-Content $File) | foreach-Object {invoke-command -ScriptBlock ${function:RunFunc} -ArgumentList $_}
+				
+D:
 CD 'D:\Program Files\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
     $File = "E:\Packages\Powershell_Scripts\SCCM_Collection_Cleanup_Direct_Membership_list.txt"
 
@@ -10,7 +13,7 @@ CD SS1:
 function RunFunc($CollectionID)
 {
     # Get collection from WMI
-    $coll = Get-WmiObject -Namespace root\sms\site_SS1 -Class sms_collection -Filter "CollectionID = '$CollectionID'"
+    $coll = Get-WmiObject -Namespace root\sms\site_XX1 -Class sms_collection -Filter "CollectionID = '$CollectionID'"
 
     # Continue if we got a collection
     if ($coll) {
@@ -25,7 +28,7 @@ function RunFunc($CollectionID)
         $directmembers = @()
 
         # Get all ResourceIDs that are member by a DirectRule
-        $directmembers += Get-WmiObject -Namespace root\sms\site_SS1 -Query "SELECT * FROM SMS_CollectionMember_A WHERE CollectionID = '$CollectionID'" | Where IsDirect -eq $True | Select ResourceID
+        $directmembers += Get-WmiObject -Namespace root\sms\site_XX1 -Query "SELECT * FROM SMS_CollectionMember_A WHERE CollectionID = '$CollectionID'" | Where IsDirect -eq $True | Select ResourceID
         Write-Output "Found $($directmembers.count) direct members"
 
         # Continue if there are any direct members
@@ -42,7 +45,7 @@ function RunFunc($CollectionID)
                     Write-Output "Found query rule called $($item.RuleName)"
 
                     # Get the result of the query from SCCM
-                    $result = Get-WmiObject -Namespace root\sms\site_SS1 -Query $query
+                    $result = Get-WmiObject -Namespace root\sms\site_XX1 -Query $query
                     Write-Output "Got result of query"
 
                     # Loop through all resources in the result

@@ -1,4 +1,7 @@
-﻿<#
+<#
+}
+    }
+<#
 .Synopsis
    Gets the Objects you specify distributed to a Distribution Point
 .DESCRIPTION

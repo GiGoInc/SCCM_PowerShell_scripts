@@ -1,4 +1,7 @@
-﻿# "Java Deployment Files" Discovery Script
+# "Java Deployment Files" Discovery Script
+  {write-host "Not-Compliant"}
+else
+# "Java Deployment Files" Discovery Script
 
 $Path1 = "$env:windir\Sun\Java\Deployment"
 $Path2 = "$env:windir\Sun\Java\Deployment\deployment.properties"

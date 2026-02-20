@@ -1,4 +1,7 @@
-﻿param (
+param (
+Move-Collection $SourceContainerNodeID $collID $TargetContainerNodeID
+
+param (
 	[string]$sitename,
 	[string]$CollectionName
 	)

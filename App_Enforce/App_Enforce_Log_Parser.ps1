@@ -1,4 +1,7 @@
-﻿$Computers = 'computer1'
+$Computers = 'COMPUTER77'
+}
+    }
+$Computers = 'COMPUTER77'
 
 $ADateStart = $(get-date -format yyyy_MM_dd)+'__'+ $(get-date -UFormat %R).Replace(':','.')
 ForEach ($computer in $computers)
@@ -90,7 +93,7 @@ ForEach ($computer in $computers)
         ######################################################################
         }
         Invoke-Command -ComputerName $Computer -ScriptBlock $ScriptBlock
-        Copy-Item "\\$Computer\C$\Temp\AppEnforce_log--Results.csv" "\\D7B0M9Z2\D$\Powershell\!SCCM_PS_scripts\App_Enforce\$Computer--$ADateStart--AppEnforce_log--Results.csv" -Recurse -Force
+        Copy-Item "\\$Computer\C$\Temp\AppEnforce_log--Results.csv" "\\COMPUTER77\D$\Powershell\!SCCM_PS_scripts\App_Enforce\$Computer--$ADateStart--AppEnforce_log--Results.csv" -Recurse -Force
         "D:\Powershell\!SCCM_PS_scripts\App_Enforce\$Computer--$ADateStart--AppEnforce_log--Results.csv"
     }
     ELSE

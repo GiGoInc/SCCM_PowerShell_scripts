@@ -1,4 +1,7 @@
-﻿<#
+<#
+}
+    Remove-CimSessions
+<#
 .SYNOPSIS
     Create a Deployment Package in Configuration Manager 2012.
 .DESCRIPTION

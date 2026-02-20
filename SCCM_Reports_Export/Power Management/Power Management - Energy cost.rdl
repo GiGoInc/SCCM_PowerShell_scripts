@@ -1,0 +1,3690 @@
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <rdl:Language xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">=User!Language</rdl:Language>
+  <Description>Displays the total monthly power consumption cost for a specified collection over a specified time period.</Description>
+  <DataSources>
+    <DataSource Name="DataSource1">
+      <DataSourceReference>default_reference</DataSourceReference>
+      <rd:DataSourceID>55b5ce5c-0d20-42f9-8366-163d9f47edf2</rd:DataSourceID>
+      <rd:SecurityType>None</rd:SecurityType>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSetGetTotalComputersForCollection">
+      <Fields>
+        <Field Name="Total">
+          <DataField>Total</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>select count(*) as Total from fn_rbac_ClientCollectionMembers(@UserSIDs)  where CollectionID = @collectionId and IsClient=1</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@UserSIDs">
+            <Value>=Parameters!UserSIDs.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@collectionId">
+            <Value>=Parameters!collectionId.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSet1">
+      <Fields>
+        <Field Name="MonthStart">
+          <DataField>MonthStart</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="ComputerActive">
+          <DataField>ComputerActive</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="ComputerOn">
+          <DataField>ComputerOn</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="ComputerSleep">
+          <DataField>ComputerSleep</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="ComputerOff">
+          <DataField>ComputerOff</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="MonitorOn">
+          <DataField>MonitorOn</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="ComputerConsumptionPotential">
+          <DataField>ComputerConsumptionPotential</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="NumberOfMachines">
+          <DataField>NumberOfMachines</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>BEGIN
+declare @isLaptop as bit
+
+if @deviceType =2
+set @isLaptop = 1
+else if @deviceType =0
+set @isLaptop = null
+else
+set @isLaptop = 0
+
+EXEC   [SCCM_Rpt].[rptspPowerManagementGetMonthlyReport]
+                                @reportStartDate =@reportStartDate ,
+                                @reportEndDate = @reportEndDate,
+                                @collectionId = @collectionId,
+		@computerOnDesktop = @computerOnDesktop,
+		@computerOnLaptop =@computerOnLaptop ,
+		@computerOffDesktop =@computerOffDesktop,
+		@computerOffLaptop = @computerOffLaptop,
+		@computerSleepDesktop = @computerSleepDesktop,
+		@computerSleepLaptop = @computerSleepLaptop,
+		@monitorOnDesktop = @monitorOnDesktop,
+		@monitorOnLaptop = @monitorOnLaptop,
+                                @isLaptop = @isLaptop
+end</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@deviceType">
+            <Value>=Parameters!deviceType.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@reportStartDate">
+            <Value>=Parameters!reportStartDate.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@reportEndDate">
+            <Value>=Parameters!reportEndDate.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@collectionId">
+            <Value>=Parameters!collectionId.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@computerOnDesktop">
+            <Value>=Parameters!KwhConsumptionDesktopComputerOn.Value*Parameters!costOfKwh.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@computerOnLaptop">
+            <Value>=Parameters!KwhConsumptionLaptopComputerOn.Value*Parameters!costOfKwh.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@computerOffDesktop">
+            <Value>=Parameters!KwhConsumptionDesktopComputerOff.Value*Parameters!costOfKwh.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@computerOffLaptop">
+            <Value>=Parameters!KwhConsumptionLaptopComputerOff.Value*Parameters!costOfKwh.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@computerSleepDesktop">
+            <Value>=Parameters!KwhConsumptionDesktopComputerSleep.Value*Parameters!costOfKwh.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@computerSleepLaptop">
+            <Value>=Parameters!KwhConsumptionLaptopComputerSleep.Value*Parameters!costOfKwh.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@monitorOnDesktop">
+            <Value>=Parameters!KwhConsumptionDesktopMonitorOn.Value*Parameters!costOfKwh.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@monitorOnLaptop">
+            <Value>=Parameters!KwhConsumptionLaptopMonitorOn.Value*Parameters!costOfKwh.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSetStartDate">
+      <Fields>
+        <Field Name="ReportStartDate">
+          <DataField>date</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>exec [SCCM_Rpt].[rptspPowerManagementGetMonthRange] 14, 0, 0</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSetEndDate">
+      <Fields>
+        <Field Name="ReportEndDate">
+          <DataField>date</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>exec [SCCM_Rpt].[rptspPowerManagementGetMonthRange] 14, 1, 0</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSetCollection">
+      <Fields>
+        <Field Name="CollectionID">
+          <DataField>CollectionID</DataField>
+        </Field>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+        </Field>
+        <Field Name="LocName">
+          <Value>=SrsResources.Localization.GetDBString(Fields!Name.Value, User!Language)</Value>
+        </Field>
+        <Field Name="CollectionID_f0edddb0aaacccd">
+          <DataField>CollectionID</DataField>
+        </Field>
+        <Field Name="Name_bfee0cb0dfcdcf">
+          <DataField>Name</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>begin 
+ if (@filterwildcard = '') 
+ select v_Collection_Alias.CollectionID, v_Collection_Alias.Name from fn_rbac_Collection(@UserSIDs) v_Collection_Alias 
+ where v_Collection_Alias.CollectionType = 2
+ order by v_Collection_Alias.Name 
+else 
+ select v_Collection_Alias.CollectionID, v_Collection_Alias.Name from fn_rbac_Collection(@UserSIDs) v_Collection_Alias 
+ WHERE v_Collection_Alias.CollectionID like @filterwildcard 
+               and
+               v_Collection_Alias.CollectionType = 2
+ order by v_Collection_Alias.Name 
+end</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@UserSIDs">
+            <Value>=Parameters!UserSIDs.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="filterwildcard">
+            <Value />
+          </QueryParameter>
+        </QueryParameters>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSetCollectionName">
+      <Fields>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="LocName">
+          <Value>=SrsResources.Localization.GetDBString(Fields!Name.Value, User!Language)</Value>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>select v_Collection_Alias.Name from fn_rbac_Collection(@UserSIDs) v_Collection_Alias 
+ WHERE v_Collection_Alias.CollectionID = @collectionId</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@UserSIDs">
+            <Value>=Parameters!UserSIDs.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@collectionId">
+            <Value>=Parameters!collectionId.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+    </DataSet>
+    <DataSet Name="GetTotalPhyMachineForCollectionData">
+      <Fields>
+        <Field Name="TotalPhyMachines">
+          <DataField>TotalPhyMachines</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>
+          select COUNT(*)  as TotalPhyMachines
+          from fn_rbac_ClientCollectionMembers(@UserSIDs)  c
+          LEFT JOIN fn_rbac_R_System(@UserSIDs)  v on v.ResourceID = c.ResourceID
+          WHERE
+          c.CollectionID = @collectionId
+          AND c.IsClient = 1
+          AND ISNULL(v.Is_Virtual_Machine0,0) = 0
+        </CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@UserSIDs">
+            <Value>=Parameters!UserSIDs.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@collectionId">
+            <Value>=Parameters!collectionId.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSetAdminID">
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@UserTokenSIDs">
+            <Value>=Parameters!UserTokenSIDs.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select dbo.fn_rbac_GetAdminIDsfromUserSIDs(@UserTokenSIDs) as UserSIDs</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="UserSIDs">
+          <DataField>UserSIDs</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <Body>
+    <ReportItems>
+      <Rectangle Name="rectangle3">
+        <ReportItems>
+          <Rectangle Name="rectangle1">
+            <ReportItems>
+              <Textbox Name="textbox2">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("DesktopCompOn", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>3.13542in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox1">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Parameters!KwhConsumptionDesktopComputerOn.Value</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>3.13542in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>1</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox4">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("PowConsumptionConst", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>9pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>textbox4</rd:DefaultName>
+                <Top>2.76042in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.375in</Height>
+                <Width>2.5in</Width>
+                <ZIndex>2</ZIndex>
+                <Style>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox5">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("LaptopCompOn", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>3.38542in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>3</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox3">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Parameters!KwhConsumptionLaptopComputerOn.Value</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>3.38542in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>4</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox9">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("DesktopCompOff", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>4.13542in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>5</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox8">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Parameters!KwhConsumptionDesktopComputerOff.Value</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>4.13542in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>6</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox7">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("LaptopCompOff", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>4.38542in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>7</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox6">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Parameters!KwhConsumptionLaptopComputerOff.Value</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>4.38542in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>8</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox13">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("DesktopCompSleep", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>3.63542in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>9</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox12">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Parameters!KwhConsumptionDesktopComputerSleep.Value</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>3.63542in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>10</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox11">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("LaptopCompSleep", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>3.88542in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>11</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox10">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Parameters!KwhConsumptionLaptopComputerSleep.Value</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>3.88542in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>12</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox17">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("DesktopMonOn", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>4.63542in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>13</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox16">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Parameters!KwhConsumptionDesktopMonitorOn.Value</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>4.63542in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>14</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox15">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("LaptopMonOn", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>4.88542in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>15</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox14">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Parameters!KwhConsumptionLaptopMonitorOn.Value</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>4.88542in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>16</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox26">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.FormatShortDate(Parameters!reportEndDate.Value, User!Language)</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>0.76042in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>17</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox20">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("ReportStartDate", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>textbox20</rd:DefaultName>
+                <Top>0.51042in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>18</ZIndex>
+                <Style>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox21">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.FormatShortDate(Parameters!reportStartDate.Value, User!Language)</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>0.51042in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>19</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox23">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("ReportEndDate", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>0.76042in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>20</ZIndex>
+                <Style>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox22">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=IIF(Parameters!deviceType.Value=0, SrsResources.Localization.GetString("AllDevices", User!Language) , 
+ IIF(Parameters!deviceType.Value=1, SrsResources.Localization.GetString("DeskTop", User!Language) , SrsResources.Localization.GetString("LapTop", User!Language) ))</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>1.26042in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>21</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox25">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("Collection", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>1.01042in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>22</ZIndex>
+                <Style>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox24">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=First(Fields!LocName.Value, "DataSetCollectionName")</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>1.01042in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>23</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox27">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("DeviceType1", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>1.26042in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>24</ZIndex>
+                <Style>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox19">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("Parameters0", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>9pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <rd:DefaultName>textbox19</rd:DefaultName>
+                <Top>0.26042in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.25in</Width>
+                <ZIndex>25</ZIndex>
+                <Style>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox28">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("Currency0", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>5.38542in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>26</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox29">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Parameters!Currency.Value</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>5.38542in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>27</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox32">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("CostOfkWh", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>5.13542in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.25in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>28</ZIndex>
+                <Style>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox33">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Parameters!costOfKwh.Value</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>5.13542in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>29</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox40">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("NumofCompinCollection", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>1.51042in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.375in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>30</ZIndex>
+                <Style>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox39">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Sum(Fields!Total.Value, "DataSetGetTotalComputersForCollection")</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>1.52292in</Top>
+                <Left>1.69444in</Left>
+                <Height>0.25in</Height>
+                <Width>0.875in</Width>
+                <ZIndex>31</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <BackgroundColor>WhiteSmoke</BackgroundColor>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox41">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("NumofPhyCompinCollection", User!Language) + ":"</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>1.90486in</Top>
+                <Left>0.06944in</Left>
+                <Height>0.39583in</Height>
+                <Width>1.625in</Width>
+                <ZIndex>32</ZIndex>
+                <Style>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Textbox Name="textbox42">
+                <CanGrow>true</CanGrow>
+                <ToggleImage>
+                  <InitialState>true</InitialState>
+                </ToggleImage>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=Sum(Fields!TotalPhyMachines.Value, "GetTotalPhyMachineForCollectionData")</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style>
+                      <TextAlign>Left</TextAlign>
+                    </Style>
+                  </Paragraph>
+                </Paragraphs>
+                <Top>1.90486in</Top>
+                <Left>1.71111in</Left>
+                <Height>0.25in</Height>
+                <Width>0.84583in</Width>
+                <ZIndex>33</ZIndex>
+                <Style>
+                  <TopBorder>
+                    <Style>None</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <PaddingLeft>2pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+            </ReportItems>
+            <DataElementOutput>NoOutput</DataElementOutput>
+            <Left>6.43056in</Left>
+            <Height>11.25in</Height>
+            <Width>2.56944in</Width>
+            <Style>
+              <Border>
+                <Color>Gray</Color>
+              </Border>
+              <TopBorder>
+                <Style>Solid</Style>
+              </TopBorder>
+              <BottomBorder>
+                <Style>None</Style>
+              </BottomBorder>
+              <LeftBorder>
+                <Style>None</Style>
+              </LeftBorder>
+              <RightBorder>
+                <Style>None</Style>
+              </RightBorder>
+              <BackgroundColor>WhiteSmoke</BackgroundColor>
+            </Style>
+          </Rectangle>
+          <Rectangle Name="rectangle2">
+            <ReportItems>
+              <Textbox Name="textbox18">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("AvgPowCostByComp", User!Language)</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>16pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Height>0.375in</Height>
+                <Width>6.375in</Width>
+                <Style>
+                  <Border>
+                    <Color>Gray</Color>
+                  </Border>
+                  <TopBorder>
+                    <Style>Solid</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <RightBorder>
+                    <Style>None</Style>
+                  </RightBorder>
+                  <PaddingLeft>5pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Chart Name="customReportItem1">
+                <ChartCategoryHierarchy>
+                  <ChartMembers>
+                    <ChartMember>
+                      <Group Name="customReportItem1_DataGrouping1">
+                        <GroupExpressions>
+                          <GroupExpression>=MonthName(Month(Fields!MonthStart.Value)) &amp; " " &amp; Year(Fields!MonthStart.Value)</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <Label>=SrsResources.Localization.FormatTime(Fields!MonthStart.Value, "Y", User!Language)</Label>
+                    </ChartMember>
+                  </ChartMembers>
+                </ChartCategoryHierarchy>
+                <ChartSeriesHierarchy>
+                  <ChartMembers>
+                    <ChartMember>
+                      <Label>Number Of Machines</Label>
+                    </ChartMember>
+                  </ChartMembers>
+                </ChartSeriesHierarchy>
+                <ChartData>
+                  <ChartSeriesCollection>
+                    <ChartSeries Name="Series1">
+                      <ChartDataPoints>
+                        <ChartDataPoint>
+                          <ChartDataPointValues>
+                            <Y>=IIF(Fields!NumberOfMachines.Value&gt;0, (Fields!ComputerOn.Value + Fields!ComputerSleep.Value + Fields!ComputerOff.Value + Fields!MonitorOn.Value)/Fields!NumberOfMachines.Value, 0)</Y>
+                          </ChartDataPointValues>
+                          <ChartDataLabel>
+                            <Style>
+                              <FontFamily>Verdana</FontFamily>
+                              <FontSize>12pt</FontSize>
+                              <FontWeight>Bold</FontWeight>
+                              <Color>Snow</Color>
+                            </Style>
+                          </ChartDataLabel>
+                          <Style>
+                            <Border>
+                              <Color>#1a3b69</Color>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <ChartMarker>
+                            <Style />
+                          </ChartMarker>
+                          <CustomProperties>
+                            <CustomProperty>
+                              <Name>LabelStyle</Name>
+                              <Value>Top</Value>
+                            </CustomProperty>
+                          </CustomProperties>
+                        </ChartDataPoint>
+                      </ChartDataPoints>
+                      <Style>
+                        <ShadowOffset>1.5pt</ShadowOffset>
+                      </Style>
+                      <ChartEmptyPoints>
+                        <Style />
+                        <ChartMarker>
+                          <Style />
+                        </ChartMarker>
+                        <ChartDataLabel>
+                          <Style />
+                        </ChartDataLabel>
+                      </ChartEmptyPoints>
+                      <CustomProperties>
+                        <CustomProperty>
+                          <Name>DrawingStyle</Name>
+                          <Value>LightToDark</Value>
+                        </CustomProperty>
+                      </CustomProperties>
+                      <LegendName>Default</LegendName>
+                      <ChartAreaName>Default</ChartAreaName>
+                      <ValueAxisName>Primary</ValueAxisName>
+                      <CategoryAxisName>Primary</CategoryAxisName>
+                      <ChartSmartLabel>
+                        <Disabled>true</Disabled>
+                        <CalloutLineColor>DimGray</CalloutLineColor>
+                        <ShowOverlapped>true</ShowOverlapped>
+                        <MaxMovingDistance>22.5pt</MaxMovingDistance>
+                      </ChartSmartLabel>
+                    </ChartSeries>
+                  </ChartSeriesCollection>
+                </ChartData>
+                <ChartAreas>
+                  <ChartArea Name="Default">
+                    <ChartCategoryAxes>
+                      <ChartAxis Name="Primary">
+                        <Style>
+                          <FontFamily>Lucida Sans Unicode</FontFamily>
+                          <FontSize>9pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <Format>Y</Format>
+                        </Style>
+                        <ChartAxisTitle>
+                          <Caption />
+                          <Style>
+                            <FontFamily>Microsoft Sans Serif</FontFamily>
+                            <FontSize>8pt</FontSize>
+                          </Style>
+                        </ChartAxisTitle>
+                        <Margin>False</Margin>
+                        <LabelInterval>1</LabelInterval>
+                        <ChartMajorGridLines>
+                          <Enabled>False</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <Interval>1</Interval>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMajorGridLines>
+                        <ChartMinorGridLines>
+                          <Enabled>False</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMinorGridLines>
+                        <ChartMajorTickMarks>
+                          <Enabled>False</Enabled>
+                          <Type>None</Type>
+                          <Interval>1</Interval>
+                        </ChartMajorTickMarks>
+                        <Minimum>NaN</Minimum>
+                        <Maximum>NaN</Maximum>
+                        <AllowLabelRotation>Rotate30</AllowLabelRotation>
+                        <IncludeZero>false</IncludeZero>
+                        <ChartAxisScaleBreak>
+                          <Enabled>true</Enabled>
+                          <Style />
+                        </ChartAxisScaleBreak>
+                      </ChartAxis>
+                      <ChartAxis Name="Secondary">
+                        <Style>
+                          <FontFamily>Microsoft Sans Serif</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                        <ChartAxisTitle>
+                          <Caption />
+                          <Style>
+                            <FontFamily>Microsoft Sans Serif</FontFamily>
+                            <FontSize>8pt</FontSize>
+                          </Style>
+                        </ChartAxisTitle>
+                        <Margin>True</Margin>
+                        <ChartMajorGridLines>
+                          <Enabled>False</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMajorGridLines>
+                        <ChartMinorGridLines>
+                          <Enabled>False</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMinorGridLines>
+                        <ChartMajorTickMarks>
+                          <Enabled>False</Enabled>
+                        </ChartMajorTickMarks>
+                        <Location>Opposite</Location>
+                        <Minimum>NaN</Minimum>
+                        <Maximum>NaN</Maximum>
+                        <AllowLabelRotation>Rotate30</AllowLabelRotation>
+                        <ChartAxisScaleBreak>
+                          <Style />
+                        </ChartAxisScaleBreak>
+                      </ChartAxis>
+                    </ChartCategoryAxes>
+                    <ChartValueAxes>
+                      <ChartAxis Name="Primary">
+                        <Style>
+                          <FontFamily>Lucida Sans Unicode</FontFamily>
+                          <FontSize>9pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                        </Style>
+                        <ChartAxisTitle>
+                          <Caption>=SrsResources.Localization.GetString("AvgCostByComp", User!Language) + " " + Parameters!Currency.Value</Caption>
+                          <Style>
+                            <FontFamily>Verdana</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <FontWeight>Bold</FontWeight>
+                          </Style>
+                        </ChartAxisTitle>
+                        <Margin>True</Margin>
+                        <ChartMajorGridLines>
+                          <Enabled>True</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMajorGridLines>
+                        <ChartMinorGridLines>
+                          <Enabled>True</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMinorGridLines>
+                        <ChartMajorTickMarks>
+                          <Enabled>False</Enabled>
+                        </ChartMajorTickMarks>
+                        <Minimum>0</Minimum>
+                        <AllowLabelRotation>Rotate30</AllowLabelRotation>
+                        <ChartAxisScaleBreak>
+                          <Style />
+                        </ChartAxisScaleBreak>
+                      </ChartAxis>
+                      <ChartAxis Name="Secondary">
+                        <Style>
+                          <FontFamily>Microsoft Sans Serif</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                        <ChartAxisTitle>
+                          <Caption />
+                          <Style>
+                            <FontFamily>Microsoft Sans Serif</FontFamily>
+                            <FontSize>8pt</FontSize>
+                          </Style>
+                        </ChartAxisTitle>
+                        <Margin>True</Margin>
+                        <ChartMajorGridLines>
+                          <Enabled>False</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMajorGridLines>
+                        <ChartMinorGridLines>
+                          <Enabled>False</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMinorGridLines>
+                        <ChartMajorTickMarks>
+                          <Enabled>False</Enabled>
+                        </ChartMajorTickMarks>
+                        <Location>Opposite</Location>
+                        <AllowLabelRotation>Rotate30</AllowLabelRotation>
+                        <ChartAxisScaleBreak>
+                          <Style />
+                        </ChartAxisScaleBreak>
+                      </ChartAxis>
+                    </ChartValueAxes>
+                    <ChartThreeDProperties>
+                      <Shading>Simple</Shading>
+                      <WallThickness>4</WallThickness>
+                      <Clustered>true</Clustered>
+                    </ChartThreeDProperties>
+                    <Style>
+                      <Border>
+                        <Color>Gray</Color>
+                        <Style>Solid</Style>
+                        <Width>0.75pt</Width>
+                      </Border>
+                      <BackgroundColor>Silver</BackgroundColor>
+                      <BackgroundGradientType>DiagonalLeft</BackgroundGradientType>
+                      <BackgroundGradientEndColor>White</BackgroundGradientEndColor>
+                      <ShadowOffset>1.5pt</ShadowOffset>
+                    </Style>
+                    <AlignOrientation>Vertical</AlignOrientation>
+                  </ChartArea>
+                </ChartAreas>
+                <ChartLegends>
+                  <ChartLegend Name="Default">
+                    <Hidden>true</Hidden>
+                    <Style>
+                      <Border>
+                        <Color>#1a3b69</Color>
+                        <Style>Solid</Style>
+                        <Width>0.75pt</Width>
+                      </Border>
+                      <BackgroundColor>White</BackgroundColor>
+                      <FontFamily>Microsoft Sans Serif</FontFamily>
+                      <FontSize>8pt</FontSize>
+                      <ShadowOffset>1.5pt</ShadowOffset>
+                    </Style>
+                    <ChartLegendTitle>
+                      <Caption />
+                      <Style>
+                        <FontFamily>Microsoft Sans Serif</FontFamily>
+                        <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </ChartLegendTitle>
+                  </ChartLegend>
+                </ChartLegends>
+                <ChartTitles>
+                  <ChartTitle Name="Title1">
+                    <Caption />
+                    <Style>
+                      <Border>
+                        <Color>#00ffffff</Color>
+                        <Style>Solid</Style>
+                        <Width>0.75pt</Width>
+                      </Border>
+                      <FontFamily>Microsoft Sans Serif</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                      <Color>DodgerBlue</Color>
+                    </Style>
+                  </ChartTitle>
+                </ChartTitles>
+                <Palette>Custom</Palette>
+                <ChartCustomPaletteColors>
+                  <ChartCustomPaletteColor>Firebrick</ChartCustomPaletteColor>
+                  <ChartCustomPaletteColor>#c04000</ChartCustomPaletteColor>
+                </ChartCustomPaletteColors>
+                <ChartBorderSkin>
+                  <Style>
+                    <Border>
+                      <Color>Gray</Color>
+                      <Style>Solid</Style>
+                      <Width>0.75pt</Width>
+                    </Border>
+                    <BackgroundGradientEndColor>Gray</BackgroundGradientEndColor>
+                    <Color>White</Color>
+                  </Style>
+                </ChartBorderSkin>
+                <ChartNoDataMessage Name="NoDataMessageTitle">
+                  <Caption>=SrsResources.Localization.GetString("ErrorNoDataForChart", User!Language)</Caption>
+                  <Style>
+                    <Border>
+                      <Color>#00ffffff</Color>
+                      <Style>Solid</Style>
+                      <Width>0.75pt</Width>
+                    </Border>
+                    <FontFamily>Microsoft Sans Serif</FontFamily>
+                    <FontSize>8pt</FontSize>
+                  </Style>
+                </ChartNoDataMessage>
+                <DataSetName>DataSet1</DataSetName>
+                <Top>0.375in</Top>
+                <Left>0.125in</Left>
+                <Height>5.25in</Height>
+                <Width>6.12501in</Width>
+                <ZIndex>1</ZIndex>
+                <Style>
+                  <Border>
+                    <Color>Gray</Color>
+                    <Style>None</Style>
+                  </Border>
+                  <BackgroundColor>White</BackgroundColor>
+                </Style>
+              </Chart>
+              <Textbox Name="textbox34">
+                <CanGrow>true</CanGrow>
+                <KeepTogether>true</KeepTogether>
+                <Paragraphs>
+                  <Paragraph>
+                    <TextRuns>
+                      <TextRun>
+                        <Value>=SrsResources.Localization.GetString("PowerCost", User!Language)</Value>
+                        <Style>
+                          <FontFamily>Verdana</FontFamily>
+                          <FontSize>16pt</FontSize>
+                        </Style>
+                      </TextRun>
+                    </TextRuns>
+                    <Style />
+                  </Paragraph>
+                </Paragraphs>
+                <Top>5.75in</Top>
+                <Height>0.375in</Height>
+                <Width>6.375in</Width>
+                <ZIndex>3</ZIndex>
+                <Style>
+                  <Border>
+                    <Color>Gray</Color>
+                  </Border>
+                  <TopBorder>
+                    <Style>Solid</Style>
+                  </TopBorder>
+                  <BottomBorder>
+                    <Style>None</Style>
+                  </BottomBorder>
+                  <LeftBorder>
+                    <Style>None</Style>
+                  </LeftBorder>
+                  <PaddingLeft>5pt</PaddingLeft>
+                  <PaddingRight>2pt</PaddingRight>
+                  <PaddingTop>2pt</PaddingTop>
+                  <PaddingBottom>2pt</PaddingBottom>
+                </Style>
+              </Textbox>
+              <Chart Name="customReportItem2">
+                <ChartCategoryHierarchy>
+                  <ChartMembers>
+                    <ChartMember>
+                      <Group Name="customReportItem2_DataGrouping1">
+                        <GroupExpressions>
+                          <GroupExpression>=MonthName(Month(Fields!MonthStart.Value)) &amp; " " &amp; Year(Fields!MonthStart.Value)</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <Label>=SrsResources.Localization.FormatTime(Fields!MonthStart.Value, "Y", User!Language)</Label>
+                    </ChartMember>
+                  </ChartMembers>
+                </ChartCategoryHierarchy>
+                <ChartSeriesHierarchy>
+                  <ChartMembers>
+                    <ChartMember>
+                      <Label>Monitor On</Label>
+                    </ChartMember>
+                  </ChartMembers>
+                </ChartSeriesHierarchy>
+                <ChartData>
+                  <ChartSeriesCollection>
+                    <ChartSeries Name="Series1">
+                      <ChartDataPoints>
+                        <ChartDataPoint>
+                          <ChartDataPointValues>
+                            <Y>=Fields!ComputerOn.Value + Fields!ComputerSleep.Value + Fields!ComputerOff.Value + Fields!MonitorOn.Value</Y>
+                          </ChartDataPointValues>
+                          <ChartDataLabel>
+                            <Style>
+                              <FontFamily>Verdana</FontFamily>
+                              <FontSize>12pt</FontSize>
+                              <FontWeight>Bold</FontWeight>
+                              <Color>Snow</Color>
+                            </Style>
+                          </ChartDataLabel>
+                          <Style>
+                            <Border>
+                              <Color>#1a3b69</Color>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <ChartMarker>
+                            <Style />
+                          </ChartMarker>
+                          <CustomProperties>
+                            <CustomProperty>
+                              <Name>LabelStyle</Name>
+                              <Value>Top</Value>
+                            </CustomProperty>
+                          </CustomProperties>
+                        </ChartDataPoint>
+                      </ChartDataPoints>
+                      <Style>
+                        <ShadowOffset>1.5pt</ShadowOffset>
+                      </Style>
+                      <ChartEmptyPoints>
+                        <Style />
+                        <ChartMarker>
+                          <Style />
+                        </ChartMarker>
+                        <ChartDataLabel>
+                          <Style />
+                        </ChartDataLabel>
+                      </ChartEmptyPoints>
+                      <CustomProperties>
+                        <CustomProperty>
+                          <Name>DrawingStyle</Name>
+                          <Value>LightToDark</Value>
+                        </CustomProperty>
+                      </CustomProperties>
+                      <LegendName>Default</LegendName>
+                      <ChartAreaName>Default</ChartAreaName>
+                      <ValueAxisName>Primary</ValueAxisName>
+                      <CategoryAxisName>Primary</CategoryAxisName>
+                      <ChartSmartLabel>
+                        <Disabled>true</Disabled>
+                        <CalloutLineColor>DimGray</CalloutLineColor>
+                        <ShowOverlapped>true</ShowOverlapped>
+                        <MaxMovingDistance>22.5pt</MaxMovingDistance>
+                      </ChartSmartLabel>
+                    </ChartSeries>
+                  </ChartSeriesCollection>
+                </ChartData>
+                <ChartAreas>
+                  <ChartArea Name="Default">
+                    <ChartCategoryAxes>
+                      <ChartAxis Name="Primary">
+                        <Style>
+                          <FontFamily>Lucida Sans Unicode</FontFamily>
+                          <FontSize>9pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                          <Format>Y</Format>
+                        </Style>
+                        <ChartAxisTitle>
+                          <Caption />
+                          <Style>
+                            <FontFamily>Microsoft Sans Serif</FontFamily>
+                            <FontSize>8pt</FontSize>
+                          </Style>
+                        </ChartAxisTitle>
+                        <Margin>False</Margin>
+                        <LabelInterval>1</LabelInterval>
+                        <ChartMajorGridLines>
+                          <Enabled>False</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <Interval>1</Interval>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMajorGridLines>
+                        <ChartMinorGridLines>
+                          <Enabled>False</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMinorGridLines>
+                        <ChartMajorTickMarks>
+                          <Enabled>False</Enabled>
+                          <Type>None</Type>
+                          <Interval>1</Interval>
+                        </ChartMajorTickMarks>
+                        <Minimum>NaN</Minimum>
+                        <Maximum>NaN</Maximum>
+                        <AllowLabelRotation>Rotate30</AllowLabelRotation>
+                        <IncludeZero>false</IncludeZero>
+                        <ChartAxisScaleBreak>
+                          <Enabled>true</Enabled>
+                          <Style />
+                        </ChartAxisScaleBreak>
+                      </ChartAxis>
+                      <ChartAxis Name="Secondary">
+                        <Style>
+                          <FontFamily>Microsoft Sans Serif</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                        <ChartAxisTitle>
+                          <Caption />
+                          <Style>
+                            <FontFamily>Microsoft Sans Serif</FontFamily>
+                            <FontSize>8pt</FontSize>
+                          </Style>
+                        </ChartAxisTitle>
+                        <Margin>True</Margin>
+                        <ChartMajorGridLines>
+                          <Enabled>False</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMajorGridLines>
+                        <ChartMinorGridLines>
+                          <Enabled>False</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMinorGridLines>
+                        <ChartMajorTickMarks>
+                          <Enabled>False</Enabled>
+                        </ChartMajorTickMarks>
+                        <Location>Opposite</Location>
+                        <Minimum>NaN</Minimum>
+                        <Maximum>NaN</Maximum>
+                        <AllowLabelRotation>Rotate30</AllowLabelRotation>
+                        <ChartAxisScaleBreak>
+                          <Style />
+                        </ChartAxisScaleBreak>
+                      </ChartAxis>
+                    </ChartCategoryAxes>
+                    <ChartValueAxes>
+                      <ChartAxis Name="Primary">
+                        <Style>
+                          <FontFamily>Lucida Sans Unicode</FontFamily>
+                          <FontSize>9pt</FontSize>
+                          <FontWeight>Bold</FontWeight>
+                        </Style>
+                        <ChartAxisTitle>
+                          <Caption>=SrsResources.Localization.GetString("Cost0", User!Language) + " " + Parameters!Currency.Value</Caption>
+                          <Style>
+                            <FontFamily>Verdana</FontFamily>
+                            <FontSize>12pt</FontSize>
+                            <FontWeight>Bold</FontWeight>
+                          </Style>
+                        </ChartAxisTitle>
+                        <Margin>True</Margin>
+                        <ChartMajorGridLines>
+                          <Enabled>True</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMajorGridLines>
+                        <ChartMinorGridLines>
+                          <Enabled>True</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMinorGridLines>
+                        <ChartMajorTickMarks>
+                          <Enabled>False</Enabled>
+                        </ChartMajorTickMarks>
+                        <Minimum>0</Minimum>
+                        <AllowLabelRotation>Rotate30</AllowLabelRotation>
+                        <ChartAxisScaleBreak>
+                          <Style />
+                        </ChartAxisScaleBreak>
+                      </ChartAxis>
+                      <ChartAxis Name="Secondary">
+                        <Style>
+                          <FontFamily>Microsoft Sans Serif</FontFamily>
+                          <FontSize>8pt</FontSize>
+                        </Style>
+                        <ChartAxisTitle>
+                          <Caption />
+                          <Style>
+                            <FontFamily>Microsoft Sans Serif</FontFamily>
+                            <FontSize>8pt</FontSize>
+                          </Style>
+                        </ChartAxisTitle>
+                        <Margin>True</Margin>
+                        <ChartMajorGridLines>
+                          <Enabled>False</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMajorGridLines>
+                        <ChartMinorGridLines>
+                          <Enabled>False</Enabled>
+                          <Style>
+                            <Border>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                              <Width>0.75pt</Width>
+                            </Border>
+                          </Style>
+                          <IntervalOffset>NaN</IntervalOffset>
+                        </ChartMinorGridLines>
+                        <ChartMajorTickMarks>
+                          <Enabled>False</Enabled>
+                        </ChartMajorTickMarks>
+                        <Location>Opposite</Location>
+                        <AllowLabelRotation>Rotate30</AllowLabelRotation>
+                        <ChartAxisScaleBreak>
+                          <Style />
+                        </ChartAxisScaleBreak>
+                      </ChartAxis>
+                    </ChartValueAxes>
+                    <ChartThreeDProperties>
+                      <Shading>Simple</Shading>
+                      <WallThickness>4</WallThickness>
+                      <Clustered>true</Clustered>
+                    </ChartThreeDProperties>
+                    <Style>
+                      <Border>
+                        <Color>Gray</Color>
+                        <Style>Solid</Style>
+                        <Width>0.75pt</Width>
+                      </Border>
+                      <BackgroundColor>Silver</BackgroundColor>
+                      <BackgroundGradientType>DiagonalLeft</BackgroundGradientType>
+                      <BackgroundGradientEndColor>White</BackgroundGradientEndColor>
+                      <ShadowOffset>1.5pt</ShadowOffset>
+                    </Style>
+                    <AlignOrientation>Vertical</AlignOrientation>
+                  </ChartArea>
+                </ChartAreas>
+                <ChartLegends>
+                  <ChartLegend Name="Default">
+                    <Hidden>true</Hidden>
+                    <Style>
+                      <Border>
+                        <Color>#1a3b69</Color>
+                        <Style>Solid</Style>
+                        <Width>0.75pt</Width>
+                      </Border>
+                      <BackgroundColor>White</BackgroundColor>
+                      <FontFamily>Microsoft Sans Serif</FontFamily>
+                      <FontSize>8pt</FontSize>
+                      <ShadowOffset>1.5pt</ShadowOffset>
+                    </Style>
+                    <ChartLegendTitle>
+                      <Caption />
+                      <Style>
+                        <FontFamily>Microsoft Sans Serif</FontFamily>
+                        <FontSize>8pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </ChartLegendTitle>
+                  </ChartLegend>
+                </ChartLegends>
+                <ChartTitles>
+                  <ChartTitle Name="Title1">
+                    <Caption />
+                    <Style>
+                      <Border>
+                        <Color>#00ffffff</Color>
+                        <Style>Solid</Style>
+                        <Width>0.75pt</Width>
+                      </Border>
+                      <FontFamily>Microsoft Sans Serif</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                      <Color>DodgerBlue</Color>
+                    </Style>
+                  </ChartTitle>
+                </ChartTitles>
+                <Palette>Custom</Palette>
+                <ChartCustomPaletteColors>
+                  <ChartCustomPaletteColor>Firebrick</ChartCustomPaletteColor>
+                  <ChartCustomPaletteColor>#c04000</ChartCustomPaletteColor>
+                </ChartCustomPaletteColors>
+                <ChartBorderSkin>
+                  <Style>
+                    <Border>
+                      <Color>Gray</Color>
+                      <Style>Solid</Style>
+                      <Width>0.75pt</Width>
+                    </Border>
+                    <BackgroundGradientEndColor>Gray</BackgroundGradientEndColor>
+                    <Color>White</Color>
+                  </Style>
+                </ChartBorderSkin>
+                <ChartNoDataMessage Name="NoDataMessageTitle">
+                  <Caption>=SrsResources.Localization.GetString("ErrorNoDataForChart", User!Language)</Caption>
+                  <Style>
+                    <Border>
+                      <Color>#00ffffff</Color>
+                      <Style>Solid</Style>
+                      <Width>0.75pt</Width>
+                    </Border>
+                    <FontFamily>Microsoft Sans Serif</FontFamily>
+                    <FontSize>8pt</FontSize>
+                  </Style>
+                </ChartNoDataMessage>
+                <DataSetName>DataSet1</DataSetName>
+                <Top>6.25in</Top>
+                <Left>0.125in</Left>
+                <Height>5in</Height>
+                <Width>6.12501in</Width>
+                <ZIndex>4</ZIndex>
+                <Style>
+                  <Border>
+                    <Color>Gray</Color>
+                    <Style>None</Style>
+                  </Border>
+                  <BackgroundColor>White</BackgroundColor>
+                </Style>
+              </Chart>
+            </ReportItems>
+            <DataElementOutput>ContentsOnly</DataElementOutput>
+            <Height>11.26042in</Height>
+            <Width>6.375in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <Border>
+                <Color>Gray</Color>
+                <Style>Solid</Style>
+              </Border>
+              <TopBorder>
+                <Style>Solid</Style>
+              </TopBorder>
+              <BottomBorder>
+                <Style>None</Style>
+              </BottomBorder>
+              <LeftBorder>
+                <Style>Solid</Style>
+              </LeftBorder>
+              <RightBorder>
+                <Style>Solid</Style>
+              </RightBorder>
+              <BackgroundColor>White</BackgroundColor>
+            </Style>
+          </Rectangle>
+        </ReportItems>
+        <DataElementOutput>ContentsOnly</DataElementOutput>
+        <rdl:Top xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">0.33in
+    </rdl:Top>
+        <Left>0.29167in</Left>
+        <Height>11.27084in</Height>
+        <Width>9in</Width>
+        <Style>
+          <Border>
+            <Color>Gray</Color>
+          </Border>
+          <BottomBorder>
+            <Style>Solid</Style>
+          </BottomBorder>
+          <RightBorder>
+            <Style>Solid</Style>
+          </RightBorder>
+          <BackgroundColor>WhiteSmoke</BackgroundColor>
+        </Style>
+      </Rectangle>
+      <Tablix Name="table1">
+        <TablixBody>
+          <TablixColumns>
+            <TablixColumn>
+              <Width>1.31in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>1.60in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>2.79in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>3.01in</Width>
+            </TablixColumn>
+          </TablixColumns>
+          <TablixRows>
+            <TablixRow>
+              <Height>0.25in</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox30">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=SrsResources.Localization.FormatTime(Fields!MonthStart.Value, "Y", User!Language)</SortExpression>
+                        <SortTarget>DataSet1</SortTarget>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("ReportDate1", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <ZIndex>7</ZIndex>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox31">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!ComputerOn.Value + Fields!ComputerSleep.Value + Fields!ComputerOff.Value + Fields!MonitorOn.Value</SortExpression>
+                        <SortTarget>DataSet1</SortTarget>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("Cost0", User!Language) + " " + Parameters!Currency.Value</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <ZIndex>6</ZIndex>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox35">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=Fields!NumberOfMachines.Value</SortExpression>
+                        <SortTarget>DataSet1</SortTarget>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("NumOfMachinesReporting", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>textbox35</rd:DefaultName>
+                      <ZIndex>5</ZIndex>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox37">
+                      <CanGrow>true</CanGrow>
+                      <UserSort>
+                        <SortExpression>=IIF(Fields!NumberOfMachines.Value&gt;0, (Fields!ComputerOn.Value + Fields!ComputerSleep.Value + Fields!ComputerOff.Value + Fields!MonitorOn.Value)/Fields!NumberOfMachines.Value, 0)</SortExpression>
+                        <SortTarget>DataSet1</SortTarget>
+                      </UserSort>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("AvgPowerCostByComp", User!Language) +  " " + Parameters!Currency.Value</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>textbox37</rd:DefaultName>
+                      <ZIndex>4</ZIndex>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+            <TablixRow>
+              <Height>0.25in</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="ReportDate">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.FormatTime(Fields!MonthStart.Value, "Y", User!Language)</Value>
+                              <Style>
+                                <FontFamily>Verdana</FontFamily>
+                                <FontSize>8pt</FontSize>
+                                <Format>N4</Format>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <ZIndex>3</ZIndex>
+                      <Style>
+                        <Border>
+                          <Color>DimGray</Color>
+                        </Border>
+                        <TopBorder>
+                          <Style>Solid</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Cost">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!ComputerOn.Value + Fields!ComputerSleep.Value + Fields!ComputerOff.Value + Fields!MonitorOn.Value</Value>
+                              <Style>
+                                <FontFamily>Verdana</FontFamily>
+                                <FontSize>8pt</FontSize>
+                                <Format>N2</Format>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <ZIndex>2</ZIndex>
+                      <Style>
+                        <Border>
+                          <Color>DimGray</Color>
+                        </Border>
+                        <TopBorder>
+                          <Style>Solid</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox36">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!NumberOfMachines.Value</Value>
+                              <Style>
+                                <FontFamily>Verdana</FontFamily>
+                                <FontSize>8pt</FontSize>
+                                <Format>g</Format>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>textbox36</rd:DefaultName>
+                      <ZIndex>1</ZIndex>
+                      <Style>
+                        <Border>
+                          <Color>DimGray</Color>
+                        </Border>
+                        <TopBorder>
+                          <Style>Solid</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox38">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=IIF(Fields!NumberOfMachines.Value&gt;0, (Fields!ComputerOn.Value + Fields!ComputerSleep.Value + Fields!ComputerOff.Value + Fields!MonitorOn.Value)/Fields!NumberOfMachines.Value, 0)</Value>
+                              <Style>
+                                <FontFamily>Verdana</FontFamily>
+                                <FontSize>8pt</FontSize>
+                                <Format>N2</Format>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>textbox38</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>DimGray</Color>
+                        </Border>
+                        <TopBorder>
+                          <Style>Solid</Style>
+                        </TopBorder>
+                        <BottomBorder>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+          </TablixRows>
+        </TablixBody>
+        <TablixColumnHierarchy>
+          <TablixMembers>
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+          </TablixMembers>
+        </TablixColumnHierarchy>
+        <TablixRowHierarchy>
+          <TablixMembers>
+            <TablixMember>
+              <KeepWithGroup>After</KeepWithGroup>
+              <RepeatOnNewPage>true</RepeatOnNewPage>
+              <KeepTogether>true</KeepTogether>
+            </TablixMember>
+            <TablixMember>
+              <Group Name="table1_Details_Group">
+                <DataElementName>Detail</DataElementName>
+              </Group>
+              <TablixMembers>
+                <TablixMember />
+              </TablixMembers>
+              <DataElementName>Detail_Collection</DataElementName>
+              <DataElementOutput>Output</DataElementOutput>
+              <KeepTogether>true</KeepTogether>
+            </TablixMember>
+          </TablixMembers>
+        </TablixRowHierarchy>
+        <KeepTogether>true</KeepTogether>
+        <DataSetName>DataSet1</DataSetName>
+        <rdl:Top xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">11.8925in
+    </rdl:Top>
+        <rdl:Left xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">0in</rdl:Left>
+        <Height>0.5in</Height>
+        <Width>6.12501in</Width>
+        <ZIndex>1</ZIndex>
+        <Style>
+          <Border>
+            <Color>Gray</Color>
+          </Border>
+          <TopBorder>
+            <Style>Solid</Style>
+          </TopBorder>
+          <BottomBorder>
+            <Style>Solid</Style>
+          </BottomBorder>
+          <LeftBorder>
+            <Style>Solid</Style>
+          </LeftBorder>
+          <RightBorder>
+            <Style>Solid</Style>
+          </RightBorder>
+        </Style>
+      </Tablix>
+      <rdl:Rectangle Name="ReportDescriptionRectangle" xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+        <rdl:ReportItems>
+          <rdl:Tablix Name="ReportDescriptionTablix">
+            <rdl:DataSetName>DataSet1</rdl:DataSetName>
+            <rdl:TablixBody>
+              <rdl:TablixColumns>
+                <rdl:TablixColumn>
+                  <rdl:Width>1.25in</rdl:Width>
+                </rdl:TablixColumn>
+                <rdl:TablixColumn>
+                  <rdl:Width>7.791669845581055in</rdl:Width>
+                </rdl:TablixColumn>
+              </rdl:TablixColumns>
+              <rdl:TablixRows>
+                <rdl:TablixRow>
+                  <rdl:Height>0.4in</rdl:Height>
+                  <rdl:TablixCells>
+                    <rdl:TablixCell>
+                      <rdl:CellContents>
+                        <rdl:Textbox Name="DescriptionLabelTextbox">
+                          <rdl:CanGrow>true</rdl:CanGrow>
+                          <rdl:KeepTogether>true</rdl:KeepTogether>
+                          <rdl:Paragraphs>
+                            <rdl:Paragraph>
+                              <rdl:TextRuns>
+                                <rdl:TextRun>
+                                  <rdl:Value>=SrsResources.Localization.GetString("Description", User!Language)</rdl:Value>
+                                  <rdl:Style>
+                                    <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                    <rdl:FontWeight>Bold</rdl:FontWeight>
+                                    <rdl:FontSize>9pt</rdl:FontSize>
+                                    <rdl:Color>Black</rdl:Color>
+                                  </rdl:Style>
+                                </rdl:TextRun>
+                              </rdl:TextRuns>
+                              <rdl:Style />
+                            </rdl:Paragraph>
+                          </rdl:Paragraphs>
+                          <rd:DefaultName>Textbox16</rd:DefaultName>
+                          <rdl:Style>
+                            <rdl:Border>
+                              <rdl:Color>LightGrey</rdl:Color>
+                              <rdl:Style>Solid</rdl:Style>
+                            </rdl:Border>
+                            <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+                            <rdl:PaddingLeft>2pt</rdl:PaddingLeft>
+                            <rdl:PaddingRight>2pt</rdl:PaddingRight>
+                            <rdl:PaddingTop>2pt</rdl:PaddingTop>
+                            <rdl:PaddingBottom>2pt</rdl:PaddingBottom>
+                          </rdl:Style>
+                        </rdl:Textbox>
+                      </rdl:CellContents>
+                    </rdl:TablixCell>
+                    <rdl:TablixCell>
+                      <rdl:CellContents>
+                        <rdl:Textbox Name="DescriptionTextbox">
+                          <rdl:CanGrow>true</rdl:CanGrow>
+                          <rdl:KeepTogether>true</rdl:KeepTogether>
+                          <rdl:Paragraphs>
+                            <rdl:Paragraph>
+                              <rdl:TextRuns>
+                                <rdl:TextRun>
+                                  <rdl:Value>=SrsResources.Localization.GetString("PowerCost_Description", User!Language)</rdl:Value>
+                                  <rdl:Style>
+                                    <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                    <rdl:FontSize>9pt</rdl:FontSize>
+                                    <rdl:FontWeight>Normal</rdl:FontWeight>
+                                    <rdl:Color>Black</rdl:Color>
+                                  </rdl:Style>
+                                </rdl:TextRun>
+                              </rdl:TextRuns>
+                              <rdl:Style />
+                            </rdl:Paragraph>
+                          </rdl:Paragraphs>
+                          <rd:DefaultName>Textbox18</rd:DefaultName>
+                          <rdl:Visibility>
+                            <rdl:Hidden>true</rdl:Hidden>
+                            <rdl:ToggleItem>DescriptionLabelTextbox</rdl:ToggleItem>
+                          </rdl:Visibility>
+                          <rdl:Style>
+                            <rdl:Border>
+                              <rdl:Color>LightGrey</rdl:Color>
+                              <rdl:Style>Solid</rdl:Style>
+                            </rdl:Border>
+                            <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+                            <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                            <rdl:PaddingRight>2pt</rdl:PaddingRight>
+                            <rdl:PaddingTop>2pt</rdl:PaddingTop>
+                            <rdl:PaddingBottom>2pt</rdl:PaddingBottom>
+                          </rdl:Style>
+                        </rdl:Textbox>
+                      </rdl:CellContents>
+                    </rdl:TablixCell>
+                  </rdl:TablixCells>
+                </rdl:TablixRow>
+              </rdl:TablixRows>
+            </rdl:TablixBody>
+            <rdl:TablixColumnHierarchy>
+              <rdl:TablixMembers>
+                <rdl:TablixMember />
+                <rdl:TablixMember />
+              </rdl:TablixMembers>
+            </rdl:TablixColumnHierarchy>
+            <rdl:TablixRowHierarchy>
+              <rdl:TablixMembers>
+                <rdl:TablixMember />
+              </rdl:TablixMembers>
+            </rdl:TablixRowHierarchy>
+            <rdl:Top>0.0in</rdl:Top>
+            <rdl:Height>0.2in</rdl:Height>
+            <rdl:Style>
+              <rdl:Border>
+                <rdl:Style>None</rdl:Style>
+              </rdl:Border>
+            </rdl:Style>
+          </rdl:Tablix>
+        </rdl:ReportItems>
+        <rdl:KeepTogether>true</rdl:KeepTogether>
+        <rdl:Left>0in</rdl:Left>
+        <rdl:Height>0.21181in</rdl:Height>
+        <rdl:Top>0.0in</rdl:Top>
+        <rdl:Width>9.291669845581054in</rdl:Width>
+        <rdl:ZIndex>1</rdl:ZIndex>
+        <rdl:Style>
+          <rdl:Border>
+            <rdl:Style>None</rdl:Style>
+          </rdl:Border>
+          <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+        </rdl:Style>
+      </rdl:Rectangle>
+      <rdl:Line Name="ReportDescriptionLine" xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+        <rdl:Top>0.25in</rdl:Top>
+        <rdl:Left>0in</rdl:Left>
+        <rdl:Height>0in</rdl:Height>
+        <rdl:Width>9.291669845581054in</rdl:Width>
+        <rdl:ZIndex>2</rdl:ZIndex>
+        <rdl:Style>
+          <rdl:Border>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:Border>
+          <rdl:TopBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:TopBorder>
+          <rdl:BottomBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:BottomBorder>
+          <rdl:LeftBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:LeftBorder>
+          <rdl:RightBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:RightBorder>
+        </rdl:Style>
+      </rdl:Line>
+    </ReportItems>
+    <Height>12.17708in</Height>
+    <Style />
+  </Body>
+  <ReportParameters>
+    <ReportParameter Name="UserTokenSIDs">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=SrsResources.UserIdentity.GetUserSIDs(User!UserID)</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="UserSIDs">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <DataSetReference>
+          <DataSetName>DataSetAdminID</DataSetName>
+          <ValueField>UserSIDs</ValueField>
+        </DataSetReference>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="AllParameterValue">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=SrsResources.Localization.GetString("All", User!Language)</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="DesktopParameterValue">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=SrsResources.Localization.GetString("DeskTop", User!Language)</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="LaptopParameterValue">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=SrsResources.Localization.GetString("LapTop", User!Language)</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="USDCurrencyReportParam">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=SrsResources.Localization.GetString("USD0", User!Language) + " ($)"</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="reportStartDate">
+      <DataType>DateTime</DataType>
+      <Prompt>Start date</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DataSetStartDate</DataSetName>
+          <ValueField>ReportStartDate</ValueField>
+          <LabelField>ReportStartDate</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="reportEndDate">
+      <DataType>DateTime</DataType>
+      <Prompt>End date</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DataSetEndDate</DataSetName>
+          <ValueField>ReportEndDate</ValueField>
+          <LabelField>ReportEndDate</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="costOfKwh">
+      <DataType>Float</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>0.09</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Cost Of kWh</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="Currency">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=Parameters!USDCurrencyReportParam.Value</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Currency</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="collectionId">
+      <DataType>String</DataType>
+      <Prompt>Collection</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DataSetCollection</DataSetName>
+          <ValueField>CollectionID</ValueField>
+          <LabelField>LocName</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="deviceType">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>0</Value>
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>Device type</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>0</Value>
+            <Label>=Parameters!AllParameterValue.Value</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>1</Value>
+            <Label>=Parameters!DesktopParameterValue.Value</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>2</Value>
+            <Label>=Parameters!LaptopParameterValue.Value</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="KwhConsumptionDesktopComputerOn">
+      <DataType>Float</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>0.070</Value>
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>PowerCost_parameter_KwhConsumptionDesktopComputerOn</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="KwhConsumptionLaptopComputerOn">
+      <DataType>Float</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>0.020</Value>
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>PowerCost_parameter_KwhConsumptionLaptopComputerOn</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="KwhConsumptionDesktopComputerOff">
+      <DataType>Float</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>0</Value>
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>PowerCost_parameter_KwhConsumptionDesktopComputerOff</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="KwhConsumptionLaptopComputerOff">
+      <DataType>Float</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>0</Value>
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>PowerCost_parameter_KwhConsumptionLaptopComputerOff</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="KwhConsumptionDesktopComputerSleep">
+      <DataType>Float</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>0.003</Value>
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>PowerCost_parameter_KwhConsumptionDesktopComputerSleep</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="KwhConsumptionLaptopComputerSleep">
+      <DataType>Float</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>0.001</Value>
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>PowerCost_parameter_KwhConsumptionLaptopComputerSleep</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="KwhConsumptionDesktopMonitorOn">
+      <DataType>Float</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>0.028</Value>
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>PowerCost_parameter_KwhConsumptionDesktopMonitorOn</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="KwhConsumptionLaptopMonitorOn">
+      <DataType>Float</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>0</Value>
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>PowerCost_parameter_KwhConsumptionLaptopMonitorOn</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+  </ReportParameters>
+  <Width>9.29167in</Width>
+  <rdl:Page xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+    <rdl:PageHeader>
+      <rdl:Height>1.1in</rdl:Height>
+      <rdl:PrintOnFirstPage>true</rdl:PrintOnFirstPage>
+      <rdl:PrintOnLastPage>true</rdl:PrintOnLastPage>
+      <rdl:ReportItems>
+        <rdl:Rectangle Name="BackgroundColorRectangle">
+          <rdl:ReportItems>
+            <rdl:Image Name="RightHeaderImage">
+              <rdl:Source>External</rdl:Source>
+              <rdl:Value>/ConfigMgr_DC1/Report Resources/Report_Header_Right.png</rdl:Value>
+              <rdl:Top>0.0in</rdl:Top>
+              <rdl:Left>6.951669931411743in</rdl:Left>
+              <rdl:Height>0.75in</rdl:Height>
+              <rdl:Width>2.3399999141693115in</rdl:Width>
+              <rdl:Style>
+                <rdl:Border>
+                  <rdl:Style>None</rdl:Style>
+                </rdl:Border>
+              </rdl:Style>
+            </rdl:Image>
+            <rdl:Image Name="CenterHeaderImage">
+              <rdl:Source>External</rdl:Source>
+              <rdl:Sizing>Fit</rdl:Sizing>
+              <rdl:Value>/ConfigMgr_DC1/Report Resources/Report_Header_Center.png</rdl:Value>
+              <rdl:Top>0.0in</rdl:Top>
+              <rdl:Left>0.20999999344348907in</rdl:Left>
+              <rdl:Height>0.75in</rdl:Height>
+              <rdl:Width>6.741669654846191in</rdl:Width>
+              <rdl:Style>
+                <rdl:Border>
+                  <rdl:Style>None</rdl:Style>
+                </rdl:Border>
+              </rdl:Style>
+            </rdl:Image>
+            <rdl:Image Name="LeftHeaderImage">
+              <rdl:Source>External</rdl:Source>
+              <rdl:Value>/ConfigMgr_DC1/Report Resources/Report_Header_Left.png</rdl:Value>
+              <rdl:Top>0.0in</rdl:Top>
+              <rdl:Left>0.0in</rdl:Left>
+              <rdl:Height>0.75in</rdl:Height>
+              <rdl:Width>0.20999999344348907in</rdl:Width>
+              <rdl:ZIndex>1</rdl:ZIndex>
+              <rdl:Style>
+                <rdl:Border>
+                  <rdl:Style>None</rdl:Style>
+                </rdl:Border>
+              </rdl:Style>
+            </rdl:Image>
+          </rdl:ReportItems>
+          <rdl:KeepTogether>true</rdl:KeepTogether>
+          <rdl:Top>0.0in</rdl:Top>
+          <rdl:Left>0in</rdl:Left>
+          <rdl:Height>0.75in</rdl:Height>
+          <rdl:Width>9.291669845581054in</rdl:Width>
+          <rdl:Style>
+            <rdl:Border>
+              <rdl:Style>None</rdl:Style>
+            </rdl:Border>
+            <rdl:BackgroundColor>#e2e9f2</rdl:BackgroundColor>
+          </rdl:Style>
+        </rdl:Rectangle>
+        <rdl:Textbox Name="ReportTitleTextbox">
+          <rdl:CanGrow>true</rdl:CanGrow>
+          <rdl:KeepTogether>true</rdl:KeepTogether>
+          <rdl:Paragraphs>
+            <rdl:Paragraph>
+              <rdl:TextRuns>
+                <rdl:TextRun>
+                  <rdl:Value>=SrsResources.Localization.GetString("PowerCost_Name", User!Language) + "  "</rdl:Value>
+                  <rdl:Style>
+                    <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                    <rdl:FontSize>17pt</rdl:FontSize>
+                    <rdl:FontWeight>Bold</rdl:FontWeight>
+                    <rdl:Color>Black</rdl:Color>
+                  </rdl:Style>
+                </rdl:TextRun>
+              </rdl:TextRuns>
+              <rdl:Style />
+            </rdl:Paragraph>
+          </rdl:Paragraphs>
+          <rd:DefaultName>Textbox54</rd:DefaultName>
+          <rdl:Top>0.75in</rdl:Top>
+          <rdl:Left>0in</rdl:Left>
+          <rdl:Height>0.35in</rdl:Height>
+          <rdl:Width>9.291669845581054in</rdl:Width>
+          <rdl:ZIndex>1</rdl:ZIndex>
+          <rdl:Style>
+            <rdl:Border>
+              <rdl:Style>None</rdl:Style>
+            </rdl:Border>
+            <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+            <rdl:PaddingLeft>2pt</rdl:PaddingLeft>
+            <rdl:PaddingRight>2pt</rdl:PaddingRight>
+            <rdl:PaddingTop>2pt</rdl:PaddingTop>
+            <rdl:PaddingBottom>2pt</rdl:PaddingBottom>
+          </rdl:Style>
+        </rdl:Textbox>
+      </rdl:ReportItems>
+      <rdl:Style>
+        <rdl:Border>
+          <rdl:Style>None</rdl:Style>
+        </rdl:Border>
+      </rdl:Style>
+    </rdl:PageHeader>
+    <rdl:PageFooter>
+      <rdl:Height>0.45in</rdl:Height>
+      <rdl:PrintOnFirstPage>true</rdl:PrintOnFirstPage>
+      <rdl:PrintOnLastPage>true</rdl:PrintOnLastPage>
+      <rdl:Style>
+        <rdl:Border>
+          <rdl:Style>None</rdl:Style>
+        </rdl:Border>
+      </rdl:Style>
+    </rdl:PageFooter>
+    <rdl:PageHeight>27.94cm</rdl:PageHeight>
+    <rdl:PageWidth>21.59cm</rdl:PageWidth>
+    <rdl:LeftMargin>2.54cm</rdl:LeftMargin>
+    <rdl:RightMargin>2.54cm</rdl:RightMargin>
+    <rdl:TopMargin>2.54cm</rdl:TopMargin>
+    <rdl:BottomMargin>2.54cm</rdl:BottomMargin>
+    <rdl:Style />
+  </rdl:Page>
+  <EmbeddedImages>
+    <EmbeddedImage Name="sccm2007_reportheader">
+      <MIMEType>image/png</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <rdl:CodeModules xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+    <rdl:CodeModule>SrsResources, culture=neutral</rdl:CodeModule>
+  </rdl:CodeModules>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>158b73cb-524b-4222-9391-407ceeb43231</rd:ReportID>
+</Report>

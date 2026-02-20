@@ -1,4 +1,7 @@
-﻿<#
+<#
+}
+        Write-Host "$DCollName " -ForegroundColor Red
+<#
 .Synopsis
 This script is intended to build the AD-Groups,  by another script with a list of machine names, which will add a header and build a CSV file.
 The output is required to be a single line of information per computername, so it can be passed as an object to Invoke-Parallel.ps1
@@ -7,13 +10,13 @@ The data follows comma separated order:
 PC Name,Online,BPApplID String
 
 .Example
-PS C:\> .\Read_Bankpro--bsub.ps1 -computer 'Computer1'
+PS C:\> .\Read_Part2pro--bsub.ps1 -computer 'Computer1'
 	Computer1,Yes,	BPApplID="XAMS1"
 
 
     It's assumed that the tech:
         ....is using a PowerShell install file named "install.ps1"
-        ...created a folder named the same as "$SourceFolder" in \\sccmserver\PACKAGES
+        ...created a folder named the same as "$SourceFolder" in \\SERVER\PACKAGES
         ...populated that folder with the install contents
 
 To Be Done
@@ -56,8 +59,8 @@ param(
     C:
     CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
     Import-Module ".\ConfigurationManager.psd1"
-    Set-Location SS1:
-    CD SS1:
+    Set-Location XX1:
+    CD XX1:
 
 
 # User Input Variables
@@ -76,7 +79,7 @@ $Appnames = 'Hyland Web ActiveX Control',`
 
 $InstallNotification = 'DisplayAll' # HideAll / DisplayAll / DisplaySoftwareCenterOnly
 
-$DCollName = 'Isaac - Test - Base Workstation Installs'
+$DCollName = 'SuperUser - Test - Base Workstation Installs'
 
 ForEach ($Appname in $AppNames)
 {

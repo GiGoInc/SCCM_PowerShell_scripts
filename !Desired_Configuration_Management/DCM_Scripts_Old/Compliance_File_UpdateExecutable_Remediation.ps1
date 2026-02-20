@@ -1,4 +1,7 @@
-﻿# "File Exists" Remediation Script
+# "File Exists" Remediation Script
+  }
+    { $_.Exception.Message }
+# "File Exists" Remediation Script
 
 $ErrorActionPreference = "Stop"
 

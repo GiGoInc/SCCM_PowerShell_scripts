@@ -1,8 +1,13 @@
-ï»¿$SDate = $(Get-Date)
+$SDate = $(Get-Date)
+#>
+$Output
+$SDate = $(Get-Date)
 $SSDate = $(Get-Date)
 Write-Host "$SDate -- Script starting...runtime approx five minutes" -ForegroundColor Magenta
 #######################################
-. "C:\Scripts\!Modules\GoGoSCCM_Module_client.ps1"$SiteCode = Get-PSDrive -PSProvider CMSITESet-Location -Path "$($SiteCode.Name):\"
+. "C:\Scripts\!Modules\GoGoSCCM_Module_client.ps1"
+$SiteCode = Get-PSDrive -PSProvider CMSITE
+Set-Location -Path "$($SiteCode.Name):\"
 #######################################
     $Folder = 'D:\Powershell\!SCCM_PS_scripts\SCCM_Check_DP_Content_Status'
 $ADateStart = $(Get-Date -format yyyy-MM-dd)+'__'+ $(Get-Date -UFormat %R).Replace(':','.')
@@ -11,7 +16,9 @@ $ADateStart = $(Get-Date -format yyyy-MM-dd)+'__'+ $(Get-Date -UFormat %R).Repla
  $FinalFile = "$Folder\SCCM_Check_DP_Content_Status-Results--$ADateStart.xlsx"
 'ServerName,Name,PkgID,PackageType,StategroupName,StateGroup,State,SummaryDate,SourceSize (MB),SourceVersion' | Set-Content $Log
 #########################################################################################
-Write-Host "Getting DP list..." -ForegroundColor cyan	$DPsInfo = Get-CMDistributionPoint -AllSite$DPs = $($DPsInfo.NetworkOSPath).replace('\\','')
+Write-Host "Getting DP list..." -ForegroundColor cyan	
+$DPsInfo = Get-CMDistributionPoint -AllSite
+$DPs = $($DPsInfo.NetworkOSPath).replace('\\','')
 $DPs | Set-Content "$Folder\SCCM_Check_DP_Content_Status--DP_List.txt"
 #########################################################################################
 $i = 1
@@ -49,9 +56,9 @@ $DPs | % {
                inner join v_PackageStatusRootSummarizer D on A.PkgID = D.PackageID
                where B.ServerName in ('$_')"
     
-          $SQL_DB = 'CM_SS1'
-      $SQL_Server = 'sccmserverdb'
-    $SQL_Instance = 'sccmserverdb'
+          $SQL_DB = 'CM_XX1'
+      $SQL_Server = 'SERVER'
+    $SQL_Instance = 'SERVER'
     $SQL_Check = Invoke-Sqlcmd -AbortOnError `
         -ConnectionTimeout 60 `
         -Database $SQL_DB  `
@@ -75,59 +82,100 @@ $DPs | % {
     }
     $i++
 }
-######################################################################################	######################################################################################
+######################################################################################	
+######################################################################################
 $EDate = (GET-DATE)
-$Span = NEW-TIMESPAN â€“Start $SDate â€“End $EDate
+$Span = NEW-TIMESPAN –Start $SDate –End $EDate
 $Min = $Span.minutes
 $Sec = $Span.Seconds
 Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`r`n" -ForegroundColor Cyan
-$SDate = $(Get-Date)######################################################################################	######################################################################################
-############################################################################# List Task Sequences$SiteCode = Get-PSDrive -PSProvider CMSITESet-Location -Path "$($SiteCode.Name):\"$TS1 = Get-CMTaskSequence#Write-Host "Task Sequences" -ForegroundColor Yellow# $TS1 | % {$_.PackageID + ' -- ' + $_.name}<#    SS100404 -- Windows 10 - MDT Newline
-    SS1005EC -- HWC - Operating System Deployment v8.7.5.3
-    SS10067C -- EpoTemporaryAutoboot Check
-    SS100689 -- **DO NOT USE - TEST ONLY** - 1809 - UPGRADE
-    SS1006A8 -- **DO NOT USE - TEST ONLY** - 1809 - NEW
-    SS100724 -- **DO NOT USE - TEST ONLY** - 1809 - NEW OS ONLY
-    SS100744 -- Windows 10 1909 - Upgrade OS.bak
-    SS100745 -- Windows 10 1809 - PreCache-Upgrade Readiness-BAK
-    SS10074A -- Windows 10 Enterprise x64 -USMT  PROD - Branch
-    SS100759 -- Windows 10 (1809) - FULL INSTALL v4.9 PROD
-    SS10075E -- Windows 10 (1809) - FULL INSTALL v4.7.2 PROD
-    SS100766 -- Windows 10 Enterprise x64 - USMT Test - AppMapping
-    SS10076C -- AOC DisplayLink USB Monitor
-    SS100777 -- Windows 10 Enterprise x64 - USMT Dev
-    SS10077F -- .Net 4.7.2 and IIS package for Branch Machines
-    SS100785 -- IIS package(Dism) and .Net 4.7.2
-    SS10078C -- Windows 10 Enterprise x64 - USMT Pilot- BackOffice
-    SS100794 -- DDI TEST
-    SS1007A2 -- Windows 10 1809 - PreCache-Readiness
-    SS1007A3 -- Windows 10 1809 - Upgrade OS
-    SS1007A9 -- Windows 10 Enterprise x64 - USMT Test - McAfeeDE
-    SS1007AF -- App Mapping - No OS
-    SS1007B0 -- Windows 10 1909 - PreCache-Readiness
-    SS1007B1 -- Windows 10 1909 - OS Upgrade
-    SS1007BA -- McAfee Testing
-    SS1007BB -- Windows 10 Enterprise x64 - USMT Test - M-SS1007BB
-    SS1007C5 -- * TEST - Windows 10 (1809) - FULL INSTALL v4.8 **
-    SS1007CC -- Windows 10 (1809) - FULL INSTALL v4.8 PRO-SS1007CC
-    SS1007CD -- Windows 10 (1809) - FULL INSTALL v4.8 Testing
-    SS1007E0 -- Win10 Ent x64 - USMT - AppMapping
-    SS1007E1 -- TESTING - USMT  PROD - Branch
-    SS1007E4 -- TESTNG - FULL INSTALL
-    SS1007F4 -- Windows 10 (1809) - FULL INSTALL v4.8 PROD - SAM
-    SS1007FC -- Test Windows 10 (1809) - FULL INSTALL v4.9 PRODC
-    SS1007FD -- Windows 10 (1909) - FULL INSTALL v1.7
-    SS1007FF -- Windows 7 v8.7.53 - TESTCOPY
-    SS100805 -- Windows 10 1909 - OS Upgrade-SS100805
-    SS100825 -- 1e Test
-    SS100828 -- Bitlocker Deployment#># GET TS REFERENCES$TSID = 'SS1007FD'Write-Host "Using $TSID...runtime approx two minutes-- $_" -ForegroundColor Magenta# Read-Host "Press any key to continue"$SiteCode = Get-PSDrive -PSProvider CMSITESet-Location -Path "$($SiteCode.Name):\"$TS = Get-CMTaskSequence -TaskSequencePackageId $TSID$TSRefs = $TS.references | select Package
-############################################################################Write-Host "Generating..." -ForegroundColor GreenWrite-Host "$TSLog`r`n" -NoNewline -ForegroundColor Yellow$TSOutout = @()$TSOutout += $TSRefs.packageForEach ($TSR in $TSRefs){    If ($TSR.package -match 'ScopeId_')    {        $AppID = $TSR.package.split('/')[1]        $AppName = $(. "C:\Scripts\!Modules\ConvertFrom-CMApplicationCIUniqueID.ps1" -SiteServer 'sccmserver' -CIUniqueID "$AppID").DisplayName        $TSOutout += $AppName    }}$TSOutout | Set-Content $TSLog######################################################################################	######################################################################################
+$SDate = $(Get-Date)
+######################################################################################	
+######################################################################################
+############################################################################
+# List Task Sequences
+$SiteCode = Get-PSDrive -PSProvider CMSITE
+Set-Location -Path "$($SiteCode.Name):\"
+$TS1 = Get-CMTaskSequence
+#Write-Host "Task Sequences" -ForegroundColor Yellow
+# $TS1 | % {$_.PackageID + ' -- ' + $_.name}
+
+<#
+    XX100404 -- Windows 10 - MDT Newline
+    XX1005EC -- HWC - Operating System Deployment v8.7.5.3
+    XX10067C -- EpoTemporaryAutoboot Check
+    XX100689 -- **DO NOT USE - TEST ONLY** - 1809 - UPGRADE
+    XX1006A8 -- **DO NOT USE - TEST ONLY** - 1809 - NEW
+    XX100724 -- **DO NOT USE - TEST ONLY** - 1809 - NEW OS ONLY
+    XX100744 -- Windows 10 1909 - Upgrade OS.bak
+    XX100745 -- Windows 10 1809 - PreCache-Upgrade Readiness-BAK
+    XX10074A -- Windows 10 Enterprise x64 -USMT  PROD - RemoteLocale
+    XX100759 -- Windows 10 (1809) - FULL INSTALL v4.9 PROD
+    XX10075E -- Windows 10 (1809) - FULL INSTALL v4.7.2 PROD
+    XX100766 -- Windows 10 Enterprise x64 - USMT Test - AppMapping
+    XX10076C -- AOC DisplayLink USB Monitor
+    XX100777 -- Windows 10 Enterprise x64 - USMT Dev
+    XX10077F -- .Net 4.7.2 and IIS package for RemoteLocale Machines
+    XX100785 -- IIS package(Dism) and .Net 4.7.2
+    XX10078C -- Windows 10 Enterprise x64 - USMT Pilot- BackOffice
+    XX100794 -- DDI TEST
+    XX1007A2 -- Windows 10 1809 - PreCache-Readiness
+    XX1007A3 -- Windows 10 1809 - Upgrade OS
+    XX1007A9 -- Windows 10 Enterprise x64 - USMT Test - McAfeeDE
+    XX1007AF -- App Mapping - No OS
+    XX1007B0 -- Windows 10 1909 - PreCache-Readiness
+    XX1007B1 -- Windows 10 1909 - OS Upgrade
+    XX1007BA -- McAfee Testing
+    XX1007BB -- Windows 10 Enterprise x64 - USMT Test - M-XX1007BB
+    XX1007C5 -- * TEST - Windows 10 (1809) - FULL INSTALL v4.8 **
+    XX1007CC -- Windows 10 (1809) - FULL INSTALL v4.8 PRO-XX1007CC
+    XX1007CD -- Windows 10 (1809) - FULL INSTALL v4.8 Testing
+    XX1007E0 -- Win10 Ent x64 - USMT - AppMapping
+    XX1007E1 -- TESTING - USMT  PROD - RemoteLocale
+    XX1007E4 -- TESTNG - FULL INSTALL
+    XX1007F4 -- Windows 10 (1809) - FULL INSTALL v4.8 PROD - SAM
+    XX1007FC -- Test Windows 10 (1809) - FULL INSTALL v4.9 PRODC
+    XX1007FD -- Windows 10 (1909) - FULL INSTALL v1.7
+    XX1007FF -- Windows 7 v8.7.53 - TESTCOPY
+    XX100805 -- Windows 10 1909 - OS Upgrade-XX100805
+    XX100825 -- 1e Test
+    XX100828 -- Bitlocker Deployment
+#>
+
+# GET TS REFERENCES
+$TSID = 'XX1007FD'
+Write-Host "Using $TSID...runtime approx two minutes-- $_" -ForegroundColor Magenta
+# Read-Host "Press any key to continue"
+$SiteCode = Get-PSDrive -PSProvider CMSITE
+Set-Location -Path "$($SiteCode.Name):\"
+$TS = Get-CMTaskSequence -TaskSequencePackageId $TSID
+$TSRefs = $TS.references | select Package
+############################################################################
+Write-Host "Generating..." -ForegroundColor Green
+Write-Host "$TSLog`r`n" -NoNewline -ForegroundColor Yellow
+$TSOutout = @()
+$TSOutout += $TSRefs.package
+ForEach ($TSR in $TSRefs)
+{
+    If ($TSR.package -match 'ScopeId_')
+    {
+        $AppID = $TSR.package.split('/')[1]
+        $AppName = $(. "C:\Scripts\!Modules\ConvertFrom-CMApplicationCIUniqueID.ps1" -SiteServer 'SERVER' -CIUniqueID "$AppID").DisplayName
+        $TSOutout += $AppName
+    }
+}
+$TSOutout | Set-Content $TSLog
+######################################################################################	
+######################################################################################
 $EDate = (GET-DATE)
-$Span = NEW-TIMESPAN â€“Start $SDate â€“End $EDate
+$Span = NEW-TIMESPAN –Start $SDate –End $EDate
 $Min = $Span.minutes
 $Sec = $Span.Seconds
 Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`r`n" -ForegroundColor Cyan
-$SDate = $(Get-Date)######################################################################################	###########################################################################################################################################################################################
+$SDate = $(Get-Date)
+######################################################################################	
+######################################################################################
+#####################################################################################################
 Write-Host "$(get-date) ---- Generating...XLSX" -ForegroundColor Green
 #####################################################################################################
 # These two paths are required for Task Schedule-ing the Excel functions
@@ -177,13 +225,16 @@ Write-Host "$(get-date) ---- Generating...XLSX" -ForegroundColor Green
     $ws1.cells.Item(2,6).Value() = '=INDEX(SCCM_Check_DP_Content_Status_TS!$A$2:$A$13000,MATCH(C2,SCCM_Check_DP_Content_Status_TS!$A$2:$A$13000,FALSE),1)'
     $excel.ActiveSheet.UsedRange.EntireColumn.AutoFit()
 #################################################################################
-######################################################################################	######################################################################################
+######################################################################################	
+######################################################################################
 $EDate = (GET-DATE)
-$Span = NEW-TIMESPAN â€“Start $SDate â€“End $EDate
+$Span = NEW-TIMESPAN –Start $SDate –End $EDate
 $Min = $Span.minutes
 $Sec = $Span.Seconds
 Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`r`n" -ForegroundColor Cyan
-$SDate = $(Get-Date)######################################################################################	######################################################################################
+$SDate = $(Get-Date)
+######################################################################################	
+######################################################################################
 Write-Host "$(get-date) ---- Formatting cells" -ForegroundColor Green
     $used = $ws1.usedRange
     $lastCell = $used.SpecialCells(11)
@@ -211,12 +262,19 @@ Write-Host "$(get-date) ---- Formatting cells" -ForegroundColor Green
     $excel.quit()
 Write-Host "$(get-date) ---- File saved" -ForegroundColor Green
     Start-Sleep -Seconds 2
-# If(Test-Path $destfile){Remove-Item $DestFile -Force}######################################################################################	######################################################################################
+# If(Test-Path $destfile){Remove-Item $DestFile -Force}
+######################################################################################	
+######################################################################################
 $SEDate = (GET-DATE)
-$Span = NEW-TIMESPAN â€“Start $SSDate â€“End $SEDate
+$Span = NEW-TIMESPAN –Start $SSDate –End $SEDate
 $Min = $Span.minutes
 $Sec = $Span.Seconds
-Write-Host "$(Get-Date)`tTotal script ran for $min minutes and $sec seconds`r`n" -ForegroundColor Cyan######################################################################################	######################################################################################<############################################################################# MATCH DP PACKAGES TO TS REFERENCES
+Write-Host "$(Get-Date)`tTotal script ran for $min minutes and $sec seconds`r`n" -ForegroundColor Cyan
+######################################################################################	
+######################################################################################
+
+<############################################################################
+# MATCH DP PACKAGES TO TS REFERENCES
 $i = 1
 $Output = @()
 ForEach ($Ref in $TSOutout)

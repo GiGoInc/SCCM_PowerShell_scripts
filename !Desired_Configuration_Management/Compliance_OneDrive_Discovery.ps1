@@ -1,4 +1,7 @@
-﻿Function Test-RegistryValue
+Function Test-RegistryValue
+  
+  
+Function Test-RegistryValue
 {
     param (
 

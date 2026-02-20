@@ -1,4 +1,7 @@
-ï»¿<#
+<#
+#>
+    }
+<#
     Datalib -- where the content is stored
     DCxxx(source version)
     *.ini
@@ -17,14 +20,14 @@ $LogFolder = "D:\Powershell\!SCCM_PS_scripts\SCCM_PkgLib_Check"
     If (!(Test-Path "$DPFolder")){New-Item -ItemType Directory -Path "$DPFolder" -Force | Out-Null}
 ######################################################################################################################################
 
-$DP = 'sccmserver'
+$DP = 'SERVER'
 
 ######################################################################################################################################
     $DSDate = Get-Date   
         If (Test-Path "\\$DP\C$\SCCMContentLib\Datalib"){$DLIB = "\\$DP\C$\SCCMContentLib\Datalib"}
     ElseIf (Test-Path "\\$DP\D$\SCCMContentLib\Datalib"){$DLIB = "\\$DP\D$\SCCMContentLib\Datalib"}
     ElseIf (Test-Path "\\$DP\E$\SCCMContentLib\Datalib"){$DLIB = "\\$DP\E$\SCCMContentLib\Datalib"}
-    $DLIBFolders = Get-ChildItem "$DLIB" -Filter 'SS1*' -Directory
+    $DLIBFolders = Get-ChildItem "$DLIB" -Filter 'XX1*' -Directory
     $DLIBFolders = $($DLIBFolders).Fullname
     $DLIBFolders | Out-File "$DPFolder\$DP--DLIB.txt"
     ##############################################################################################
@@ -54,7 +57,7 @@ $DP = 'sccmserver'
     }
     $DOutput | Out-File "$DPFolder\$DP--DataLib_Output.txt"  
     $DEDate = (GET-DATE)
-    $Span = NEW-TIMESPAN â€“Start $DSDate â€“End $DEDate
+    $Span = NEW-TIMESPAN –Start $DSDate –End $DEDate
     $Min = $Span.minutes
     $Sec = $Span.Seconds
     Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan
@@ -73,7 +76,7 @@ $DP = 'sccmserver'
     $Folders
 
         $FEDate = (GET-DATE)
-    $Span = NEW-TIMESPAN â€“Start $FSDate â€“End $FEDate
+    $Span = NEW-TIMESPAN –Start $FSDate –End $FEDate
     $Min = $Span.minutes
     $Sec = $Span.Seconds
     Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan
@@ -81,7 +84,7 @@ $DP = 'sccmserver'
     $FSDate = Get-Date
     $FFolders = Get-ChildItem "$FLIBFolder" -Recurse -Depth 1
         $FEDate = (GET-DATE)
-    $Span = NEW-TIMESPAN â€“Start $FSDate â€“End $FEDate
+    $Span = NEW-TIMESPAN –Start $FSDate –End $FEDate
     $Min = $Span.minutes
     $Sec = $Span.Seconds
     Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan
@@ -106,7 +109,7 @@ $DP = 'sccmserver'
     }
     $FOutput | Out-File "$DPFolder\$DP--FileLib_Output.txt"  
     $FEDate = (GET-DATE)
-    $Span = NEW-TIMESPAN â€“Start $FSDate â€“End $FEDate
+    $Span = NEW-TIMESPAN –Start $FSDate –End $FEDate
     $Min = $Span.minutes
     $Sec = $Span.Seconds
     Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan

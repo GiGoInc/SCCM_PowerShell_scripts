@@ -1,12 +1,15 @@
 # Import the SCORCH module
-Import-Module 'D:\Scripts\!Modules\scorchaccountestratorServicePowerShellV1_2\OrchestratorServiceModule.psm1'
+whoami | out-file "D:\scripts\Runbooks_identity.txt"
+# Output identity
+# Import the SCORCH module
+Import-Module 'D:\Scripts\!Modules\SCOrchestratorServicePowerShellV1_2\OrchestratorServiceModule.psm1'
  
 # Set URL for web service
-$scorch_url = "http://scorch_server:81/Orchestrator2012/Orchestrator.svc/"
+$scorch_url = "http://SERVER:81/Orchestrator2012/Orchestrator.svc/"
 
  
 # Set Folder Path for Runbook Folder
-$runbook_folder = '\Scheduled Jobs\scorchaccount COllection Cleanup'
+$runbook_folder = '\Scheduled Jobs\SCOrch COllection Cleanup'
  
 # Get all runbooks within the Daily folder
 $daily_runbooks = Get-OrchestratorRunbook -ServiceUrl $scorch_url -RunbookPath $runbook_folder

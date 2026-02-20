@@ -1,4 +1,7 @@
-ï»¿$ADateS = Get-Date
+$ADateS = Get-Date
+Write-Host "`t$min minutes and $sec seconds." -ForegroundColor Magenta
+Write-Host "`nPart2 ran for:" -nonewline
+$ADateS = Get-Date
 $ADate = Get-Date -Format "yyyy_MM-dd_hh-mm-ss"
 $LogFolder = "D:\Powershell\!SCCM_PS_scripts\SCCM_PkgLib_Check_PowerShell7_Parallel"
   $DPsFile = "D:\Powershell\!SCCM_PS_scripts\SCCM_PkgLib_Check_PowerShell7_Parallel\DPs.txt"
@@ -69,8 +72,8 @@ Function Ignore-SelfSignedCerts
                 Try
                 {
 #####################################################################################################################################
-                    $Username = 'domain\service_scorch_account'
-                    $Password = 'ScorchPassword' | ConvertTo-SecureString -AsPlainText -Force 
+                    $Username = 'DOMAIN\SVCUSER1'
+                    $Password = '(password)' | ConvertTo-SecureString -AsPlainText -Force 
                     $Cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Username, $Password
                     #Ignore-SelfSignedCerts
                     #####################################################################################################################################
@@ -102,7 +105,7 @@ Function Ignore-SelfSignedCerts
 } -ThrottleLimit $Throttle -TimeoutSeconds $Timeout
 # FINALLY - Write Time
 $ADateE = Get-Date
-$t = NEW-TIMESPAN â€“Start $ADateS â€“End $ADateE | Select Minutes,Seconds
+$t = NEW-TIMESPAN –Start $ADateS –End $ADateE | Select Minutes,Seconds
 $min = $t.Minutes
 $sec = $t.seconds
 Write-Host "`nPart2 ran for:" -nonewline

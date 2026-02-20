@@ -1,4 +1,7 @@
-﻿$computer = '37QJG12'
+$computer = '37QJG12'
+#>
+
+$computer = '37QJG12'
 
 # Get-WmiObject -Namespace 'root\ccm\SoftMgmtAgent' -Impersonation 3 -ComputerName $computer -Query 'SELECT ContentID,Location FROM CacheInfoEx WHERE PersistInCache = 1'
 $A = Get-WmiObject -Namespace 'root\ccm\SoftMgmtAgent' -Impersonation 3 -ComputerName $computer -Query 'SELECT ContentID,Location FROM CacheInfoEx WHERE PersistInCache = 0'

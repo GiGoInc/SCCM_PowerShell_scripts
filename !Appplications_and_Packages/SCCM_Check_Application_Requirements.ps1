@@ -1,4 +1,7 @@
 <#
+#>
+$DTInstaller = $DTRequirement | Select DisplayName -ExpandProperty DisplayName
+<#
 .Synopsis
 This script is intended to be called by itself to check all the applications in SCCM and return the DeploymentTypes for each application.
 Specifically it writes a log that contains all the Requirements for a DeploymentType.
@@ -17,8 +20,8 @@ PS C:\> .\Check_Application_Requirements.ps1
 [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.Extender.dll")) | Out-Null
 [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.MsiInstaller.dll")) | Out-Null
  
-$SiteServer = "SCCMSERVER"
-$SiteCode = "SS1"
+$SiteServer = "SERVER"
+$SiteCode = "XX1"
 
 # Flip flag to write out to screen or not - True = Run the Write-Host lines
     $Write_To_Screen = 'False'

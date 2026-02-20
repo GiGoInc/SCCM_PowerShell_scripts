@@ -1,4 +1,7 @@
-﻿<#
+<#
+$SQLResults
+$SQLResults | Set-Content "D:\2020-02-03--SQL_Checks.csv"
+<#
 Declare @Date1 datetime = '2019-02-01'
 Declare @Date2 datetime = '2019-03-01'
 
@@ -25,9 +28,9 @@ GROUP BY v_GS_OPERATING_SYSTEM.Caption0
 order by Caption0 desc
 #>
 
-$SQL_DB       = 'CM_SS1'
-$SQL_Server   = "SCCMDB1"
-$SQL_Instance = "SCCMDB1"
+$SQL_DB       = 'CM_XX1'
+$SQL_Server   = "SERVER"
+$SQL_Instance = "SERVER"
 $SQL_Table    = 'v_GS_OPERATING_SYSTEM'
 
 $i = 0

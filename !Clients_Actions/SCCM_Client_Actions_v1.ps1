@@ -1,4 +1,7 @@
-﻿Import-Module C:\Scripts\!Modules\CMClient.psm1
+Import-Module C:\Scripts\!Modules\CMClient.psm1
+#>
+Windows Installer Source List Update Cycle' = '{00000000-0000-0000-0000-000000000107}';
+Import-Module C:\Scripts\!Modules\CMClient.psm1
 
 $CurrentDirectory = split-path $MyInvocation.MyCommand.Path
 $File = Get-Content "$CurrentDirectory\SCCM_Client_Actions_v1_LIST.txt"
@@ -102,7 +105,7 @@ Software update scan	'{00000000-0000-0000-0000-000000000113}';
 Software Inventory	'{00000000-0000-0000-0000-000000000002}';
 
 
-'Branch Distribution Point Maintenance Task' = '{00000000-0000-0000-0000-000000000109}';
+'RemoteLocale Distribution Point Maintenance Task' = '{00000000-0000-0000-0000-000000000109}';
 'Clean state message cache' = '{00000000-0000-0000-0000-000000000112}';
 'Client Machine Authentication' = '{00000000-0000-0000-0000-000000000012}';
 'DCM policy' = '{00000000-0000-0000-0000-000000000110}';

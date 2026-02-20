@@ -1,4 +1,7 @@
-﻿Function Invoke-BLEvaluation
+Function Invoke-BLEvaluation
+}
+    $i++
+Function Invoke-BLEvaluation
 {
 	param (
 		[String][Parameter(Mandatory = $true, Position = 1)]
@@ -21,6 +24,15 @@
 	}
 }
 
+<#
+    Check machine's BaseLines
+    
+    $(Get-WmiObject -Namespace root\ccm\dcm -Class SMS_DesiredConfiguration).DisplayName
+    OR
+    $(Get-WmiObject -ComputerName '(COMPUTERNAME)' -Class SMS_DesiredConfiguration).DisplayName
+
+#>
+
 $File = "D:\Powershell\!SCCM_PS_scripts\!Desired_Configuration_Management\SCCM_Invoke_Baseline--PCList.txt"
 
 $Computers = Get-Content $File
@@ -31,7 +43,7 @@ ForEach ($Computer in $Computers)
     if (test-connection $computer -count 1 -quiet -BufferSize 16)
     {
         write-host "$i of $total`t$Computer..." -foregroundcolor green
-        Invoke-BLEvaluation -ComputerName "$Computer" -BLName 'EDGE (CHROMIUM) CONFIGURATIONS'
+        Invoke-BLEvaluation -ComputerName "$Computer" -BLName 'GPO Event Checker'
     }
     ELSE
     {

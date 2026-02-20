@@ -1,4 +1,13 @@
-﻿$StartDate = ([System.Management.ManagementDateTimeconverter]::ToDmtfDateTime((Get-Date))).Split(".")[0]$Deadline = ([System.Management.ManagementDateTimeconverter]::ToDmtfDateTime((Get-Date).AddDays(7))).Split(".")[0]$Updates = 16787514,16787565,16787577,16787651,16787663$WMIConnection = [WMICLASS]"\\Localhost\Root\SMS\Site_PR1:SMS_UpdateGroupAssignment"    $NewSUPDeployment = $WMIConnection.psbase.CreateInstance()    $NewSUPDeployment.ApplyToSubTargets = $False
+$StartDate = ([System.Management.ManagementDateTimeconverter]::ToDmtfDateTime((Get-Date))).Split(".")[0]
+    $NewSUPDeployment.Put()
+    $NewSUPDeployment.SourceSite = "PR1"
+$StartDate = ([System.Management.ManagementDateTimeconverter]::ToDmtfDateTime((Get-Date))).Split(".")[0]
+$Deadline = ([System.Management.ManagementDateTimeconverter]::ToDmtfDateTime((Get-Date).AddDays(7))).Split(".")[0]
+$Updates = 16787514,16787565,16787577,16787651,16787663
+
+$WMIConnection = [WMICLASS]"\\Localhost\Root\SMS\Site_PR1:SMS_UpdateGroupAssignment"
+    $NewSUPDeployment = $WMIConnection.psbase.CreateInstance()
+    $NewSUPDeployment.ApplyToSubTargets = $False
     $NewSUPDeployment.AssignedCIs =  $Updates #Software Updates that are in Software Update Group
     $NewSUPDeployment.AssignedUpdateGroup = 16789635 #Software Update Group CI_ID
     $NewSUPDeployment.AssignmentAction = 2
@@ -25,7 +34,7 @@
     $NewSUPDeployment.StateMessageVerbosity = 1
     $NewSUPDeployment.SuppressReboot = $False
     $NewSUPDeployment.TargetCollectionID = "SMS00001"
-    $NewSUPDeployment.UseBranchCache = $True
+    $NewSUPDeployment.UseRemoteLocaleCache = $True
     $NewSUPDeployment.UseGMTTimes = $False
     $NewSUPDeployment.UserUIExperience = $True
     $NewSUPDeployment.WoLEnabled = $True

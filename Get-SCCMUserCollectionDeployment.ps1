@@ -1,4 +1,7 @@
-﻿function Get-SCCMUserCollectionDeployment
+function Get-SCCMUserCollectionDeployment
+Get-SCCMUserCollectionDeployment -UserName 'DOMAIN\a101842' -Credential $cred -Purpose Available -SiteCode XX1 -ComputerName 'SERVER'
+
+function Get-SCCMUserCollectionDeployment
 {
 <#
 	.SYNOPSIS
@@ -158,7 +161,7 @@
 }
 
 # Use saved password are $Cred
-$Username = "domain\user1"
+$Username = "DOMAIN\SUPERUSER"
 $PFile = "C:\Scripts\tsa_securestring.txt"
 $Password = cat $PFile | ConvertTo-SecureString
 $Cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Username, $Password
@@ -166,4 +169,4 @@ $Cred = New-Object -TypeName System.Management.Automation.PSCredential -Argument
 
 
 
-Get-SCCMUserCollectionDeployment -UserName 'domain\user3' -Credential $cred -Purpose Available -SiteCode SS1 -ComputerName 'sccm1'
+Get-SCCMUserCollectionDeployment -UserName 'DOMAIN\a101842' -Credential $cred -Purpose Available -SiteCode XX1 -ComputerName 'SERVER'

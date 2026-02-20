@@ -1,4 +1,7 @@
-﻿#requires -version 3.0
+#requires -version 3.0
+}
+    }
+#requires -version 3.0
 <#
 .Synopsis
    Takes Boundary Objects as input and adds a propety to show the IP range they cover

@@ -1,4 +1,7 @@
-﻿$user = 'DOMAIN\user1'
+$user = 'DOMAIN\SUPERUSER'
+             
+
+$user = 'DOMAIN\SUPERUSER'
 $cred = New-Object System.Management.Automation.PsCredential $user,(Get-Content D:\Powershell\securestring.txt | ConvertTo-SecureString)
 
 
@@ -24,7 +27,7 @@ Invoke-Command -ComputerName $computer -ScriptBlock $scriptblock -Credential $cr
 	{00000000-0000-0000-0000-000000000123}		Application manager global evaluation action
 	{00000000-0000-0000-0000-000000000121}		Application manager policy action
 	{00000000-0000-0000-0000-000000000122}		Application manager user policy action
-	{00000000-0000-0000-0000-000000000109}		Branch Distribution Point Maintenance Task
+	{00000000-0000-0000-0000-000000000109}		RemoteLocale Distribution Point Maintenance Task
 	{00000000-0000-0000-0000-000000000037}		Clearing proxy settings cache
 	{00000000-0000-0000-0000-000000000012}		Client Machine Authentication
 	{00000000-0000-0000-0000-000000000110}		DCM policy

@@ -1,4 +1,7 @@
-ÔªøIf(!(Test-Path 'C:\Windows\Logs\Software')){New-Item -Path 'C:\Windows\Logs\Software' -ItemType Directory -Force}
+If(!(Test-Path 'C:\Windows\Logs\Software')){New-Item -Path 'C:\Windows\Logs\Software' -ItemType Directory -Force}
+}
+    "$(Get-Date -format MM/dd/yyy)`t*`t$(Get-Date -format HH:mm:ss)   ****   Remediation - Found: $count number of items in the ccmcache and $total total space (in MB) used in the CCMCACHE folder" | Add-Content $log
+If(!(Test-Path 'C:\Windows\Logs\Software')){New-Item -Path 'C:\Windows\Logs\Software' -ItemType Directory -Force}
 $log = 'C:\Windows\Logs\Software\SCCM_client_cache_cleanup.log'
 
 
@@ -66,7 +69,7 @@ If ($total -gt $count)
     			$ElementsToRemove = $CacheElements | where {$_.contentid -eq $ElementID.Name -and $_.ContentVer-ne $Max}
     			foreach ($Element in $ElementsToRemove)
     			{
-    				#Write-Host ‚ÄúDeleting‚Äù$Element.ContentID‚Äùwith version‚Äù$Element.ContentVersion -ForegroundColor Red
+    				#Write-Host ìDeletingî$Element.ContentIDîwith versionî$Element.ContentVersion -ForegroundColor Red
     				Remove-Item $Element.Location -recurse
     				$Element.Delete()
     				$Cleaned++

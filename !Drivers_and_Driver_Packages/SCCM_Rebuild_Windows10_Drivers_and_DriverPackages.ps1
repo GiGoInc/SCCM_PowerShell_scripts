@@ -1,4 +1,7 @@
-﻿cls
+cls
+#>
+	
+cls
 
 $Today = $(get-date -format yyyy/MM/dd)
 $DriverPackagePath = 'D:\Drivers'
@@ -120,7 +123,7 @@ ForEach ($Item in $A)
 ##################
 # CREATE NEW DRIVER PACKAGE IN SCCM - RUN BEFORE ADDING NEW DRIVERS
     Write-Host "`tCreating new DriverPackage: $DriverPackagePath\$FolderName" -ForegroundColor Green
-    # New-CMDriverPackage -Name "Win10 - $Model - $Version" -Path "\\SCCMSERVER\Drivers\$FolderName" -Description "created $Today by PowerShell"
+    # New-CMDriverPackage -Name "Win10 - $Model - $Version" -Path "\\SERVER\Drivers\$FolderName" -Description "created $Today by PowerShell"
 
     Write-Host "`tModifying DriverPackage: $DriverPackagePath\$FolderName" -ForegroundColor Green
     Set-CMDriverPackage -Name "Win10 - $Model - $Version"
@@ -130,17 +133,17 @@ ForEach ($Item in $A)
 ##################
 # ADD NEW DRIVERS AND DRIVERPACKAGES TO SCCM
 $Drivers = Get-ChildItem -Path "$DriverPackagePath\$FolderName" -Recurse -Filter "*.inf"
-cd SS1:
+cd XX1:
     # Foreach($Item in $Drivers)
     # {
     # 	Import-CMDriver -UncFileLocation $Item.FullName -ImportDuplicateDriverOption AppendCategory -EnableAndAllowInstall $True
     # }
 
-New-CMDriverPackage -Name "Win10 - $Model - $Version" -Path "\\SCCMSERVER\Drivers\$FolderName" -Description "created $Today by PowerShell" | Out-Null
+New-CMDriverPackage -Name "Win10 - $Model - $Version" -Path "\\SERVER\Drivers\$FolderName" -Description "created $Today by PowerShell" | Out-Null
 Foreach($Item in $Drivers)
 {
     $FileName = $item.FullName
-    $FileName = $FileName.replace('E:\','\\SCCMSERVER\')
+    $FileName = $FileName.replace('E:\','\\SERVER\')
     [string]$DriverCategory = "Win10 - $Model - $Version"
     Write-Host $FileName
 	$DriverPackage = Get-CMDriverPackage -Name "Win10 - $Model - $Version"
@@ -177,7 +180,7 @@ foreach($item in $Drivers)
 ##################
 # CREATE NEW DRIVER PACKAGE IN SCCM
     Write-Host "`tCreating new DriverPackage: $DriverPackagePath\$FolderName" -ForegroundColor Green
-    New-CMDriverPackage -Name "Win10 - $Model - $Version" -Path "\\SCCMSERVER\Drivers\$FolderName" -Description "created $Today by PowerShell"
+    New-CMDriverPackage -Name "Win10 - $Model - $Version" -Path "\\SERVER\Drivers\$FolderName" -Description "created $Today by PowerShell"
 
     Write-Host "`tModifying DriverPackage: $DriverPackagePath\$FolderName" -ForegroundColor Green
     Set-CMDriverPackage -Name "Win10 - $Model - $Version"
@@ -199,7 +202,7 @@ $driverPackage = Get-CMDriverPackage -Id "ST100062"
 $bootPackage = Get-CMBootImage -Id "CM100004"
 Import-CMDriver -UncFileLocation "\\btc-dist-08\Public\CM\AdminTeam\Driver\X64Driver\AudioDriver\smwdmCH6.inf" -ImportDuplicateDriverOption OverwriteCategory -EnableAndAllowInstall $True -DriverPackage $driverPackage -BootImagePackage $bootPackage
 
-Import-CMDriver -UncFileLocation \\SCCMSERVER\DriversSource\E7440-WIN7-A09-MJP2J\x86\chipset\3664N_A00-00\WIN7 -AdministrativeCategory (Win10 - Dell Latitude 7480) -DriverPackage (Win10 - E7480) -EnableAndAllowInstall True
+Import-CMDriver -UncFileLocation \\SERVER\DriversSource\E7440-WIN7-A09-MJP2J\x86\chipset\3664N_A00-00\WIN7 -AdministrativeCategory (Win10 - Dell Latitude 7480) -DriverPackage (Win10 - E7480) -EnableAndAllowInstall True
 
 
 $Folders = '7040-WIN7-A02-CRW28', `

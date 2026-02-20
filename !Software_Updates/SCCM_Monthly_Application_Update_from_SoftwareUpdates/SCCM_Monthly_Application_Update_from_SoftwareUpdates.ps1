@@ -1,4 +1,10 @@
-﻿<#
+<#
+Remove-PSDrive -Name $SCCMDrive -Force -PSProvider FileSystem
+Write-Host $SCCMDrive':' -ForegroundColor Magenta
+<#
+Remove-PSDrive -Name $SCCMDrive -Force -PSProvider FileSystem
+Write-Host $SCCMDrive':' -ForegroundColor Magenta
+<#
 .Synopsis
 This script is intended to be used to download the 3rd party updates from SCCM so they can be used to keep the application packages in SCCM up-to-date.
 Specifically it is set to download the download the updates from the Software Update Group 'ADR: 3rd party Updates - Workstations'
@@ -59,8 +65,8 @@ Function CleanupName($line)
 [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.Extender.dll")) | Out-Null
 [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.MsiInstaller.dll")) | Out-Null
  
-$SiteServer = "sccmserver"
-$SiteCode = "SS1"
+$SiteServer = "SERVER"
+$SiteCode = "XX1"
 
 $Class = Get-WmiObject -ComputerName $SiteServer -Namespace root\SMS\site_$SiteCode -Class SMS_AuthorizationList -list
 $UpdateGroup = $Class.GetInstances()
@@ -74,7 +80,7 @@ Write-Host "This should take about five minutes..." -ForegroundColor Yellow
 
 
 # Set Mapped Drive to SCCM folder
-    $Share = "\\sccmserver\Packages"
+    $Share = "\\SERVER\Packages"
     $DrivesInUse = (Get-PSDrive -PSProvider FileSystem).Name
     Foreach ($Drives in "FGIJKLMNOPQRSTUVWXYZ".ToCharArray())
     {
@@ -110,7 +116,7 @@ ForEach ($Update in $UpdateGroup)
         ($SUGName -eq 'ADR: 3rd party Updates - Workstations - Test') -or `
         ($SUGName -eq 'ADR: 3rd Party Updates for Workstations - Weekly'))
     {
-        $SUGContents = Get-CimInstance -ComputerName $SiteServer -Namespace root\SMS\site_SS1 -Query "Select ContentID,ContentUniqueID,ContentLocales from SMS_CITOContent Where CI_ID='$CIID'"
+        $SUGContents = Get-CimInstance -ComputerName $SiteServer -Namespace root\SMS\site_XX1 -Query "Select ContentID,ContentUniqueID,ContentLocales from SMS_CITOContent Where CI_ID='$CIID'"
 
         # Filter out the English Local and ContentID's not targeted to a particular Language
             #$SUGContents = $SUGContents  | Where {($_.ContentLocales -eq "Locale:9") -or ($_.ContentLocales -eq "Locale:0") }
@@ -120,14 +126,14 @@ ForEach ($Update in $UpdateGroup)
             #       ContentID = 17109947
             #  ContentLocales = {Locale:0}
             # ContentUniqueID = ffc11950-eb16-48c8-8e51-50acbfcf066f
-            #  PSComputerName = sccmserver
+            #  PSComputerName = SERVER
 
              $CID = $ContentItem.ContentID 
               $CL = $ContentItem.ContentLocales
             $CUID = $ContentItem.ContentUniqueID
 
-            $ContentFile = Get-CimInstance -ComputerName $SiteServer -Namespace root\SMS\site_SS1 -Query "Select FileName,SourceURL from SMS_CIContentfiles WHERE ContentID='$CID'"
-            $UN = Get-WmiObject -ComputerName $SiteServer -Namespace root\sms\site_SS1 -query "SELECT LocalizedDisplayName from SMS_SoftwareUpdate where CI_UniqueID='$CUID'" | SELECT LocalizedDisplayName -first 1
+            $ContentFile = Get-CimInstance -ComputerName $SiteServer -Namespace root\SMS\site_XX1 -Query "Select FileName,SourceURL from SMS_CIContentfiles WHERE ContentID='$CID'"
+            $UN = Get-WmiObject -ComputerName $SiteServer -Namespace root\sms\site_XX1 -query "SELECT LocalizedDisplayName from SMS_SoftwareUpdate where CI_UniqueID='$CUID'" | SELECT LocalizedDisplayName -first 1
             $UpdateName = $UN.LocalizedDisplayName.Replace(')','').Replace('(','')
             $SplitName = $UpdateName.split(' ')
             $UpdateNamesArray += $UpdateName
@@ -232,7 +238,7 @@ Write-Host ''
 Write-Host ''
 
 # Set Mapped Drive to SCCM folder
-    $Share = "\\sccmserver\Packages"
+    $Share = "\\SERVER\Packages"
     $DrivesInUse = (Get-PSDrive -PSProvider FileSystem).Name
     Foreach ($Drives in "MNOPQRSTUVWXYZ".ToCharArray())
     {

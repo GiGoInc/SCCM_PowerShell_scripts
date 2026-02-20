@@ -1,4 +1,7 @@
-﻿$sessions = Get-Content "C:\!Powershell\!SCCM_PS_scripts\Cleanup_SCCM_cache\SCCM_clean_CACHE_using_PSSESSION_based_on_PC_list--PCList.txt" | % { New-PSSession -ComputerName $_ -ThrottleLimit 60 }
+$sessions = Get-Content "C:\!Powershell\!SCCM_PS_scripts\Cleanup_SCCM_cache\SCCM_clean_CACHE_using_PSSESSION_based_on_PC_list--PCList.txt" | % { New-PSSession -ComputerName $_ -ThrottleLimit 60 }
+Write-host ""
+
+$sessions = Get-Content "C:\!Powershell\!SCCM_PS_scripts\Cleanup_SCCM_cache\SCCM_clean_CACHE_using_PSSESSION_based_on_PC_list--PCList.txt" | % { New-PSSession -ComputerName $_ -ThrottleLimit 60 }
 
 
 foreach($session in $sessions)

@@ -1,4 +1,10 @@
-﻿<#PSScriptInfo 
+<#PSScriptInfo 
+ReDistribute-FailedPackages @PSBOundParameters
+}# Function
+<#PSScriptInfo 
+ReDistribute-FailedPackages @PSBOundParameters
+}# Function
+<#PSScriptInfo 
  
 .VERSION 1.0.0 
  

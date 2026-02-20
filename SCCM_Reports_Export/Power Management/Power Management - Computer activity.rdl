@@ -1,0 +1,2290 @@
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <rdl:Language xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">=User!Language</rdl:Language>
+  <Description>Displays a graph showing monitor, computer and user activity for a specified collection over a specified time period.</Description>
+  <DataSources>
+    <DataSource Name="DataSource1">
+      <DataSourceReference>default_reference</DataSourceReference>
+      <rd:DataSourceID>b6cbeee4-638b-4ceb-bdde-64f628650d2f</rd:DataSourceID>
+      <rd:SecurityType>None</rd:SecurityType>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSetGetCollectionName">
+      <Fields>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Collection_DisplayName">
+          <Value>=SrsResources.Localization.GetDBString(Fields!Name.Value, User!Language)</Value>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>select v_Collection_Alias.Name from fn_rbac_Collection(@UserSIDs) v_Collection_Alias 
+ WHERE v_Collection_Alias.CollectionID = @collectionId</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@UserSIDs">
+            <Value>=Parameters!UserSIDs.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@collectionId">
+            <Value>=Parameters!collectionId.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSetGetTotalComputersForCollection">
+      <Fields>
+        <Field Name="Total">
+          <DataField>Total</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>select count(*) as Total from fn_rbac_ClientCollectionMembers(@UserSIDs)  where CollectionID = @collectionId and IsClient=1</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@UserSIDs">
+            <Value>=Parameters!UserSIDs.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@collectionId">
+            <Value>=Parameters!collectionId.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSet2">
+      <Fields>
+        <Field Name="Hours">
+          <DataField>Hours</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="ComputerOn">
+          <DataField>ComputerOn</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="MonitorOn">
+          <DataField>MonitorOn</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="ComputerActive">
+          <DataField>ComputerActive</DataField>
+          <rd:TypeName>System.Double</rd:TypeName>
+        </Field>
+        <Field Name="TotalComputersCount">
+          <DataField>TotalComputersCount</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>BEGIN
+
+EXEC [SCCM_Rpt].[rptspPowerManagementGetDailyReport] @reportDate = @reportDate, @endDate = @endDate, @collectionId = @collectionId, @deviceType=@deviceType
+
+
+END</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@deviceType">
+            <Value>=Parameters!deviceType.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@reportDate">
+            <Value>=Parameters!reportDate.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@endDate">
+            <Value>=Parameters!endDate.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@collectionId">
+            <Value>=Parameters!collectionId.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSet1">
+      <Fields>
+        <Field Name="CollectionID">
+          <DataField>CollectionID</DataField>
+        </Field>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+        </Field>
+        <Field Name="LocName">
+          <Value>=SrsResources.Localization.GetDBString(Fields!Name.Value, User!Language)</Value>
+        </Field>
+        <Field Name="CollectionID_f0edddb0aaacccd">
+          <DataField>CollectionID</DataField>
+        </Field>
+        <Field Name="Name_bfee0cb0dfcdcf">
+          <DataField>Name</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>begin 
+ if (@filterwildcard = '') 
+ select v_Collection_Alias.CollectionID, v_Collection_Alias.Name from fn_rbac_Collection(@UserSIDs) v_Collection_Alias
+ where v_Collection_Alias.CollectionType = 2
+ order by v_Collection_Alias.Name 
+else 
+ select v_Collection_Alias.CollectionID, v_Collection_Alias.Name from fn_rbac_Collection(@UserSIDs) v_Collection_Alias 
+ WHERE v_Collection_Alias.CollectionID like @filterwildcard 
+               and
+               v_Collection_Alias.CollectionType = 2
+ order by v_Collection_Alias.Name 
+end</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@UserSIDs">
+            <Value>=Parameters!UserSIDs.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="filterwildcard">
+            <Value />
+          </QueryParameter>
+        </QueryParameters>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSetStartDate">
+      <Fields>
+        <Field Name="reportDate">
+          <DataField>date</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>EXEC [SCCM_Rpt].[rptspPowerManagementGetDayRange] 31, - 1, 0</CommandText>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSetEndDate">
+      <Fields>
+        <Field Name="EndReportDate">
+          <DataField>date</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>exec [SCCM_Rpt].[rptspPowerManagementGetDayRange] 31, 0, 1</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSetTotalSystemNotCapableOfSleep">
+      <Fields>
+        <Field Name="TotalSystemNotCapableOfSleep">
+          <DataField>TotalSystemNotCapableOfSleep</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>select
+    count(CollectionTable.ResourceID) as TotalSystemNotCapableOfSleep 
+from 
+    fn_rbac_ClientCollectionMembers(@UserSIDs)  CollectionTable
+    JOIN fn_rbac_GS_POWER_MANAGEMENT_CAPABILITIES(@UserSIDs)  tCapab ON CollectionTable.ResourceID = tCapab.ResourceID 
+    LEFT JOIN fn_rbac_r_System_valid(@UserSIDs)  v ON v.ResourceID =  CollectionTable.ResourceID
+where 
+    tCapab.SystemS30 = 0 AND
+    (
+            @deviceType = 0 OR 
+            (@deviceType = 1 AND tCapab.PreferredPMProfile0 != 2) OR 
+            (@deviceType = 2 AND tCapab.PreferredPMProfile0 = 2) 
+    ) AND
+    CollectionTable.CollectionID = @collectionId 
+    AND CollectionTable.IsClient = 1
+    AND ISNULL(v.Is_Virtual_Machine0,0) = 0</CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@UserSIDs">
+            <Value>=Parameters!UserSIDs.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@deviceType">
+            <Value>=Parameters!deviceType.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@collectionId">
+            <Value>=Parameters!collectionId.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSetGetComputerState">
+      <Fields>
+        <Field Name="Hour">
+          <DataField>Hour</DataField>
+          <rd:UserDefined>true</rd:UserDefined>
+        </Field>
+        <Field Name="ActiveMachineCount">
+          <DataField>ActiveMachineCount</DataField>
+          <rd:UserDefined>true</rd:UserDefined>
+        </Field>
+        <Field Name="NotActiveMachineCount">
+          <DataField>NotActiveMachineCount</DataField>
+          <rd:UserDefined>true</rd:UserDefined>
+        </Field>
+        <Field Name="NotReportingMachineCount">
+          <DataField>NotReportingMachineCount</DataField>
+          <rd:UserDefined>true</rd:UserDefined>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>
+EXEC SCCM_Rpt.rptspPowerManagementGetDailySummary
+          @reportDate = @reportDate, @collectionId = @collectionId, @deviceType=@deviceType
+        </CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@reportDate">
+            <Value>=Parameters!reportDate.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
+          <QueryParameter Name="@collectionId">
+            <Value>=Parameters!collectionId.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
+          <QueryParameter Name="@deviceType">
+            <Value>=Parameters!deviceType.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
+        </QueryParameters>
+      </Query>
+    </DataSet>
+    <DataSet Name="GetTotalPhyMachineForCollectionData">
+      <Fields>
+        <Field Name="TotalPhyMachines">
+          <DataField>TotalPhyMachines</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <CommandText>
+          select COUNT(*)  as TotalPhyMachines
+          from fn_rbac_ClientCollectionMembers(@UserSIDs)  c
+          LEFT JOIN fn_rbac_R_System(@UserSIDs)  v on v.ResourceID = c.ResourceID
+          WHERE
+          c.CollectionID = @collectionId
+          AND c.IsClient = 1
+          AND ISNULL(v.Is_Virtual_Machine0,0) = 0
+        </CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@UserSIDs">
+            <Value>=Parameters!UserSIDs.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@collectionId">
+            <Value>=Parameters!collectionId.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSetAdminID">
+      <Query>
+        <DataSourceName>DataSource1</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@UserTokenSIDs">
+            <Value>=Parameters!UserTokenSIDs.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select dbo.fn_rbac_GetAdminIDsfromUserSIDs(@UserTokenSIDs) as UserSIDs</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="UserSIDs">
+          <DataField>UserSIDs</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <Body>
+    <ReportItems>
+      <Chart Name="dundasChartControl1">
+        <ChartCategoryHierarchy>
+          <ChartMembers>
+            <ChartMember>
+              <Group Name="dundasChartControl1_DCG_Hours1">
+                <GroupExpressions>
+                  <GroupExpression>=Fields!Hours.Value</GroupExpression>
+                </GroupExpressions>
+              </Group>
+              <Label>=SrsResources.Localization.FormatShortTime(Fields!Hours.Value, 0, 0, User!Language)</Label>
+            </ChartMember>
+          </ChartMembers>
+        </ChartCategoryHierarchy>
+        <ChartSeriesHierarchy>
+          <ChartMembers>
+            <ChartMember>
+              <Label>=SrsResources.Localization.GetString("ComputerOn", User!Language)</Label>
+            </ChartMember>
+            <ChartMember>
+              <Label>=SrsResources.Localization.GetString("MonitorOn", User!Language)</Label>
+            </ChartMember>
+            <ChartMember>
+              <Label>=SrsResources.Localization.GetString("ComputerActive", User!Language)</Label>
+            </ChartMember>
+          </ChartMembers>
+        </ChartSeriesHierarchy>
+        <ChartData>
+          <ChartSeriesCollection>
+            <ChartSeries Name="Series1">
+              <ChartDataPoints>
+                <ChartDataPoint>
+                  <ChartDataPointValues>
+                    <Y>=Sum(Fields!ComputerOn.Value)</Y>
+                  </ChartDataPointValues>
+                  <ChartDataLabel>
+                    <Style>
+                      <FontFamily>Microsoft Sans Serif</FontFamily>
+                      <FontSize>8pt</FontSize>
+                    </Style>
+                  </ChartDataLabel>
+                  <Style>
+                    <Border>
+                      <Color>#1a3b69</Color>
+                      <Width>1.5pt</Width>
+                    </Border>
+                  </Style>
+                  <ChartMarker>
+                    <Style />
+                  </ChartMarker>
+                  <CustomProperties>
+                    <CustomProperty>
+                      <Name>LabelStyle</Name>
+                      <Value>Top</Value>
+                    </CustomProperty>
+                  </CustomProperties>
+                </ChartDataPoint>
+              </ChartDataPoints>
+              <Type>Line</Type>
+              <Subtype>Smooth</Subtype>
+              <Style>
+                <ShadowOffset>1.5pt</ShadowOffset>
+              </Style>
+              <ChartEmptyPoints>
+                <Style />
+                <ChartMarker>
+                  <Style />
+                </ChartMarker>
+                <ChartDataLabel>
+                  <Style />
+                </ChartDataLabel>
+              </ChartEmptyPoints>
+              <LegendName>Default</LegendName>
+              <ChartAreaName>Default</ChartAreaName>
+              <ValueAxisName>Primary</ValueAxisName>
+              <CategoryAxisName>Primary</CategoryAxisName>
+              <ChartSmartLabel>
+                <Disabled>true</Disabled>
+                <MaxMovingDistance>22.5pt</MaxMovingDistance>
+              </ChartSmartLabel>
+            </ChartSeries>
+            <ChartSeries Name="Series2">
+              <ChartDataPoints>
+                <ChartDataPoint>
+                  <ChartDataPointValues>
+                    <Y>=Sum(Fields!MonitorOn.Value)</Y>
+                  </ChartDataPointValues>
+                  <ChartDataLabel>
+                    <Style>
+                      <FontFamily>Microsoft Sans Serif</FontFamily>
+                      <FontSize>8pt</FontSize>
+                    </Style>
+                  </ChartDataLabel>
+                  <Style>
+                    <Border>
+                      <Color>#1a3b69</Color>
+                      <Width>1.5pt</Width>
+                    </Border>
+                  </Style>
+                  <ChartMarker>
+                    <Style />
+                  </ChartMarker>
+                </ChartDataPoint>
+              </ChartDataPoints>
+              <Type>Line</Type>
+              <Subtype>Smooth</Subtype>
+              <Style>
+                <ShadowOffset>1.5pt</ShadowOffset>
+              </Style>
+              <ChartEmptyPoints>
+                <Style />
+                <ChartMarker>
+                  <Style />
+                </ChartMarker>
+                <ChartDataLabel>
+                  <Style />
+                </ChartDataLabel>
+              </ChartEmptyPoints>
+              <LegendName>Default</LegendName>
+              <ChartAreaName>Default</ChartAreaName>
+              <ValueAxisName>Primary</ValueAxisName>
+              <CategoryAxisName>Primary</CategoryAxisName>
+              <ChartSmartLabel>
+                <Disabled>true</Disabled>
+                <MaxMovingDistance>22.5pt</MaxMovingDistance>
+              </ChartSmartLabel>
+            </ChartSeries>
+            <ChartSeries Name="Series3">
+              <ChartDataPoints>
+                <ChartDataPoint>
+                  <ChartDataPointValues>
+                    <Y>=Sum(Fields!ComputerActive.Value)</Y>
+                  </ChartDataPointValues>
+                  <ChartDataLabel>
+                    <Style>
+                      <FontFamily>Microsoft Sans Serif</FontFamily>
+                      <FontSize>8pt</FontSize>
+                    </Style>
+                  </ChartDataLabel>
+                  <Style>
+                    <Border>
+                      <Color>#1a3b69</Color>
+                      <Width>1.5pt</Width>
+                    </Border>
+                  </Style>
+                  <ChartMarker>
+                    <Style />
+                  </ChartMarker>
+                </ChartDataPoint>
+              </ChartDataPoints>
+              <Type>Line</Type>
+              <Subtype>Smooth</Subtype>
+              <Style>
+                <ShadowOffset>1.5pt</ShadowOffset>
+              </Style>
+              <ChartEmptyPoints>
+                <Style />
+                <ChartMarker>
+                  <Style />
+                </ChartMarker>
+                <ChartDataLabel>
+                  <Style />
+                </ChartDataLabel>
+              </ChartEmptyPoints>
+              <ChartAreaName>Default</ChartAreaName>
+              <ValueAxisName>Primary</ValueAxisName>
+              <CategoryAxisName>Primary</CategoryAxisName>
+              <ChartSmartLabel>
+                <CalloutLineColor>Black</CalloutLineColor>
+                <MinMovingDistance>0pt</MinMovingDistance>
+              </ChartSmartLabel>
+            </ChartSeries>
+          </ChartSeriesCollection>
+        </ChartData>
+        <ChartAreas>
+          <ChartArea Name="Default">
+            <ChartCategoryAxes>
+              <ChartAxis Name="Primary">
+                <Style>
+                  <FontFamily>Verdana</FontFamily>
+                  <FontSize>12pt</FontSize>
+                  <FontWeight>Bold</FontWeight>
+                </Style>
+                <ChartAxisTitle>
+                  <Caption>=SrsResources.Localization.GetString("Time0", User!Language)</Caption>
+                  <Style>
+                    <FontFamily>Verdana</FontFamily>
+                    <FontSize>12pt</FontSize>
+                    <FontWeight>Bold</FontWeight>
+                  </Style>
+                </ChartAxisTitle>
+                <Margin>False</Margin>
+                <LabelInterval>1</LabelInterval>
+                <ChartMajorGridLines>
+                  <Enabled>True</Enabled>
+                  <Style>
+                    <Border>
+                      <Color>Silver</Color>
+                      <Style>Solid</Style>
+                      <Width>0.75pt</Width>
+                    </Border>
+                  </Style>
+                  <Interval>1</Interval>
+                  <IntervalOffset>NaN</IntervalOffset>
+                </ChartMajorGridLines>
+                <ChartMinorGridLines>
+                  <Enabled>True</Enabled>
+                  <Style>
+                    <Border>
+                      <Color>Silver</Color>
+                      <Style>Solid</Style>
+                      <Width>0.75pt</Width>
+                    </Border>
+                  </Style>
+                  <Interval>1</Interval>
+                  <IntervalOffset>NaN</IntervalOffset>
+                </ChartMinorGridLines>
+                <ChartMajorTickMarks>
+                  <Enabled>False</Enabled>
+                  <Type>Inside</Type>
+                  <Interval>1</Interval>
+                </ChartMajorTickMarks>
+                <ChartMinorTickMarks>
+                  <Enabled>True</Enabled>
+                  <Type>Inside</Type>
+                  <Interval>1</Interval>
+                </ChartMinorTickMarks>
+                <Minimum>NaN</Minimum>
+                <Maximum>NaN</Maximum>
+                <IncludeZero>false</IncludeZero>
+                <MinFontSize>5pt</MinFontSize>
+                <ChartAxisScaleBreak>
+                  <Style />
+                </ChartAxisScaleBreak>
+              </ChartAxis>
+              <ChartAxis Name="Secondary">
+                <Style>
+                  <FontFamily>Microsoft Sans Serif</FontFamily>
+                  <FontSize>8pt</FontSize>
+                </Style>
+                <ChartAxisTitle>
+                  <Caption />
+                  <Style>
+                    <FontFamily>Microsoft Sans Serif</FontFamily>
+                    <FontSize>8pt</FontSize>
+                  </Style>
+                </ChartAxisTitle>
+                <Margin>True</Margin>
+                <ChartMajorGridLines>
+                  <Enabled>False</Enabled>
+                  <Style>
+                    <Border>
+                      <Color>Silver</Color>
+                      <Style>Solid</Style>
+                      <Width>0.75pt</Width>
+                    </Border>
+                  </Style>
+                  <IntervalOffset>NaN</IntervalOffset>
+                </ChartMajorGridLines>
+                <ChartMinorGridLines>
+                  <Enabled>False</Enabled>
+                  <Style>
+                    <Border>
+                      <Color>Silver</Color>
+                      <Style>Solid</Style>
+                      <Width>0.75pt</Width>
+                    </Border>
+                  </Style>
+                  <IntervalOffset>NaN</IntervalOffset>
+                </ChartMinorGridLines>
+                <ChartMajorTickMarks>
+                  <Enabled>False</Enabled>
+                </ChartMajorTickMarks>
+                <Location>Opposite</Location>
+                <Minimum>NaN</Minimum>
+                <Maximum>NaN</Maximum>
+                <AllowLabelRotation>Rotate30</AllowLabelRotation>
+                <ChartAxisScaleBreak>
+                  <Style />
+                </ChartAxisScaleBreak>
+              </ChartAxis>
+            </ChartCategoryAxes>
+            <ChartValueAxes>
+              <ChartAxis Name="Primary">
+                <Style>
+                  <FontFamily>Verdana</FontFamily>
+                  <FontSize>12pt</FontSize>
+                  <FontWeight>Bold</FontWeight>
+                  <Format>0;(0)</Format>
+                </Style>
+                <ChartAxisTitle>
+                  <Caption>=SrsResources.Localization.GetString("NumofComp", User!Language)</Caption>
+                  <Style>
+                    <FontFamily>Verdana</FontFamily>
+                    <FontSize>12pt</FontSize>
+                    <FontWeight>Bold</FontWeight>
+                  </Style>
+                </ChartAxisTitle>
+                <Margin>True</Margin>
+                <ChartMajorGridLines>
+                  <Enabled>True</Enabled>
+                  <Style>
+                    <Border>
+                      <Color>Silver</Color>
+                      <Style>Solid</Style>
+                      <Width>0.75pt</Width>
+                    </Border>
+                  </Style>
+                  <IntervalOffset>NaN</IntervalOffset>
+                </ChartMajorGridLines>
+                <ChartMinorGridLines>
+                  <Enabled>False</Enabled>
+                  <Style>
+                    <Border>
+                      <Color>Silver</Color>
+                      <Style>Solid</Style>
+                      <Width>0.75pt</Width>
+                    </Border>
+                  </Style>
+                  <Interval>1</Interval>
+                  <IntervalOffset>NaN</IntervalOffset>
+                </ChartMinorGridLines>
+                <ChartMajorTickMarks>
+                  <Enabled>False</Enabled>
+                  <Type>None</Type>
+                </ChartMajorTickMarks>
+                <ChartMinorTickMarks>
+                  <Enabled>False</Enabled>
+                  <Type>None</Type>
+                  <Interval>1</Interval>
+                </ChartMinorTickMarks>
+                <Minimum>0</Minimum>
+                <Maximum>=Fields!TotalComputersCount.Value + 1</Maximum>
+                <AllowLabelRotation>Rotate30</AllowLabelRotation>
+                <ChartAxisScaleBreak>
+                  <Style />
+                </ChartAxisScaleBreak>
+              </ChartAxis>
+              <ChartAxis Name="Secondary">
+                <Style>
+                  <FontFamily>Microsoft Sans Serif</FontFamily>
+                  <FontSize>8pt</FontSize>
+                </Style>
+                <ChartAxisTitle>
+                  <Caption />
+                  <Style>
+                    <FontFamily>Microsoft Sans Serif</FontFamily>
+                    <FontSize>8pt</FontSize>
+                  </Style>
+                </ChartAxisTitle>
+                <Margin>True</Margin>
+                <ChartMajorGridLines>
+                  <Enabled>False</Enabled>
+                  <Style>
+                    <Border>
+                      <Color>Silver</Color>
+                      <Style>Solid</Style>
+                      <Width>0.75pt</Width>
+                    </Border>
+                  </Style>
+                  <IntervalOffset>NaN</IntervalOffset>
+                </ChartMajorGridLines>
+                <ChartMinorGridLines>
+                  <Enabled>False</Enabled>
+                  <Style>
+                    <Border>
+                      <Color>Silver</Color>
+                      <Style>Solid</Style>
+                      <Width>0.75pt</Width>
+                    </Border>
+                  </Style>
+                  <IntervalOffset>NaN</IntervalOffset>
+                </ChartMinorGridLines>
+                <ChartMajorTickMarks>
+                  <Enabled>False</Enabled>
+                </ChartMajorTickMarks>
+                <Location>Opposite</Location>
+                <AllowLabelRotation>Rotate30</AllowLabelRotation>
+                <ChartAxisScaleBreak>
+                  <Style />
+                </ChartAxisScaleBreak>
+              </ChartAxis>
+            </ChartValueAxes>
+            <ChartThreeDProperties>
+              <Shading>Simple</Shading>
+              <WallThickness>4</WallThickness>
+              <Clustered>true</Clustered>
+            </ChartThreeDProperties>
+            <Style>
+              <Border>
+                <Color>#1a3b69</Color>
+                <Style>None</Style>
+              </Border>
+              <BackgroundColor>Silver</BackgroundColor>
+              <BackgroundGradientType>DiagonalLeft</BackgroundGradientType>
+              <BackgroundGradientEndColor>White</BackgroundGradientEndColor>
+              <ShadowOffset>1.5pt</ShadowOffset>
+            </Style>
+            <AlignOrientation>Vertical</AlignOrientation>
+          </ChartArea>
+        </ChartAreas>
+        <ChartLegends>
+          <ChartLegend Name="Default">
+            <Style>
+              <Border>
+                <Color>#50418cf0</Color>
+                <Style>Solid</Style>
+                <Width>0.75pt</Width>
+              </Border>
+              <BackgroundColor>#e6f2fc</BackgroundColor>
+              <BackgroundGradientType>TopBottom</BackgroundGradientType>
+              <BackgroundGradientEndColor>#00ffffff</BackgroundGradientEndColor>
+              <FontFamily>Microsoft Sans Serif</FontFamily>
+              <FontSize>8pt</FontSize>
+            </Style>
+            <Position>BottomCenter</Position>
+            <Layout>Row</Layout>
+            <DockOutsideChartArea>true</DockOutsideChartArea>
+            <ChartLegendTitle>
+              <Caption />
+              <Style>
+                <BackgroundColor>Gainsboro</BackgroundColor>
+                <FontFamily>Verdana</FontFamily>
+                <FontSize>9pt</FontSize>
+                <FontWeight>Bold</FontWeight>
+              </Style>
+            </ChartLegendTitle>
+            <AutoFitTextDisabled>true</AutoFitTextDisabled>
+          </ChartLegend>
+        </ChartLegends>
+        <ChartTitles>
+          <ChartTitle Name="Title1">
+            <Caption />
+            <Style>
+              <Border>
+                <Color>#00ffffff</Color>
+                <Style>Solid</Style>
+                <Width>0.75pt</Width>
+              </Border>
+              <BackgroundGradientType>LeftRight</BackgroundGradientType>
+              <FontFamily>Microsoft Sans Serif</FontFamily>
+              <FontSize>12pt</FontSize>
+              <FontWeight>Bold</FontWeight>
+              <Color>DodgerBlue</Color>
+              <TextEffect>Shadow</TextEffect>
+            </Style>
+          </ChartTitle>
+        </ChartTitles>
+        <Palette>BrightPastel</Palette>
+        <ChartBorderSkin>
+          <Style>
+            <BackgroundColor>CornflowerBlue</BackgroundColor>
+            <BackgroundGradientEndColor>CornflowerBlue</BackgroundGradientEndColor>
+            <Color>SlateGray</Color>
+          </Style>
+        </ChartBorderSkin>
+        <ChartNoDataMessage Name="NoDataMessageTitle">
+          <Caption>=SrsResources.Localization.GetString("ErrorNoDataForChart", User!Language)</Caption>
+          <Style>
+            <Border>
+              <Color>#00ffffff</Color>
+              <Style>Solid</Style>
+              <Width>0.75pt</Width>
+            </Border>
+            <FontFamily>Microsoft Sans Serif</FontFamily>
+            <FontSize>8pt</FontSize>
+          </Style>
+        </ChartNoDataMessage>
+        <DataSetName>DataSet2</DataSetName>
+        <rdl:Top xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">1.9702800000000002in
+    </rdl:Top>
+        <Left>0.25in</Left>
+        <Height>4.8125in</Height>
+        <Width>8.3125in</Width>
+        <Style>
+          <Border>
+            <Color>#1a3b69</Color>
+            <Style>None</Style>
+          </Border>
+          <BackgroundColor>White</BackgroundColor>
+        </Style>
+      </Chart>
+      <Rectangle Name="rectangle1">
+        <ReportItems>
+          <Textbox Name="textbox18">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=Sum(Fields!Total.Value, "DataSetGetTotalComputersForCollection")</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <Top>0.5in</Top>
+            <Left>7.25in</Left>
+            <Height>0.25in</Height>
+            <Width>0.875in</Width>
+            <Style>
+              <TopBorder>
+                <Style>None</Style>
+              </TopBorder>
+              <BottomBorder>
+                <Style>None</Style>
+              </BottomBorder>
+              <LeftBorder>
+                <Style>None</Style>
+              </LeftBorder>
+              <RightBorder>
+                <Style>None</Style>
+              </RightBorder>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="textbox17">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=SrsResources.Localization.GetString("NumofCompinCollection", User!Language) + ":"</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>0.5in</Top>
+            <Left>3.875in</Left>
+            <Height>0.25in</Height>
+            <Width>3.375in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="textbox20">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=SrsResources.Localization.GetString("ReportStartDate", User!Language) + ":"</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>textbox20</rd:DefaultName>
+            <Top>0.5in</Top>
+            <Left>0.125in</Left>
+            <Height>0.25in</Height>
+            <Width>1.625in</Width>
+            <ZIndex>2</ZIndex>
+            <Style>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="textbox21">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=SrsResources.Localization.FormatShortDate(Parameters!reportDate.Value, User!Language)</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <Top>0.5in</Top>
+            <Left>1.75in</Left>
+            <Height>0.25in</Height>
+            <Width>2.125in</Width>
+            <ZIndex>3</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="textbox22">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=IIF(Parameters!deviceType.Value=0, SrsResources.Localization.GetString("AllDevices", User!Language) , 
+ IIF(Parameters!deviceType.Value=1, SrsResources.Localization.GetString("DeskTop", User!Language) , SrsResources.Localization.GetString("LapTop", User!Language) ))</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <Top>1in</Top>
+            <Left>1.75in</Left>
+            <Height>0.25in</Height>
+            <Width>2.125in</Width>
+            <ZIndex>4</ZIndex>
+            <Style>
+              <TopBorder>
+                <Style>None</Style>
+              </TopBorder>
+              <BottomBorder>
+                <Style>None</Style>
+              </BottomBorder>
+              <LeftBorder>
+                <Style>None</Style>
+              </LeftBorder>
+              <RightBorder>
+                <Style>None</Style>
+              </RightBorder>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="textbox25">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=SrsResources.Localization.GetString("Collection", User!Language) + ":"</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>0.75in</Top>
+            <Left>0.125in</Left>
+            <Height>0.25in</Height>
+            <Width>1.625in</Width>
+            <ZIndex>5</ZIndex>
+            <Style>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="textbox24">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=First(Fields!Collection_DisplayName.Value, "DataSetGetCollectionName")</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <Top>0.75in</Top>
+            <Left>1.75in</Left>
+            <Height>0.25in</Height>
+            <Width>2.125in</Width>
+            <ZIndex>6</ZIndex>
+            <Style>
+              <TopBorder>
+                <Style>None</Style>
+              </TopBorder>
+              <BottomBorder>
+                <Style>None</Style>
+              </BottomBorder>
+              <LeftBorder>
+                <Style>None</Style>
+              </LeftBorder>
+              <RightBorder>
+                <Style>None</Style>
+              </RightBorder>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="textbox27">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=SrsResources.Localization.GetString("DeviceType1", User!Language) + ":"</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>1in</Top>
+            <Left>0.125in</Left>
+            <Height>0.25in</Height>
+            <Width>1.625in</Width>
+            <ZIndex>7</ZIndex>
+            <Style>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="textbox19">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=SrsResources.Localization.GetString("Parameters0", User!Language) + ":"</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                      <FontSize>9pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>textbox19</rd:DefaultName>
+            <Top>0.1875in</Top>
+            <Left>0.125in</Left>
+            <Height>0.25in</Height>
+            <Width>1.25in</Width>
+            <ZIndex>8</ZIndex>
+            <Style>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="textbox26">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=IIF(Parameters!endDate.Value  Is Nothing , "", FormatDateTime(Parameters!endDate.Value, 2))</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <Top>1.25in</Top>
+            <Left>1.75in</Left>
+            <Height>0.25in</Height>
+            <Width>2.125in</Width>
+            <ZIndex>9</ZIndex>
+            <Style>
+              <TopBorder>
+                <Style>None</Style>
+              </TopBorder>
+              <BottomBorder>
+                <Style>None</Style>
+              </BottomBorder>
+              <LeftBorder>
+                <Style>None</Style>
+              </LeftBorder>
+              <RightBorder>
+                <Style>None</Style>
+              </RightBorder>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="textbox23">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=SrsResources.Localization.GetString("ReportEndDate", User!Language) + ":"</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>1.25in</Top>
+            <Left>0.125in</Left>
+            <Height>0.25in</Height>
+            <Width>1.625in</Width>
+            <ZIndex>10</ZIndex>
+            <Style>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Current">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=SrsResources.Localization.GetString("CurNumCompNotCapableSleep", User!Language) + ":"</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>0.75in</Top>
+            <Left>3.875in</Left>
+            <Height>0.25in</Height>
+            <Width>3.375in</Width>
+            <ZIndex>11</ZIndex>
+            <Style>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="textbox5">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=Sum(Fields!TotalSystemNotCapableOfSleep.Value, "DataSetTotalSystemNotCapableOfSleep")</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <Top>0.75in</Top>
+            <Left>7.25in</Left>
+            <Height>0.25in</Height>
+            <Width>0.875in</Width>
+            <ZIndex>12</ZIndex>
+            <Style>
+              <TopBorder>
+                <Style>None</Style>
+              </TopBorder>
+              <BottomBorder>
+                <Style>None</Style>
+              </BottomBorder>
+              <LeftBorder>
+                <Style>None</Style>
+              </LeftBorder>
+              <RightBorder>
+                <Style>None</Style>
+              </RightBorder>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="textbox29">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=Sum(Fields!TotalPhyMachines.Value, "GetTotalPhyMachineForCollectionData")</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <Top>1in</Top>
+            <Left>7.26602in</Left>
+            <Height>0.25in</Height>
+            <Width>0.85898in</Width>
+            <ZIndex>13</ZIndex>
+            <Style>
+              <TopBorder>
+                <Style>None</Style>
+              </TopBorder>
+              <BottomBorder>
+                <Style>None</Style>
+              </BottomBorder>
+              <LeftBorder>
+                <Style>None</Style>
+              </LeftBorder>
+              <RightBorder>
+                <Style>None</Style>
+              </RightBorder>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="textbox28">
+            <CanGrow>true</CanGrow>
+            <ToggleImage>
+              <InitialState>true</InitialState>
+            </ToggleImage>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=SrsResources.Localization.GetString("NumofPhyCompinCollection", User!Language) + ":"</Value>
+                    <Style>
+                      <FontFamily>Verdana</FontFamily>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>1.0125in</Top>
+            <Left>3.88125in</Left>
+            <Height>0.25in</Height>
+            <Width>3.375in</Width>
+            <ZIndex>14</ZIndex>
+            <Style>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+        </ReportItems>
+        <DataElementOutput>ContentsOnly</DataElementOutput>
+        <rdl:Top xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">0.33in
+    </rdl:Top>
+        <Left>0.25in</Left>
+        <Height>1.625in</Height>
+        <Width>8.3125in</Width>
+        <ZIndex>1</ZIndex>
+        <Style>
+          <Border>
+            <Color>DimGray</Color>
+            <Style>Solid</Style>
+          </Border>
+        </Style>
+      </Rectangle>
+      <Tablix Name="table2">
+        <TablixBody>
+          <TablixColumns>
+            <TablixColumn>
+              <Width>2.04in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>2.14in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>2.21in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>3.00in</Width>
+            </TablixColumn>
+          </TablixColumns>
+          <TablixRows>
+            <TablixRow>
+              <Height>0.30208in</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox3">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("Time", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>textbox3</rd:DefaultName>
+                      <ZIndex>7</ZIndex>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox6">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("NumCompOn", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>textbox5</rd:DefaultName>
+                      <ZIndex>6</ZIndex>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox7">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("NumCompOff", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>textbox7</rd:DefaultName>
+                      <ZIndex>5</ZIndex>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox4">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("NumCompNotReporting", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <ZIndex>4</ZIndex>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+            <TablixRow>
+              <Height>0.3125in</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox8">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Code.TimespanFormat(Fields!Hour.Value)</Value>
+                              <Style>
+                                <FontFamily>Verdana</FontFamily>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>textbox8</rd:DefaultName>
+                      <ZIndex>3</ZIndex>
+                      <Style>
+                        <Border>
+                          <Color>DimGray</Color>
+                        </Border>
+                        <BottomBorder>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox9">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!ActiveMachineCount.Value</Value>
+                              <Style>
+                                <FontFamily>Verdana</FontFamily>
+                                <TextDecoration>Underline</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>textbox9</rd:DefaultName>
+                      <ActionInfo>
+                        <Actions>
+                          <Action>
+                            <Drillthrough>
+                              <ReportName>Power Management - Computer activity details</ReportName>
+                              <Parameters>
+                                <Parameter Name="collectionId">
+                                  <Value>=Parameters!collectionId.Value</Value>
+                                </Parameter>
+                                <Parameter Name="reportDate">
+                                  <Value>=Parameters!reportDate.Value</Value>
+                                </Parameter>
+                                <Parameter Name="hour">
+                                  <Value>=Fields!Hour.Value</Value>
+                                </Parameter>
+                                <Parameter Name="DeviceType">
+                                  <Value>=Parameters!deviceType.Value</Value>
+                                </Parameter>
+                                <Parameter Name="ComputersActiveNotActive">
+                                  <Value>Active</Value>
+                                </Parameter>
+                              </Parameters>
+                            </Drillthrough>
+                          </Action>
+                        </Actions>
+                      </ActionInfo>
+                      <ZIndex>2</ZIndex>
+                      <Style>
+                        <Border>
+                          <Color>DimGray</Color>
+                        </Border>
+                        <BottomBorder>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox10">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!NotActiveMachineCount.Value</Value>
+                              <Style>
+                                <FontFamily>Verdana</FontFamily>
+                                <TextDecoration>Underline</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>textbox10</rd:DefaultName>
+                      <ActionInfo>
+                        <Actions>
+                          <Action>
+                            <Drillthrough>
+                              <ReportName>Power Management - Computer activity details</ReportName>
+                              <Parameters>
+                                <Parameter Name="collectionId">
+                                  <Value>=Parameters!collectionId.Value</Value>
+                                </Parameter>
+                                <Parameter Name="reportDate">
+                                  <Value>=Parameters!reportDate.Value</Value>
+                                </Parameter>
+                                <Parameter Name="hour">
+                                  <Value>=Fields!Hour.Value</Value>
+                                </Parameter>
+                                <Parameter Name="DeviceType">
+                                  <Value>=Parameters!deviceType.Value</Value>
+                                </Parameter>
+                                <Parameter Name="ComputersActiveNotActive">
+                                  <Value>NotActive</Value>
+                                </Parameter>
+                              </Parameters>
+                            </Drillthrough>
+                          </Action>
+                        </Actions>
+                      </ActionInfo>
+                      <ZIndex>1</ZIndex>
+                      <Style>
+                        <Border>
+                          <Color>DimGray</Color>
+                        </Border>
+                        <BottomBorder>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox1">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!NotReportingMachineCount.Value</Value>
+                              <Style>
+                                <FontFamily>Verdana</FontFamily>
+                                <TextDecoration>Underline</TextDecoration>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <ActionInfo>
+                        <Actions>
+                          <Action>
+                            <Drillthrough>
+                              <ReportName>Power Management - Computer not reporting details</ReportName>
+                              <Parameters>
+                                <Parameter Name="collectionId">
+                                  <Value>=Parameters!collectionId.Value</Value>
+                                </Parameter>
+                                <Parameter Name="reportDate">
+                                  <Value>=Parameters!reportDate.Value</Value>
+                                </Parameter>
+                                <Parameter Name="deviceType">
+                                  <Value>=Parameters!deviceType.Value</Value>
+                                </Parameter>
+                              </Parameters>
+                            </Drillthrough>
+                          </Action>
+                        </Actions>
+                      </ActionInfo>
+                      <Style>
+                        <Border>
+                          <Color>DimGray</Color>
+                        </Border>
+                        <BottomBorder>
+                          <Style>Solid</Style>
+                        </BottomBorder>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+          </TablixRows>
+        </TablixBody>
+        <TablixColumnHierarchy>
+          <TablixMembers>
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+          </TablixMembers>
+        </TablixColumnHierarchy>
+        <TablixRowHierarchy>
+          <TablixMembers>
+            <TablixMember>
+              <KeepWithGroup>After</KeepWithGroup>
+              <RepeatOnNewPage>true</RepeatOnNewPage>
+              <KeepTogether>true</KeepTogether>
+            </TablixMember>
+            <TablixMember>
+              <Group Name="table2_Details_Group">
+                <GroupExpressions>
+                  <GroupExpression>=Fields!Hour.Value</GroupExpression>
+                </GroupExpressions>
+                <DataElementName>Detail</DataElementName>
+              </Group>
+              <TablixMembers>
+                <TablixMember />
+              </TablixMembers>
+              <DataElementName>Detail_Collection</DataElementName>
+              <DataElementOutput>Output</DataElementOutput>
+              <KeepTogether>true</KeepTogether>
+            </TablixMember>
+          </TablixMembers>
+        </TablixRowHierarchy>
+        <DataSetName>DataSetGetComputerState</DataSetName>
+        <rdl:Top xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">7.11646in
+    </rdl:Top>
+        <rdl:Left xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">0in</rdl:Left>
+        <Height>0.61458in</Height>
+        <Width>8.5in</Width>
+        <ZIndex>2</ZIndex>
+        <Visibility>
+          <Hidden>=IIF(IsNothing(Parameters!endDate.Value), false, true)</Hidden>
+        </Visibility>
+        <Style>
+          <Border>
+            <Color>DimGray</Color>
+            <Style>Solid</Style>
+          </Border>
+          <TopBorder>
+            <Style>Solid</Style>
+          </TopBorder>
+          <BottomBorder>
+            <Style>Solid</Style>
+          </BottomBorder>
+          <LeftBorder>
+            <Style>Solid</Style>
+          </LeftBorder>
+          <RightBorder>
+            <Style>Solid</Style>
+          </RightBorder>
+        </Style>
+      </Tablix>
+      <rdl:Rectangle Name="ReportDescriptionRectangle" xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+        <rdl:ReportItems>
+          <rdl:Tablix Name="ReportDescriptionTablix">
+            <rdl:DataSetName>DataSet2</rdl:DataSetName>
+            <rdl:TablixBody>
+              <rdl:TablixColumns>
+                <rdl:TablixColumn>
+                  <rdl:Width>1.25in</rdl:Width>
+                </rdl:TablixColumn>
+                <rdl:TablixColumn>
+                  <rdl:Width>7.890000343322754in</rdl:Width>
+                </rdl:TablixColumn>
+              </rdl:TablixColumns>
+              <rdl:TablixRows>
+                <rdl:TablixRow>
+                  <rdl:Height>0.4in</rdl:Height>
+                  <rdl:TablixCells>
+                    <rdl:TablixCell>
+                      <rdl:CellContents>
+                        <rdl:Textbox Name="DescriptionLabelTextbox">
+                          <rdl:CanGrow>true</rdl:CanGrow>
+                          <rdl:KeepTogether>true</rdl:KeepTogether>
+                          <rdl:Paragraphs>
+                            <rdl:Paragraph>
+                              <rdl:TextRuns>
+                                <rdl:TextRun>
+                                  <rdl:Value>=SrsResources.Localization.GetString("Description", User!Language)</rdl:Value>
+                                  <rdl:Style>
+                                    <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                    <rdl:FontWeight>Bold</rdl:FontWeight>
+                                    <rdl:FontSize>9pt</rdl:FontSize>
+                                    <rdl:Color>Black</rdl:Color>
+                                  </rdl:Style>
+                                </rdl:TextRun>
+                              </rdl:TextRuns>
+                              <rdl:Style />
+                            </rdl:Paragraph>
+                          </rdl:Paragraphs>
+                          <rd:DefaultName>Textbox16</rd:DefaultName>
+                          <rdl:Style>
+                            <rdl:Border>
+                              <rdl:Color>LightGrey</rdl:Color>
+                              <rdl:Style>Solid</rdl:Style>
+                            </rdl:Border>
+                            <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+                            <rdl:PaddingLeft>2pt</rdl:PaddingLeft>
+                            <rdl:PaddingRight>2pt</rdl:PaddingRight>
+                            <rdl:PaddingTop>2pt</rdl:PaddingTop>
+                            <rdl:PaddingBottom>2pt</rdl:PaddingBottom>
+                          </rdl:Style>
+                        </rdl:Textbox>
+                      </rdl:CellContents>
+                    </rdl:TablixCell>
+                    <rdl:TablixCell>
+                      <rdl:CellContents>
+                        <rdl:Textbox Name="DescriptionTextbox">
+                          <rdl:CanGrow>true</rdl:CanGrow>
+                          <rdl:KeepTogether>true</rdl:KeepTogether>
+                          <rdl:Paragraphs>
+                            <rdl:Paragraph>
+                              <rdl:TextRuns>
+                                <rdl:TextRun>
+                                  <rdl:Value>=SrsResources.Localization.GetString("PowerComputerActivity_Description", User!Language)</rdl:Value>
+                                  <rdl:Style>
+                                    <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                    <rdl:FontSize>9pt</rdl:FontSize>
+                                    <rdl:FontWeight>Normal</rdl:FontWeight>
+                                    <rdl:Color>Black</rdl:Color>
+                                  </rdl:Style>
+                                </rdl:TextRun>
+                              </rdl:TextRuns>
+                              <rdl:Style />
+                            </rdl:Paragraph>
+                          </rdl:Paragraphs>
+                          <rd:DefaultName>Textbox18</rd:DefaultName>
+                          <rdl:Visibility>
+                            <rdl:Hidden>true</rdl:Hidden>
+                            <rdl:ToggleItem>DescriptionLabelTextbox</rdl:ToggleItem>
+                          </rdl:Visibility>
+                          <rdl:Style>
+                            <rdl:Border>
+                              <rdl:Color>LightGrey</rdl:Color>
+                              <rdl:Style>Solid</rdl:Style>
+                            </rdl:Border>
+                            <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+                            <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                            <rdl:PaddingRight>2pt</rdl:PaddingRight>
+                            <rdl:PaddingTop>2pt</rdl:PaddingTop>
+                            <rdl:PaddingBottom>2pt</rdl:PaddingBottom>
+                          </rdl:Style>
+                        </rdl:Textbox>
+                      </rdl:CellContents>
+                    </rdl:TablixCell>
+                  </rdl:TablixCells>
+                </rdl:TablixRow>
+              </rdl:TablixRows>
+            </rdl:TablixBody>
+            <rdl:TablixColumnHierarchy>
+              <rdl:TablixMembers>
+                <rdl:TablixMember />
+                <rdl:TablixMember />
+              </rdl:TablixMembers>
+            </rdl:TablixColumnHierarchy>
+            <rdl:TablixRowHierarchy>
+              <rdl:TablixMembers>
+                <rdl:TablixMember />
+              </rdl:TablixMembers>
+            </rdl:TablixRowHierarchy>
+            <rdl:Top>0.0in</rdl:Top>
+            <rdl:Height>0.2in</rdl:Height>
+            <rdl:Style>
+              <rdl:Border>
+                <rdl:Style>None</rdl:Style>
+              </rdl:Border>
+            </rdl:Style>
+          </rdl:Tablix>
+        </rdl:ReportItems>
+        <rdl:KeepTogether>true</rdl:KeepTogether>
+        <rdl:Left>0in</rdl:Left>
+        <rdl:Height>0.21181in</rdl:Height>
+        <rdl:Top>0.0in</rdl:Top>
+        <rdl:Width>9.390000343322754in</rdl:Width>
+        <rdl:ZIndex>1</rdl:ZIndex>
+        <rdl:Style>
+          <rdl:Border>
+            <rdl:Style>None</rdl:Style>
+          </rdl:Border>
+          <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+        </rdl:Style>
+      </rdl:Rectangle>
+      <rdl:Line Name="ReportDescriptionLine" xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+        <rdl:Top>0.25in</rdl:Top>
+        <rdl:Left>0in</rdl:Left>
+        <rdl:Height>0in</rdl:Height>
+        <rdl:Width>9.390000343322754in</rdl:Width>
+        <rdl:ZIndex>2</rdl:ZIndex>
+        <rdl:Style>
+          <rdl:Border>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:Border>
+          <rdl:TopBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:TopBorder>
+          <rdl:BottomBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:BottomBorder>
+          <rdl:LeftBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:LeftBorder>
+          <rdl:RightBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:RightBorder>
+        </rdl:Style>
+      </rdl:Line>
+    </ReportItems>
+    <Height>7.90104in</Height>
+    <Style />
+  </Body>
+  <ReportParameters>
+    <ReportParameter Name="UserTokenSIDs">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=SrsResources.UserIdentity.GetUserSIDs(User!UserID)</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="UserSIDs">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <DataSetReference>
+          <DataSetName>DataSetAdminID</DataSetName>
+          <ValueField>UserSIDs</ValueField>
+        </DataSetReference>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="AllParameterValue">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=SrsResources.Localization.GetString("All", User!Language)</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="DesktopParameterValue">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=SrsResources.Localization.GetString("DeskTop", User!Language)</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="LaptopParameterValue">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=SrsResources.Localization.GetString("LapTop", User!Language)</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="reportDate">
+      <DataType>DateTime</DataType>
+      <Prompt>Start date</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="endDate">
+      <DataType>DateTime</DataType>
+      <Nullable>true</Nullable>
+      <DefaultValue>
+        <Values>
+          <Value xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
+        </Values>
+      </DefaultValue>
+      <Prompt>End date</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="collectionId">
+      <DataType>String</DataType>
+      <Prompt>Collection</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DataSet1</DataSetName>
+          <ValueField>CollectionID</ValueField>
+          <LabelField>LocName</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="deviceType">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>0</Value>
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>Device type</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>0</Value>
+            <Label>=Parameters!AllParameterValue.Value</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>1</Value>
+            <Label>=Parameters!DesktopParameterValue.Value</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>2</Value>
+            <Label>=Parameters!LaptopParameterValue.Value</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+  </ReportParameters>
+  <Code>
+    public function TimespanFormat( hours as long) as string
+    Dim elapsed as timespan
+    elapsed = Timespan.FromHours (hours)
+
+    Dim dt As DateTime = DateTime.MinValue.Add(elapsed)
+
+    Dim s As String
+
+
+    s = dt.ToString("h tt")
+
+    return s
+
+
+    end function
+  </Code>
+  <Width>8.66602in</Width>
+  <rdl:Page xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+    <rdl:PageHeader>
+      <rdl:Height>1.1in</rdl:Height>
+      <rdl:PrintOnFirstPage>true</rdl:PrintOnFirstPage>
+      <rdl:PrintOnLastPage>true</rdl:PrintOnLastPage>
+      <rdl:ReportItems>
+        <rdl:Rectangle Name="BackgroundColorRectangle">
+          <rdl:ReportItems>
+            <rdl:Image Name="RightHeaderImage">
+              <rdl:Source>External</rdl:Source>
+              <rdl:Value>/ConfigMgr_DC1/Report Resources/Report_Header_Right.png</rdl:Value>
+              <rdl:Top>0.0in</rdl:Top>
+              <rdl:Left>7.050000429153442in</rdl:Left>
+              <rdl:Height>0.75in</rdl:Height>
+              <rdl:Width>2.3399999141693115in</rdl:Width>
+              <rdl:Style>
+                <rdl:Border>
+                  <rdl:Style>None</rdl:Style>
+                </rdl:Border>
+              </rdl:Style>
+            </rdl:Image>
+            <rdl:Image Name="CenterHeaderImage">
+              <rdl:Source>External</rdl:Source>
+              <rdl:Sizing>Fit</rdl:Sizing>
+              <rdl:Value>/ConfigMgr_DC1/Report Resources/Report_Header_Center.png</rdl:Value>
+              <rdl:Top>0.0in</rdl:Top>
+              <rdl:Left>0.20999999344348907in</rdl:Left>
+              <rdl:Height>0.75in</rdl:Height>
+              <rdl:Width>6.840000152587891in</rdl:Width>
+              <rdl:Style>
+                <rdl:Border>
+                  <rdl:Style>None</rdl:Style>
+                </rdl:Border>
+              </rdl:Style>
+            </rdl:Image>
+            <rdl:Image Name="LeftHeaderImage">
+              <rdl:Source>External</rdl:Source>
+              <rdl:Value>/ConfigMgr_DC1/Report Resources/Report_Header_Left.png</rdl:Value>
+              <rdl:Top>0.0in</rdl:Top>
+              <rdl:Left>0.0in</rdl:Left>
+              <rdl:Height>0.75in</rdl:Height>
+              <rdl:Width>0.20999999344348907in</rdl:Width>
+              <rdl:ZIndex>1</rdl:ZIndex>
+              <rdl:Style>
+                <rdl:Border>
+                  <rdl:Style>None</rdl:Style>
+                </rdl:Border>
+              </rdl:Style>
+            </rdl:Image>
+          </rdl:ReportItems>
+          <rdl:KeepTogether>true</rdl:KeepTogether>
+          <rdl:Top>0.0in</rdl:Top>
+          <rdl:Left>0in</rdl:Left>
+          <rdl:Height>0.75in</rdl:Height>
+          <rdl:Width>9.390000343322754in</rdl:Width>
+          <rdl:Style>
+            <rdl:Border>
+              <rdl:Style>None</rdl:Style>
+            </rdl:Border>
+            <rdl:BackgroundColor>#e2e9f2</rdl:BackgroundColor>
+          </rdl:Style>
+        </rdl:Rectangle>
+        <rdl:Textbox Name="ReportTitleTextbox">
+          <rdl:CanGrow>true</rdl:CanGrow>
+          <rdl:KeepTogether>true</rdl:KeepTogether>
+          <rdl:Paragraphs>
+            <rdl:Paragraph>
+              <rdl:TextRuns>
+                <rdl:TextRun>
+                  <rdl:Value>=SrsResources.Localization.GetString("PowerComputerActivity_Name", User!Language) + "  "</rdl:Value>
+                  <rdl:Style>
+                    <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                    <rdl:FontSize>17pt</rdl:FontSize>
+                    <rdl:FontWeight>Bold</rdl:FontWeight>
+                    <rdl:Color>Black</rdl:Color>
+                  </rdl:Style>
+                </rdl:TextRun>
+              </rdl:TextRuns>
+              <rdl:Style />
+            </rdl:Paragraph>
+          </rdl:Paragraphs>
+          <rd:DefaultName>Textbox54</rd:DefaultName>
+          <rdl:Top>0.75in</rdl:Top>
+          <rdl:Left>0in</rdl:Left>
+          <rdl:Height>0.35in</rdl:Height>
+          <rdl:Width>9.390000343322754in</rdl:Width>
+          <rdl:ZIndex>1</rdl:ZIndex>
+          <rdl:Style>
+            <rdl:Border>
+              <rdl:Style>None</rdl:Style>
+            </rdl:Border>
+            <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+            <rdl:PaddingLeft>2pt</rdl:PaddingLeft>
+            <rdl:PaddingRight>2pt</rdl:PaddingRight>
+            <rdl:PaddingTop>2pt</rdl:PaddingTop>
+            <rdl:PaddingBottom>2pt</rdl:PaddingBottom>
+          </rdl:Style>
+        </rdl:Textbox>
+      </rdl:ReportItems>
+      <rdl:Style>
+        <rdl:Border>
+          <rdl:Style>None</rdl:Style>
+        </rdl:Border>
+      </rdl:Style>
+    </rdl:PageHeader>
+    <rdl:PageFooter>
+      <rdl:Height>0.45in</rdl:Height>
+      <rdl:PrintOnFirstPage>true</rdl:PrintOnFirstPage>
+      <rdl:PrintOnLastPage>true</rdl:PrintOnLastPage>
+      <rdl:Style>
+        <rdl:Border>
+          <rdl:Style>None</rdl:Style>
+        </rdl:Border>
+      </rdl:Style>
+    </rdl:PageFooter>
+    <rdl:PageHeight>27.94cm</rdl:PageHeight>
+    <rdl:PageWidth>21.59cm</rdl:PageWidth>
+    <rdl:LeftMargin>2.54cm</rdl:LeftMargin>
+    <rdl:RightMargin>2.54cm</rdl:RightMargin>
+    <rdl:TopMargin>2.54cm</rdl:TopMargin>
+    <rdl:BottomMargin>2.54cm</rdl:BottomMargin>
+    <rdl:Style />
+  </rdl:Page>
+  <rdl:CodeModules xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+    <rdl:CodeModule>SrsResources, culture=neutral</rdl:CodeModule>
+  </rdl:CodeModules>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>033ea227-0e15-4250-a13e-d68065e08cec</rd:ReportID>
+</Report>

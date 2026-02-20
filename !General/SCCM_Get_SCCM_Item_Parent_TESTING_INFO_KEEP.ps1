@@ -1,4 +1,10 @@
-﻿<#
+<#
+Exit
+Read-Host -Prompt 'Press Enter to exit...'
+<#
+Exit
+Read-Host -Prompt 'Press Enter to exit...'
+<#
 Object 						Class 								InstanceKey / Property    Example
 Application 				SMS_ApplicationLatest 				ModelName                 ScopeId_B524C55D-6E5C-465E-82C3-E2B262C19608/Application_3fe8b1b5-d8d9-4887-b819-a9243a5286c0
 Package 					SMS_Package 						PackageID
@@ -27,33 +33,33 @@ SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS
 
 # Boot Image 
     If ($Y -eq 'SMS_BootImagePackage'){$SPOP = 'SMS_Collection_Device'}
-SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='SS1000AC' and oci.ObjectTypeName='SMS_BootImagePackage'
+SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='XX1000AC' and oci.ObjectTypeName='SMS_BootImagePackage'
 
 
 # Collection 
     If ($Y -eq 'SMS_Collection'){$SPOP = 'SMS_Collection_Device'}
-SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='SS10072D' and oci.ObjectTypeName='SMS_Collection_Device'
+SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='XX10072D' and oci.ObjectTypeName='SMS_Collection_Device'
 
 
 # Package 
     If ($Y -eq 'SMS_Package'){$SPOP = 'SMS_Package'}
-SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='SS10037E' and oci.ObjectTypeName='SMS_Package'
+SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='XX10037E' and oci.ObjectTypeName='SMS_Package'
 
 # DriverPackage 
     If ($Y -eq 'SMS_DriverPackage'){$SPOP = 'SMS_Collection_Device'}
-SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='SS1003C1' and oci.ObjectTypeName='SMS_DriverPackage'
+SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='XX1003C1' and oci.ObjectTypeName='SMS_DriverPackage'
 
 
 
 # Driver 
     If ($Y -eq 'SMS_Package'){$SPOP = 'SMS_Collection_Device'}
-SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='SS1003C1' and oci.ObjectTypeName='SMS_Driver'
+SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='XX1003C1' and oci.ObjectTypeName='SMS_Driver'
 
-SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='SS1000AC'
+SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='XX1000AC'
 
-SELECT oci.* FROM SMS_ObjectContainerNode WHERE oci.InstanceKey='SS1000AC'
+SELECT oci.* FROM SMS_ObjectContainerNode WHERE oci.InstanceKey='XX1000AC'
 
-SELECT oci.* FROM SMS_ObjectContainerNode WHERE oci.InstanceKey='SS1000AC'
+SELECT oci.* FROM SMS_ObjectContainerNode WHERE oci.InstanceKey='XX1000AC'
 
 SELECT su.* From SMS_SoftwareUpdate AS su Where su.LocalizedDisplayName='Adobe Acrobat XI (11.0.19)'
 

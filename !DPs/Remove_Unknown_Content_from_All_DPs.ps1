@@ -1,4 +1,7 @@
-﻿Function Remove-SCCMDPContent
+Function Remove-SCCMDPContent
+
+
+Function Remove-SCCMDPContent
 {
 <#
 .Synopsis
@@ -100,8 +103,8 @@
 }
 
 # UPDATE THESE VARIABLES FOR YOUR ENVIRONMENT
-[string]$SiteServer = "SCCMSERVER.Domain.Com"
-[string]$SiteCode = "SS1"
+[string]$SiteServer = "SERVER.DOMAIN.COM"
+[string]$SiteCode = "XX1"
 
 # Get all valid packages from the primary site server
 $Namespace = "root\SMS\Site_" + $SiteCode
@@ -119,7 +122,7 @@ Write-Host ""
 
 ForEach ($DP in $DistributionPoints.name)
 {
-    $Failures = Get-WmiObject -ComputerName 'SCCMSERVER' -Namespace root\sms\site_$SiteCode -Class sms_packagestatusDistPointsSummarizer | Where-Object {$_.State -EQ 3 -or $_.State -eq 8} | Where-Object SourceNALPath -Match $DP
+    $Failures = Get-WmiObject -ComputerName 'SERVER' -Namespace root\sms\site_$SiteCode -Class sms_packagestatusDistPointsSummarizer | Where-Object {$_.State -EQ 3 -or $_.State -eq 8} | Where-Object SourceNALPath -Match $DP
     Write-Host "Found $($Failures.count) failed packages on $DP"
 
     Write-Host "`nAre you sure you want to remove " -NoNewline -ForegroundColor Red

@@ -1,4 +1,7 @@
-﻿# "Enterprise Mode" Remediation Script
+# "Enterprise Mode" Remediation Script
+}
+    $_.Exception.Message
+# "Enterprise Mode" Remediation Script
 
 try
 {
@@ -6,7 +9,7 @@ try
     {
         New-Item 'HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main\EnterpriseMode' -Force
     }
-    Set-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main\EnterpriseMode' -Name SiteList -Type String -Value "http://webserver/sites.xml" -Force
+    Set-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main\EnterpriseMode' -Name SiteList -Type String -Value "http://XXXXdsweb1/sites.xml" -Force
 }
 Catch
 {

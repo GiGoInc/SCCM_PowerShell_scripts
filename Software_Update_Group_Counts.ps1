@@ -1,4 +1,7 @@
-ï»¿$SDate = $(Get-Date)
+$SDate = $(Get-Date)
+
+Write-Host "$(Get-Date)`tTotal script ran for $min minutes and $sec seconds`r`n" -ForegroundColor Cyan
+$SDate = $(Get-Date)
 $SSDate = $(Get-Date)
 $ADateStart = $(Get-Date -format yyyy-MM-dd)+'__'+ $(Get-Date -UFormat %R).Replace(':','.')
 Write-Host "$SDate -- Script starting...runtime approx three minutes" -ForegroundColor Magenta
@@ -15,9 +18,9 @@ where CC.ContentDownloaded='1'
 GROUP BY AL.Title
 ORDER BY 1"
 
-      $SQL_DB = 'CM_SS1'
-  $SQL_Server = 'sccmdb1'
-$SQL_Instance = 'sccmdb1'
+      $SQL_DB = 'CM_XX1'
+  $SQL_Server = 'SERVER'
+$SQL_Instance = 'SERVER'
 $SQL_Check = Invoke-Sqlcmd -AbortOnError `
     -ConnectionTimeout 60 `
     -Database $SQL_DB  `
@@ -38,7 +41,7 @@ $Output | Set-Content $Log
 
 #########################################
 $SEDate = (GET-DATE)
-$Span = NEW-TIMESPAN â€“Start $SSDate â€“End $SEDate
+$Span = NEW-TIMESPAN –Start $SSDate –End $SEDate
 $Min = $Span.minutes
 $Sec = $Span.Seconds
 Write-Host "$(Get-Date)`tTotal script ran for $min minutes and $sec seconds`r`n" -ForegroundColor Cyan

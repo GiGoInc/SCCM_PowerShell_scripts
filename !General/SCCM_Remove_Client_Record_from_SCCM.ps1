@@ -1,8 +1,11 @@
 D:
+#>
+E:
+D:
 CD 'D:\Program Files\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 
 $Systems = Get-Content "D:\Powershell\!SCCM_PS_scripts\!General\SCCM_Remove_Client_Record_from_SCCM--PClist.txt"
@@ -20,15 +23,15 @@ ForEach ($System in $Systems)
 #	2014-10-17	IBL	This script doesn't work.
 #					Should be rewritten with Remove-CMDevice cmdlet
 #					Create list of records to delete and type each as a lint item like the next two lines:
-#					Server1
-#					Server2
+#					XXXXPC80
+#					XXXXPC81
 
 $File = "D:\Powershell\!SCCM_PS_scripts\!General\SCCM_Remove_Client_Record_from_SCCM--PClist.txt"
 
 function RunFunc ($computername)
 {
 #// required parameters
-$sitename = "SS1"
+$sitename = "XX1"
 #$computername = "delete-this"
 Write-Output $computername
 

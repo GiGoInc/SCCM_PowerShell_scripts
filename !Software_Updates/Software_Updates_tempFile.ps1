@@ -1,4 +1,7 @@
-ï»¿# Load SQL 2014 Module
+# Load SQL 2014 Module
+#>
+            # PROGRESS INDICATOR - END
+# Load SQL 2014 Module
     If (Test-Path "C:\Program Files\Microsoft SQL Server\120\Tools\PowerShell\Modules\SQLPS\SQLPS.PS1")
     {
         Write-host "Loading SQL 2014 x64 Module" -ForegroundColor Cyan
@@ -15,7 +18,7 @@
 Function RunTime
 {
     $End = (GET-DATE)
-    $TS = NEW-TIMESPAN â€“Start $Start â€“End $End
+    $TS = NEW-TIMESPAN –Start $Start –End $End
     $Min = $TS.minutes
     $Sec = $TS.Seconds
     Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan
@@ -24,14 +27,14 @@ Function RunTime
 
 
 $ConnectionTimeout   = '60'
-$GetSQLInfo_Server   = 'sccmserverdb'
-$GetSQLInfo_Instance = 'sccmserverdb'
-$GetSQLInfo_DB       = 'CM_SS1'
+$GetSQLInfo_Server   = 'SERVER'
+$GetSQLInfo_Instance = 'SERVER'
+$GetSQLInfo_DB       = 'CM_XX1'
 $QueryTimeout        = '600'
 
 $GetSQLInfo_Query = "
 Declare @CollID nvarchar (255),@SUG nvarchar(255);
-Set @CollID='SS100010';set @SUG='ADR: Software Updates - All Branch Workstations';
+Set @CollID='XX100010';set @SUG='ADR: Software Updates - All RemoteLocale Workstations';
 --CollID=Collection ID and SUG=Software update group Name
 
 Select resourceid,

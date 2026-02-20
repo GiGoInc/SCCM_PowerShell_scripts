@@ -1,4 +1,7 @@
-﻿<#
+<#
+$output | Sort-Object | Add-Content '.\CCMCACHE_ContentID_to_FolderName---Results.txt'
+$output | Sort-Object
+<#
     Add verbiage for modified date
     Add Software updates
     Add color code for non-matches

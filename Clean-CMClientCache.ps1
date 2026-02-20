@@ -1,4 +1,7 @@
 <#
+##*=============================================
+##* END SCRIPT BODY
+<#
 .SYNOPSIS
     Cleans the configuration manager client cache.
 .DESCRIPTION

@@ -1,4 +1,7 @@
-﻿Function Get-SCCMClientUpdate {
+Function Get-SCCMClientUpdate {
+}
+    }
+Function Get-SCCMClientUpdate {
 <#
     .SYNOPSIS
         Allows you to query for updates via the SCCM Client Agent

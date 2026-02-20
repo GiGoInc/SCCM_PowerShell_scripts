@@ -1,4 +1,7 @@
-ï»¿< #
+< #
+ # SIG  # End signature block
+ # RQx/1nKwRWcn6Bo=
+< #
 CACHE - means CACHE that SCCM client sees in internally
 CCMCACHE - the 'C:\Windows\CCMCACHE' folder
 
@@ -19,7 +22,7 @@ Issues I've seen:
 
 LARELT01
 MSRELT04
-BH20B42
+COMPUTER53
 F7QL32
 H9HTP12
 
@@ -277,7 +280,7 @@ Finally{$ErrorActionPreference = "Continue"}
         					$ElementsToRemove = $CacheElements | where {$_.contentid -eq $ElementID.Name -and $_.ContentVer-ne $Max}
         					foreach ($Element in $ElementsToRemove)
         					{
-        						Write-Host â€œDeletingâ€$Element.ContentIDâ€with versionâ€$Element.ContentVersion -ForegroundColor Red
+        						Write-Host “Deleting”$Element.ContentID”with version”$Element.ContentVersion -ForegroundColor Red
         						
         						Remove-Item $Element.Location -recurse -Force
         						$Element.Delete()

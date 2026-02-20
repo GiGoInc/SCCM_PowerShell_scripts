@@ -1,4 +1,7 @@
-﻿Function CreateAllTextXSLX ($CSVIn,$ExcelOut)
+Function CreateAllTextXSLX ($CSVIn,$ExcelOut)
+#>
+        Copy-Item -Path $DestFile -Destination $FinalFile -Force
+Function CreateAllTextXSLX ($CSVIn,$ExcelOut)
 {
     # OPENCSV.PS1
     # $csv = Get-Item $args[0]
@@ -40,7 +43,7 @@
 
 # Variables
     $ADateStart = Get-Date -Format "yyyy-MM-dd__hh.mm.ss.tt"
-    $user = 'domain\user1'
+    $user = 'DOMAIN\SUPERUSER'
     # $cred = New-Object System.Management.Automation.PsCredential $user,(Get-Content 'C:\Scripts\securestring_tsa.txt' | ConvertTo-SecureString)	
     $cred = New-Object System.Management.Automation.PsCredential $user,(Get-Content 'C:\Scripts\securestring_ats.txt' | ConvertTo-SecureString)
 
@@ -60,14 +63,14 @@
     ##################################
         ## KEEP THIS QUERY - DO NOT DELETE
         # $postParams = @{filterwildcard='%McAfee%';CollID=$CollID}   
-        # Invoke-WebRequest "http://sccmdb1/ReportServer?%2fConfigMgr_SS1%2fCorporate+Name%2fCOM+-+Computers+with+specific+software+(with+Product+Version)&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $cred -outfile $SCCMFile -Method POST -Body $postParams 
+        # Invoke-WebRequest "http://SERVER/ReportServer?%2fConfigMgr_XX1%2fDOMAIN+Part2%2fCOM+-+Computers+with+specific+software+(with+Product+Version)&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $cred -outfile $SCCMFile -Method POST -Body $postParams 
     ##################################
 
 # SCCM Report 1
-    Invoke-WebRequest "http://sccmdb1/ReportServer?%2fConfigMgr_SS1%2fIsaac%2fHW+-+McAfee+installs+-+Systems+fully+upgraded+to+all+the+latest+versions&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $cred -outfile $McAfeeFile1
+    Invoke-WebRequest "http://SERVER/ReportServer?%2fConfigMgr_XX1%2fSuperUser%2fHW+-+McAfee+installs+-+Systems+fully+upgraded+to+all+the+latest+versions&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $cred -outfile $McAfeeFile1
 
 # SCCM Report 2
-    Invoke-WebRequest "http://sccmdb1/ReportServer?%2fConfigMgr_SS1%2fIsaac%2fHW+-+McAfee+installs+-+Systems+at+least+partially+upgraded&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $cred -outfile $SCCMFile
+    Invoke-WebRequest "http://SERVER/ReportServer?%2fConfigMgr_XX1%2fSuperUser%2fHW+-+McAfee+installs+-+Systems+at+least+partially+upgraded&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $cred -outfile $SCCMFile
     D:
 
 ###############################################################################

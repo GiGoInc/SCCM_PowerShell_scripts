@@ -1,4 +1,7 @@
-ï»¿Function Ignore-SelfSignedCerts
+Function Ignore-SelfSignedCerts
+}
+    Start-Sleep -seconds 8
+Function Ignore-SelfSignedCerts
 {
     try
     {
@@ -30,8 +33,8 @@
 
 Ignore-SelfSignedCerts
 GoGo_SCCM_Module.ps1
-$Username = 'domain\service_scorch_account'
-$Password = 'ScorchPassword' | ConvertTo-SecureString -AsPlainText -Force 
+$Username = 'DOMAIN\SVCUSER1'
+$Password = '(password)' | ConvertTo-SecureString -AsPlainText -Force 
 $Cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Username, $Password
 #####################################################################################################################################
 $DPs = Get-CMDistributionPoint | Select-Object NetworkOsPath
@@ -95,7 +98,7 @@ ForEach ($DP in $DPs)
     }
     # FINALLY - Write Time
     $ADateE = Get-Date
-    $t = NEW-TIMESPAN â€“Start $ADateS â€“End $ADateE | select Minutes,Seconds
+    $t = NEW-TIMESPAN –Start $ADateS –End $ADateE | select Minutes,Seconds
     $min = $t.Minutes
     $sec = $t.seconds
     Write-Host "`nScript ran against $DP" -nonewline

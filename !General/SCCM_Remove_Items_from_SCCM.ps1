@@ -1,4 +1,7 @@
 #######################################################################
+}
+
+#######################################################################
 #Name: Remove multiple packages ,applications,drivers,Images etc from Configmgr 2012
 #Author: Eswar Koneti
 #Date Created:22-July-2014
@@ -10,7 +13,7 @@
 $CMModulepath = $Env:SMS_ADMIN_UI_PATH.ToString().Substring(0, $Env:SMS_ADMIN_UI_PATH.Length - 5) + "\ConfigurationManager.psd1"
 import-module $CMModulepath -force
 #Change the site Code
-CD SS1:
+CD XX1:
 #Change output File Location to store the results
 $Outputpath = 'D:\Powershell\!SCCM_PS_scripts\!General\SCCM_Remove_Items_from_SCCM--Results.txt'
 #Change the input filename ,make sure you supply the information in correct format

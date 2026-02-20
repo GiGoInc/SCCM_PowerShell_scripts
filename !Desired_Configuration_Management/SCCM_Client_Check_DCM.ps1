@@ -1,4 +1,7 @@
-ï»¿Configuration ConfigMgrHealthCheck
+Configuration ConfigMgrHealthCheck
+#Start-DscConfiguration -path .\ -verbose
+ConfigMgrHealthCheck -CMInstallArguments “/mp:modelsc02” -OutputPath .\
+Configuration ConfigMgrHealthCheck
 {
 
 [Parameter(Mandatory=$True)]
@@ -6,96 +9,96 @@
 
     Package ConfigMgrClient
     {
-        Ensure = â€œPresentâ€
-        Path = â€œ\\modelsc02\smsClient\ccmsetup.exeâ€
+        Ensure = “Present”
+        Path = “\\modelsc02\smsClient\ccmsetup.exe”
         Arguments = $CMInstallArguments
-        Name = â€œConfiguration Manager Clientâ€
-        # Logpath = â€œc:\users\tim.mintner\desktopâ€
-        ProductId = â€œD6804B3A-BFEC-4AB4-BFA5-FD9BECC80630â€
+        Name = “Configuration Manager Client”
+        # Logpath = “c:\users\tim.mintner\desktop”
+        ProductId = “D6804B3A-BFEC-4AB4-BFA5-FD9BECC80630”
     }
     
     Service BITS
     {
-        Name = â€œBITSâ€
-        StartupType = â€œAutomaticâ€
-        State = â€œRunningâ€
+        Name = “BITS”
+        StartupType = “Automatic”
+        State = “Running”
     }
     
     Service winmgmt
     {
-        Name = â€œwinmgmtâ€
-        StartupType = â€œAutomaticâ€
-        State = â€œRunningâ€
+        Name = “winmgmt”
+        StartupType = “Automatic”
+        State = “Running”
     }
     
     Service wuauserv
     {
-        Name = â€œwuauservâ€
-        StartupType = â€œAutomaticâ€
-        State = â€œRunningâ€
+        Name = “wuauserv”
+        StartupType = “Automatic”
+        State = “Running”
     }
     
     Service lanmanserver
     {
-        Name = â€œlanmanserverâ€
-        StartupType = â€œAutomaticâ€
-        State = â€œRunningâ€
+        Name = “lanmanserver”
+        StartupType = “Automatic”
+        State = “Running”
     }
     
     Service RpcSs
     {
-        Name = â€œRpcSsâ€
-        StartupType = â€œAutomaticâ€
-        State = â€œRunningâ€
+        Name = “RpcSs”
+        StartupType = “Automatic”
+        State = “Running”
     }
     
     Service ccmexec
     {
-        Name = â€œccmexecâ€
-        StartupType = â€œAutomaticâ€
-        State = â€œRunningâ€
+        Name = “ccmexec”
+        StartupType = “Automatic”
+        State = “Running”
     }
     
     Service lanmanworkstation
     {
-        Name = â€œlanmanworkstationâ€
-        StartupType = â€œAutomaticâ€
-        State = â€œRunningâ€
+        Name = “lanmanworkstation”
+        StartupType = “Automatic”
+        State = “Running”
     }
     Service CryptSvc
     {
-        Name = â€œCryptSvcâ€
-        StartupType = â€œAutomaticâ€
-        State = â€œRunningâ€
+        Name = “CryptSvc”
+        StartupType = “Automatic”
+        State = “Running”
     }
     Service ProtectedStorage
     {
-        Name = â€œProtectedStorageâ€
-        StartupType = â€œAutomaticâ€
-        State = â€œRunningâ€
+        Name = “ProtectedStorage”
+        StartupType = “Automatic”
+        State = “Running”
     }
     Service PolicyAgent
     {
-        Name = â€œPolicyAgentâ€
-        StartupType = â€œAutomaticâ€
-        State = â€œRunningâ€
+        Name = “PolicyAgent”
+        StartupType = “Automatic”
+        State = “Running”
     }
     Service RemoteRegistry
     {
-        Name = â€œRemoteRegistryâ€
-        StartupType = â€œAutomaticâ€
-        State = â€œRunningâ€
+        Name = “RemoteRegistry”
+        StartupType = “Automatic”
+        State = “Running”
     }
     
     Registry EnableDCOM
     {
-        Ensure = â€œPresentâ€
-        Key = â€œHKEY_Local_Machine\SOFTWARE\Microsoft\Oleâ€
-        ValueName = â€œEnableDCOMâ€
-        ValueData = â€œYâ€
+        Ensure = “Present”
+        Key = “HKEY_Local_Machine\SOFTWARE\Microsoft\Ole”
+        ValueName = “EnableDCOM”
+        ValueData = “Y”
         Force = $true
     }
 }
 
-ConfigMgrHealthCheck -CMInstallArguments â€œ/mp:modelsc02â€ -OutputPath .\
+ConfigMgrHealthCheck -CMInstallArguments “/mp:modelsc02” -OutputPath .\
 #Start-DscConfiguration -path .\ -verbose

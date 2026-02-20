@@ -1,4 +1,7 @@
-﻿<#
+<#
+# $SiteServer = 'SERVER'
+# $SiteCode = 'XX1'
+<#
 Object 						Class 								Property
 Application 				SMS_ApplicationLatest 				ModelName
 Package 					SMS_Package 						PackageID
@@ -23,7 +26,7 @@ Function Get-ObjectLocation
     [string]$InstanceKey
     )
     
-    $ContainerNode = Get-WmiObject -Namespace 'root/SMS/site_SS1' -ComputerName 'SCCMSERVER' -Query "SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='$InstanceKey'"
+    $ContainerNode = Get-WmiObject -Namespace 'root/SMS/site_XX1' -ComputerName 'SERVER' -Query "SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='$InstanceKey'"
     if ($ContainerNode -ne $null)
     {
         $ObjectFolder = $ContainerNode.Name
@@ -38,7 +41,7 @@ Function Get-ObjectLocation
         }
         while ($ParentFolder -eq $true)
         {
-            $ParentContainerNode = Get-WmiObject -Namespace 'root/SMS/site_SS1' -ComputerName 'SCCMSERVER' -Query "SELECT * FROM SMS_ObjectContainerNode WHERE ContainerNodeID = '$ParentContainerNodeID'"
+            $ParentContainerNode = Get-WmiObject -Namespace 'root/SMS/site_XX1' -ComputerName 'SERVER' -Query "SELECT * FROM SMS_ObjectContainerNode WHERE ContainerNodeID = '$ParentContainerNodeID'"
             $ObjectFolder =  $ParentContainerNode.Name + "\" + $ObjectFolder
             if ($ParentContainerNode.ParentContainerNodeID -eq 0)
             {
@@ -59,5 +62,5 @@ Function Get-ObjectLocation
     }
 }
 
-# $SiteCode = 'SS1'
-# $SiteServer = 'SCCMSERVER'
+# $SiteCode = 'XX1'
+# $SiteServer = 'SERVER'

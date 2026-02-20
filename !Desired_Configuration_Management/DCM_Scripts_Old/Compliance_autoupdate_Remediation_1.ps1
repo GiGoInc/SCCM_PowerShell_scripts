@@ -1,4 +1,7 @@
-﻿# "Java AutoUpdate" Remediation Script
+# "Java AutoUpdate" Remediation Script
+    }
+    }
+# "Java AutoUpdate" Remediation Script
 
 $OSArchitecture = Get-WmiObject -Class Win32_OperatingSystem | Select-Object OSArchitecture
 

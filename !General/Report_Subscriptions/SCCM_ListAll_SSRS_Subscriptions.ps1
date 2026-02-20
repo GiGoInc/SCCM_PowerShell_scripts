@@ -1,4 +1,7 @@
-﻿# Parameters
+# Parameters
+$subscriptions | select Path, report, Description, Owner, SubscriptionID, lastexecuted, Status
+Write-Host "----- $server's Subscriptions: "
+# Parameters
 #    server   - server and instance name (e.g. myserver/reportserver or myserver/reportserver_db2)
 
 Param(

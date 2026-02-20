@@ -1,4 +1,4 @@
-﻿$computer = 'W1TLET93'
+$computer = 'XXXXET93'
 $A = Get-WmiObject -Namespace "root\ccm\SoftMgmtAgent" -Class CacheInfoEx  -Impersonation 3 -ComputerName $computer
 
 

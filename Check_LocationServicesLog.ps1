@@ -1,5 +1,8 @@
-﻿$computers = 'MSPCSP01', `
-        'MSDHET02', `
+$computers = 'MSPCSP01', `
+#>
+
+$computers = 'MSPCSP01', `
+        'COMPUTER553', `
         'LAG7ET02', `
         'LAG7SP04'
 
@@ -32,10 +35,10 @@ ForEach ($Computer in $Computers)
     }
     #$Result1
     $Count = $Result2.count
-    $charCount1 = ($Result2 | Where-Object {$_ -match 'sccm1.domain.com'} | Measure-Object).Count
+    $charCount1 = ($Result2 | Where-Object {$_ -match 'SERVER.DOMAIN.COM'} | Measure-Object).Count
     Write-Host $charCount1
-    $charCount2 = ($Result2 | Where-Object {$_ -notmatch 'sccm1.domain.com'} | Measure-Object).Count
-    Write-Host "$charCount2 of $Count lines that are not 'sccm1'." -ForegroundColor Magenta
+    $charCount2 = ($Result2 | Where-Object {$_ -notmatch 'SERVER.DOMAIN.COM'} | Measure-Object).Count
+    Write-Host "$charCount2 of $Count lines that are not 'SERVER'." -ForegroundColor Magenta
 }
 
 

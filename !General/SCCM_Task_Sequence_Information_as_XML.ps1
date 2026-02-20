@@ -1,4 +1,7 @@
-﻿$TSName = "Windows 10 - MDT TS"
+$TSName = "Windows 10 - MDT TS"
+D:
+
+$TSName = "Windows 10 - MDT TS"
 $TS = $TSName.Replace(' ','_')
 $DestFile = '.\'+$TSName+'_TaskSequence.xml'
 
@@ -16,7 +19,7 @@ $DestFile = '.\'+$TSName+'_TaskSequence.xml'
 C:
 CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
+Set-Location XX1:
  
 $TS = Get-CMTaskSequence -Name $TSName | select -ExpandProperty Sequence
 Write-Output '<?xml-stylesheet type="text/xsl" href="tsDocumentorv2.xsl"?>' | Out-File $DestFile

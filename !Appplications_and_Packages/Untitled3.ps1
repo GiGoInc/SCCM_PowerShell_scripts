@@ -1,4 +1,7 @@
-﻿$AppName = 'IBM DB2'
+$AppName = 'IBM DB2'
+$output
+        }
+$AppName = 'IBM DB2'
 $App = Get-CMApplication -Name $AppName
 $output = @()
         $CheckApplicationXML = [Microsoft.ConfigurationManagement.ApplicationManagement.Serialization.SccmSerializer]::DeserializeFromString($App.SDMPackageXML, $True)

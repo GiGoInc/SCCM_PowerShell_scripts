@@ -1,4 +1,7 @@
 #========================================================================
+}
+	Write-Warning "Application '$($ApplicationName)' was not found"
+#========================================================================
 # Created on:   2013-09-13 16:43
 # Created by:   Nickolaj Andersen
 # Filename:     Remove-ApplicationDeployment.ps1

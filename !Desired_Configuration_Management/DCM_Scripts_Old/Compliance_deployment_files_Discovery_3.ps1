@@ -1,4 +1,7 @@
-﻿# "Firefox Deployment Files" Discovery Script
+# "Firefox Deployment Files" Discovery Script
+}
+        {write-host "Not-Compliant"}
+# "Firefox Deployment Files" Discovery Script
 
 IF (Test-Path 'C:\Program Files\Mozilla Firefox')
 {

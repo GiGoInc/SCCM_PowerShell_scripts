@@ -1,4 +1,7 @@
-﻿<# 
+<# 
+$Result | Format-Table Name,TotalDeleted`(MB`)
+#Write to console 
+<# 
 ********************************************************************************************************** 
 *                                                                                                        * 
 *** This Powershell Script is used to clean the CCM cache of all non persisted content                  ** 

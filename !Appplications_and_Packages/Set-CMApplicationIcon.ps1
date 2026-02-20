@@ -1,4 +1,10 @@
 <#	
+Set-Location $CurrentLocation -ErrorAction SilentlyContinue
+
+<#	
+Set-Location $CurrentLocation -ErrorAction SilentlyContinue
+
+<#	
 	.NOTES
 	===========================================================================
 	 Created with: 	SAPIEN Technologies, Inc., PowerShell Studio 2017 v5.4.145

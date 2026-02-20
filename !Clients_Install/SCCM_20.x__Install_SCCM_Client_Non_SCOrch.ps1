@@ -1,39 +1,64 @@
-ï»¿$computer = "nutxtst01"
-$SCCMshare = "\\SCCMSERVER\Packages\2012_R2_SP1_SCCM_Client"
-$destshare = "\\"+ $computer +"\C$\Windows\ccmsetup"
-
-# Test if computer is online
-$alive = Test-Connection -ComputerName $computer -Quiet
-
-If ($alive)
-{
-    # Copy CCMSETUP folder
-    Copy-Item -Path $SCCMshare -Destination $destshare -Recurse
-    start-sleep 15
-    
-    # Get Operating System Type - 32 or 64 bit
-    $System = gwmi -computer $computer Win32_ComputerSystem # normally non-terminating
-    $Type = $System.SystemType
-
-
-    # Create PSSession to computer
-    $wsman = New-PSSession -ComputerName $computer
-
-        # 64-bit OS check
-        If ($Type -eq "x64-based PC")
-        {
-            #Install x64 Client
-            Invoke-Command -ScriptBlock {Start-Process -FilePath 'C:\windows\ccmsetup\ccmsetup.exe' -ArgumentList ('/forceinstall /mp:SCCMSERVER.Domain.Com FSP=SCCMSERVER.Domain.Com SMSSLP=SCCMSERVER.Domain.Com SMSCACHESIZE=5240 PATCH=`"C:\Windows\ccmsetup\x64\ClientPatch\configmgr2012ac-sp2r2sp1-kb3135680-x64.msp`"') -Wait} -Session $wsman
-        }
-        
-        # 86-bit OS check
-        If ($Type -eq "x86-based PC")
-        {
-            #Install x86 Client
-            Invoke-Command -ScriptBlock {Start-Process -FilePath 'C:\windows\ccmsetup\ccmsetup.exe' -ArgumentList ('/forceinstall /mp:SCCMSERVER.Domain.Com FSP=SCCMSERVER.Domain.Com SMSSLP=SCCMSERVER.Domain.Com SMSCACHESIZE=5240 PATCH=`"C:\Windows\ccmsetup\i386\ClientPatch\configmgr2012ac-sp2r2sp1-kb3135680-i386.msp`"') -Wait} -Session $wsman 
-        }  
+$Computers = 'L6TQVTG3', `
 }
-else
+    Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan
+$Computers = 'L6TQVTG3', `
+'LG921PC2', `
+'LBW52R93', `
+'ALK3CC04', `
+'XXXXPSTOOLS31', `
+'L160H3X2', `
+'LAS1SP10', `
+'FLMDET03', `
+'L1TYC3X2', `
+'LB0HW433', `
+'L7GVXHL3', `
+'L5L2YMG3', `
+'MSHNSP12', `
+'LGV436Y2', `
+'LH4ZV533', `
+'LAE8SP09', `
+'LAF9SP30', `
+'LH2ZGFG3', `
+'LAF4SP21', `
+'LBLX0P13', `
+'MSGPSP16', `
+'L685Y473', `
+'LG79W433'
+
+$total = $computers.count
+$SCCMShare = "D:\Uber\!Base_Applications\19_SCCM_Client\ccmsetup"
+
+$i = 1
+Foreach ($Computer in $Computers)
 {
-    $poweredoff = $computer
+    $SDate = (GET-DATE)
+    $DestShare = "\\$computer\C$\Windows\"
+    $erroractionpreference = 'Stop'
+    Try
+    {
+        # Test if computer is online
+        $Alive = Test-Connection -ComputerName $Computer -Quiet
+        If ($Alive)
+        {
+            If (Test-Path $DestShare)
+            {
+                # Copy CCMSETUP folder
+                "$i of $total`t$Computer`tUpdating files..."
+                Copy-Item -Path $SCCMshare -Destination $DestShare -Recurse -Force
+                #Install x64 Client
+                "$i of $total`t$Computer`tInstalling client..."
+                Invoke-Command -ComputerName $Computer -ScriptBlock {Start-Process -FilePath 'C:\windows\ccmsetup\ccmsetup.exe' -ArgumentList ('/BITSPriority:FOREGROUND SMSMP=SERVER.DOMAIN.COM /forceinstall /mp:SERVER.DOMAIN.COM smssitecode=XX1 fsp=SERVER.DOMAIN.COM SMSCACHESIZE=30720') -Wait}       
+            }
+            Else { "$i of $total`t$Computer`tFailed to find $DestShare..." }    
+        }
+        Else { "$i of $total`t$Computer`tUnpingable" }
+    }
+    Catch { "$i of $total`t" + $error[0] }
+    Finally { $erroractionpreference = 'Continue' }
+    $i++
+    $EDate = (GET-DATE)
+    $Span = NEW-TIMESPAN –Start $SDate –End $EDate
+    $Min = $Span.minutes
+    $Sec = $Span.Seconds
+    Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan
 }

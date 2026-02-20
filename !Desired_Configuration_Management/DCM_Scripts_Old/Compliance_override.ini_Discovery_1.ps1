@@ -1,4 +1,7 @@
-﻿# "override.ini Content" Discovery Script
+# "override.ini Content" Discovery Script
+  }
+      {write-host "Not Compliant"}
+# "override.ini Content" Discovery Script
 
 $list = '[XRE]
 EnableProfileMigrator=false'

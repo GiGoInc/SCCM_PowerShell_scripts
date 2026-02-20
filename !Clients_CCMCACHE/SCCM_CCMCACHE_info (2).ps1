@@ -1,4 +1,7 @@
-﻿< #
+< #
+ # SIG  # End signature block
+ # aL97354fMtndLMY=
+< #
 .Synopsis
 This script is intended to be called by another script with a list of machinenames, which will add a header and build a CSV file.
 The output is required to be a single line of information per computername, so it can be passed as an object to Invoke-Parallel.ps1

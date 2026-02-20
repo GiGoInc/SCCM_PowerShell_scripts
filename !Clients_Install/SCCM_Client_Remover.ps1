@@ -1,11 +1,14 @@
-﻿$object =$NULL
+$object =$NULL
+}
+    }
+$object =$NULL
 $object = @{}
 
 $File = Get-Content 'C:\!Projects\SCOrch_Collection_Cleanup\Results.txt'
 
 #Populate the below Variables with dyamic data from your orchestrator workflow or set it statically in the code.
-$SCCMServer = "SCCMSERVER"
-$SmsSiteCode = "SS1"
+$SCCMServer = "SERVER"
+$SmsSiteCode = "XX1"
 
 ForEach ($line in $File)
 {

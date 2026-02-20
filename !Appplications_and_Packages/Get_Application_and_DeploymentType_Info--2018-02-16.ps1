@@ -1,4 +1,7 @@
-ï»¿# Add Required Type Libraries
+# Add Required Type Libraries
+#>
+
+# Add Required Type Libraries
     [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ManagementProvider.dll")) | Out-Null
     [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.dll")) | Out-Null
     [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.Extender.dll")) | Out-Null
@@ -17,11 +20,11 @@
 
 $SSDate = Get-Date
 . "C:\Scripts\!Modules\GoGo_SCCM_Module.ps1"  
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
-$SiteServer = "SCCMSERVER"
-$SiteCode = "SS1"
+$SiteServer = "SERVER"
+$SiteCode = "XX1"
 
 # $AppName = 'Five9 Softphone'
 # Get-CMApplication -ApplicationName $AppName
@@ -134,7 +137,7 @@ $ResultFiles = Get-ChildItem $Folder -Recurse -Depth 0
 
 ######################################################################################################
 $SEDate = (GET-DATE)
-$Span = NEW-TIMESPAN â€“Start $SSDate â€“End $SEDate
+$Span = NEW-TIMESPAN –Start $SSDate –End $SEDate
 $Min = $Span.minutes
 $Sec = $Span.Seconds
 Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`r`n" -ForegroundColor Cyan
@@ -211,10 +214,10 @@ $oOperands = select-object Microsoft.ConfigurationManagement.DesiredConfiguratio
 [string]$sApplicationDestription   = "Fake App Description"
 [string]$sApplicationVersion       = "1.0"
 [string]$sApplicationPublisher     = "Fake Inc"
-[string]$ApplicationOwner          = "user1"
+[string]$ApplicationOwner          = "SUPERUSER"
  
-[string]$sSCCMServerName           = "SCCMSERVER"
-[string]$sSCCMUsername             = "user1"
+[string]$sSCCMServerName           = "SERVER"
+[string]$sSCCMUsername             = "SUPERUSER"
 [string]$sSCCMPassword             = "SCCMPassword"
  
 #####################################################

@@ -1,4 +1,7 @@
-ï»¿ function Invoke-SccmBaselineEvaluation
+ function Invoke-SccmBaselineEvaluation
+# & Invoke-SccmBaselineEvaluation RemoteComputer
+# Clear-Host
+ function Invoke-SccmBaselineEvaluation
 {
     param (
         [parameter(Mandatory = $true)]
@@ -15,12 +18,12 @@
 # 1. Replace your SCCM server name (MySccmServer) and SCCM Site Code (LAB) with your own!
 # 2. [Optional] Replace the collection ID (SMS00001) with a collection of your choosing
 
-$CompList = Get-WmiObject â€“ComputerName SCCMSERVER â€“Namespace root\sms\site_SS1 â€“Class SMS_CollectionMember_a â€“Filter "CollectionID = 'SS100695'" -Property Name,ResourceType
+$CompList = Get-WmiObject –ComputerName SERVER –Namespace root\sms\site_XX1 –Class SMS_CollectionMember_a –Filter "CollectionID = 'XX100695'" -Property Name,ResourceType
 # For each computer in the list, filter it for ResourceType 5 (computer resources), and then invoke the function above, passing in the computer name
 $CompList | ? { $_.ResourceType -eq 5 } | % { Invoke-SccmBaselineEvaluation $_.Name }
 
 
- # 'Test - Isaac's VMs' = SS100176
+ # 'Test - SuperUser's VMs' = XX100176
 
 
 

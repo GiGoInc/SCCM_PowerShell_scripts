@@ -1,4 +1,7 @@
-ï»¿$CurrentDirectory = 'D:\Powershell\!SCCM_PS_scripts\!DPs'
+$CurrentDirectory = 'D:\Powershell\!SCCM_PS_scripts\!DPs'
+    D:
+# Go back to local drive
+$CurrentDirectory = 'D:\Powershell\!SCCM_PS_scripts\!DPs'
 $ADateStart = $(get-date -format yyyy-MM-dd) + '_' + $(get-date -UFormat %R).Replace(':', '.')
 
 $Log = "$CurrentDirectory\$ADateStart--DP_ContentStatus_Issues.csv"
@@ -10,8 +13,8 @@ $DestFile = "$CurrentDirectory\$ADateStart--SCCM_Item_Information.csv"
 C:
 CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 clear-host
 
@@ -124,7 +127,7 @@ Function Get-DPContent
 {
     'PackageID,DistributionPoint' | Set-Content $Log
     $Query = 'SELECT * FROM SMS_PackageStatusDistPointsSummarizer WHERE State = 2 OR State = 3'
-    $ContentIssues = Get-WmiObject -ComputerName 'SCCMSERVER' -Namespace "ROOT\SMS\site_SS1" -Query $query |
+    $ContentIssues = Get-WmiObject -ComputerName 'SERVER' -Namespace "ROOT\SMS\site_XX1" -Query $query |
         Select-Object packageID, @{n = 'DistributionPoint'; e = {$_.ServerNALPath.Split('\')[2]}}, @{n = 'PackageType'; e = {$_.PackageType}}
     # | Format-Table -AutoSize
 
@@ -141,7 +144,7 @@ Function Get-DPContent
 Function RunTime
 {
     $End = (GET-DATE)
-    $TS = NEW-TIMESPAN â€“Start $Start â€“End $End
+    $TS = NEW-TIMESPAN –Start $Start –End $End
     $Min = $TS.minutes
     $Sec = $TS.Seconds
     Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Magenta
@@ -206,7 +209,7 @@ Function RunTime
 
 # Total time to run script
     $EndScript = (GET-DATE)
-    $TS = NEW-TIMESPAN â€“Start $StartScript â€“End $EndScript
+    $TS = NEW-TIMESPAN –Start $StartScript –End $EndScript
     $MinS = $TS.minutes
     $SecS = $TS.Seconds
     Write-Host "`n$(Get-Date)`tScript ran for $minS minutes and $secS seconds`n`n" -ForegroundColor Magenta

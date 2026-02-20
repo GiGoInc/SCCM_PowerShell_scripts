@@ -1,4 +1,7 @@
-﻿<#
+<#
+}
+    }
+<#
 .Synopsis
    Resends all failed or retrying packages to a specified Distribution Point.
 .EXAMPLE

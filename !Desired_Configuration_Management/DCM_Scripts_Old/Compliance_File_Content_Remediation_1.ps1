@@ -1,4 +1,7 @@
-﻿# Compliance File Content - Remediation
+# Compliance File Content - Remediation
+}catch{$_}
+$Text1 | Out-file $FilePath2 -Encoding UTF8 -Force
+# Compliance File Content - Remediation
 
 $Path1 = "$env:windir\System32\Macromed\Flash"
 $Path2 = "$env:windir\SYSWOW64\Macromed\Flash"

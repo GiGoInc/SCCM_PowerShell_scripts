@@ -1,8 +1,11 @@
 Function Get-PackageID
+#>
+
+Function Get-PackageID
 {
-$SiteCode = "SS1"
-$SiteServer = "SCCMSERVER"
-$Application = "SalesPro Base Install for TS"
+$SiteCode = "XX1"
+$SiteServer = "SERVER"
+$Application = "APP1 Base Install for TS"
 
    Try{
         $APPQuery = Get-WmiObject -Namespace "Root\SMS\Site_$SiteCode" -Class SMS_ApplicationLatest `
@@ -25,9 +28,9 @@ $Application = "SalesPro Base Install for TS"
 Get-PackageID
 
 
-<#	Encore Teller for TS - Test
-SalesPro Base Install for TS	SS1001CF
-Encore Teller for TS - Test	SS100241
+<#	APPLICATION01 APP2 for TS - Test
+APP1 Base Install for TS	XX1001CF
+APPLICATION01 APP2 for TS - Test	XX100241
 PS E:\packages\powershell_scripts>
 
 #>

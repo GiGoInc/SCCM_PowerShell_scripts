@@ -1,10 +1,16 @@
-﻿$computer = '6djs182'
+$computer = 'PC1'
+$Result | Select-Object -ExpandProperty SiteSystems -Unique
+
+$computer = 'PC1'
+$Result | Select-Object -ExpandProperty SiteSystems -Unique
+
+$computer = 'PC1'
 
 
-$SCCMServer = 'sccm1'
+$SCCMServer = 'SERVER'
 $WMIParams = @{
     ComputerName = $SCCMServer
-    Namespace    = 'root\SMS\site_SS1'
+    Namespace    = 'root\SMS\site_XX1'
 }
 
 

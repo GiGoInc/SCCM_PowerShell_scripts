@@ -1,4 +1,10 @@
-﻿<#
+<#
+    } 
+        Else {Write-Warning "No results were returned!"}
+<#
+    } 
+        Else {Write-Warning "No results were returned!"}
+<#
 
 .SYNOPSIS
     Checks for failed or incomplete package distributions in ConfigMgr
@@ -65,19 +71,19 @@
     param
         (
         [Parameter(Mandatory=$False)]
-            [string]$SiteCode = 'SS1',
+            [string]$SiteCode = 'XX1',
         [Parameter(Mandatory=$False)]
-            [string]$SiteServer = 'SCCMSERVER',
+            [string]$SiteServer = 'SERVER',
         [parameter(Mandatory=$False)]
             [switch]$SendEmail,
         [parameter(Mandatory=$False)]
             [switch]$GridView,
         [parameter(Mandatory=$False)]
-            [string]$From = "no_reply@corp.com",
+            [string]$From = "no_reply@DOMAIN.COM",
         [parameter(Mandatory=$False)]
-            [string]$To = "user_name@corp.com",
+            [string]$To = "SuperUser.LASTNAME@DOMAIN.COM",
         [parameter(Mandatory=$False)]
-            [string]$SmtpServer = "CAS1.Domain.Com",
+            [string]$SmtpServer = "XXXXCAS1.DOMAIN.COM",
         [parameter(Mandatory=$False)]
             [string]$Subject = "SCCM DP Report"
         )

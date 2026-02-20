@@ -1,12 +1,17 @@
-﻿Import-Module BitsTransfer
+Import-Module BitsTransfer
+}
+    }
+Import-Module BitsTransfer
 
-$Computers = 'MS1TSP13'
+$Computers = 'COMPUTER528'
 
 
-$Log = "\\Computer1\D$\Uber\!Base_Applications\19_SCCM_Client"
+$Log = "D:\19_SCCM_Client"
+$Source = '\\ILVM02\D$\19_SCCM_Client'
+
 ForEach($computer in $computers)
 {
-    If(test-connection $computer -count 1 -quiet -BufferSize 16)
+    If(Test-Connection $computer -count 1 -quiet -BufferSize 16)
     {
         $System = gwmi -computer $computer Win32_ComputerSystem # normally non-terminating
         $Type = $System.SystemType
@@ -18,13 +23,13 @@ ForEach($computer in $computers)
 	    # 64-bit OS check
 	    If ($Type -eq "x64-based PC")
 	    {
-            $Source1 = '\\Computer1\D$\Uber\!Base_Applications\19_SCCM_Client\ccmsetup_x64\*.*'
+            $Source1 = "$Source\ccmsetup_x64\*.*"
             Write-Host "$Computer`t`tCopying tools..." -ForegroundColor Magenta
             Start-BitsTransfer $Source1 $Dest
         }
         Else
         {
-            $Source1 = '\\Computer1\D$\Uber\!Base_Applications\19_SCCM_Client\ccmsetup_x86\*.*'
+            $Source1 = "$Source\ccmsetup_x64\ccmsetup_x86\*.*"
             Write-Host "$Computer`t`tCopying tools..." -ForegroundColor Magenta
             Start-BitsTransfer $Source1 $Dest
         }

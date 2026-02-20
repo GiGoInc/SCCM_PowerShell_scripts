@@ -1,4 +1,7 @@
-﻿< #
+< #
+ # SIG  # End signature block
+ # d6mpyOeNoouduQw=
+< #
 .Synopsis
 This script is intended to be called by another script with a list of machinenames, which will add a header and build a CSV file.
 The output is required to be a single line of information per computername, so it can be passed as an object to Invoke-Parallel.ps1
@@ -8,7 +11,7 @@ PC Name,Online,User Name,Operating System,OS Type,Serial,Hard Drive Name,Firmwar
 
 .Example
 PS C:\> .\CCMCACHE_clear_and_log--bsub.ps1 -computer 'Computer1'
-	Computer1,Yes,Computer1,DOMAIN\user1,S-1-5-21-3460299977-1648588825-1751037255-95761,09/29/2015 08:22:08,True
+	Computer1,Yes,Computer1,DOMAIN\SUPERUSER,S-1-5-21-3460299977-1648588825-1751037255-95761,09/29/2015 08:22:08,True
  #>
 [CmdletBinding()]
 param(

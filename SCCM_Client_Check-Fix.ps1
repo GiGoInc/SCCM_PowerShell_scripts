@@ -1,4 +1,7 @@
 ###########################################################################
+}
+	$path ccmsetup.exe /mp:$mp_address SMSSITECODE=$site_code	
+###########################################################################
 ##           SCCM Client Health check and Troubleshooting Script					
 ##           Author: Lokesh Agarwal
 ##           Date: 23-08-2017
@@ -6,8 +9,8 @@
 ###########################################################################
 ############### Fill the details ##########################################
 $path = "C:\Windows\ccmsetup"
-$mp_address = "sccm1.domain.com"
-$site_code = "SS1"
+$mp_address = "SERVER.DOMAIN.COM"
+$site_code = "XX1"
 ############################### Main Code ####################################
 $machinename = hostname
 $SMSCli = [wmiclass] "root\ccm:sms_client"

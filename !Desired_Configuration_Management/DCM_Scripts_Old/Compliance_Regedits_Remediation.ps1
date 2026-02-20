@@ -1,4 +1,7 @@
-﻿# "Registry" Remediation Script
+# "Registry" Remediation Script
+}
+    catch{$_.Exception.Message}
+# "Registry" Remediation Script
 
 $OSArchitecture = Get-WmiObject -Class Win32_OperatingSystem | Select-Object OSArchitecture
 

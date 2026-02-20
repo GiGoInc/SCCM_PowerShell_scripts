@@ -1,4 +1,7 @@
 # Set-CMDeploymentDeadlines script
+}
+    }
+# Set-CMDeploymentDeadlines script
 #   J. Greg Mackinnon, 2014-02-07
 #   Updates all existing software update deployments with a new enforcement deadline.
 #   Requires specification of: 

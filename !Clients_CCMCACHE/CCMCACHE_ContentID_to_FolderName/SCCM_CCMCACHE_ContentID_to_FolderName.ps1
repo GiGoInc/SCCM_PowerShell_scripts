@@ -1,4 +1,7 @@
-﻿<#
+<#
+$output | Sort-Object | Add-Content 'D:\Powershell\!SCCM_PS_scripts\!Clients_CCMCACHE\CCMCACHE_ContentID_to_FolderName\CCMCACHE_ContentID_to_FolderName---Results.txt'
+$output | Sort-Object
+<#
     Add verbiage for modified date
     Add Software updates
     Add color code for non-matches
@@ -33,9 +36,9 @@ ORDER BY UI.CI_ID Asc
 $CIDs = 'D:\Powershell\!SCCM_PS_scripts\!Clients_CCMCACHE\CCMCACHE_ContentID_to_FolderName\ContentIDs.txt'
 
 # Match the VLAN to the SubnetChoice in the IPAM 'sections'
-$GetRowInfo_Server = "sccmserverdb"
-$GetRowInfo_Instance = "sccmserverdb"
-$GetRowInfo_DB  = 'CM_SS1'
+$GetRowInfo_Server = "SERVER"
+$GetRowInfo_Instance = "SERVER"
+$GetRowInfo_DB  = 'CM_XX1'
 $GetRowInfo_Table = 'CI_ContentPackages'
 $GetRowInfo_Query = "SELECT LP.DisplayName,CP.CI_ID,CPS.PkgID,CPS.ContentSubFolder FROM CI_ContentPackages CPS INNER JOIN CIContentPackage CP ON CPS.PkgID = CP.PkgID LEFT OUTER JOIN CI_LocalizedProperties LP ON CP.CI_ID = LP.CI_ID ORDER BY LP.LocaleID DESC"
 

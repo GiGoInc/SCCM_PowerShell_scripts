@@ -1,4 +1,7 @@
-﻿Function Redistribute-Content {
+Function Redistribute-Content {
+Redistribute-Content -SiteCode XX1
+
+Function Redistribute-Content {
     [CMDletBinding()]
     param (
     [Parameter(Mandatory=$True)]
@@ -21,4 +24,4 @@
 }
 
 
-Redistribute-Content -SiteCode SS1
+Redistribute-Content -SiteCode XX1

@@ -1,4 +1,7 @@
-﻿<#
+<#
+}
+	Else { Write-Warning "No results were returned!" }
+<#
 .SYNOPSIS
  	<PS to check all or dedicate DP Package Distributionsstate WMI and Content Lib State>
 .DESCRIPTION

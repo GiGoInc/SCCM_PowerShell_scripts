@@ -1,4 +1,7 @@
-﻿Function Get-SCCMUserCollectionDeployment
+Function Get-SCCMUserCollectionDeployment
+########################################
+$Output2 | Select -Unique
+Function Get-SCCMUserCollectionDeployment
 {
 <#
     .SYNOPSIS
@@ -158,12 +161,12 @@
 }
 CLS
 
-$UserID = 'LPHILLI'
+$UserID = 'LUSER1LI'
 ########################################
 # SCCM Module - Check
 Write-Host "Checking via SCCM Module..." -ForegroundColor Magenta
     $Output1 = @()
-    $AN = (Get-SCCMUserCollectionDeployment -UserName "$UserID" -SiteCode 'SS1' -ComputerName 'sccmserver' | sort TargetName) 
+    $AN = (Get-SCCMUserCollectionDeployment -UserName "$UserID" -SiteCode 'XX1' -ComputerName 'SERVER' | sort TargetName) 
     ForEach ($App in $AN)
     {
         If ($App.CollectionName -match 'SDG*')
@@ -185,15 +188,15 @@ Write-Host "Checking via SCCM Module..." -ForegroundColor Magenta
                   FROM v_CollectionExpandedUserMembers  cm
                   INNER JOIN v_R_User  ud ON ud.ResourceID= cm.UserItemKey
                   INNER JOIN v_DeploymentSummary ds ON ds.CollectionID = cm.SiteID
-                  LEFT JOIN v_AppIntentAssetData  ad ON ad.UserName = 'Domain\$UserID' AND ad.AssignmentID = ds.AssignmentID
+                  LEFT JOIN v_AppIntentAssetData  ad ON ad.UserName = 'DOMAIN\$UserID' AND ad.AssignmentID = ds.AssignmentID
                   INNER JOIN v_CIAssignment  cia ON cia.AssignmentID = ds.AssignmentID
-                  WHERE ud.Unique_User_Name0 = 'Domain\$UserID' AND ds.FeatureType = 1
+                  WHERE ud.Unique_User_Name0 = 'DOMAIN\$UserID' AND ds.FeatureType = 1
                   order by SoftwareName"
 
-          $DB = 'CM_SS1'
-      $Server = 'sccmserverdb'
+          $DB = 'CM_XX1'
+      $Server = 'SERVER'
        $Query = $SQL_Query
-    $Instance = 'sccmserverdb'
+    $Instance = 'SERVER'
     # Run SQl
     $QueryInvoke = Invoke-Sqlcmd -AbortOnError `
         -ConnectionTimeout 60 `

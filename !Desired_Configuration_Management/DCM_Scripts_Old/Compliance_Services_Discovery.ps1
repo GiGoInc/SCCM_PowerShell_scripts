@@ -1,4 +1,7 @@
-﻿# "Check Service and state" Discovery Script
+# "Check Service and state" Discovery Script
+Catch{$_.Exception.Message}
+}
+# "Check Service and state" Discovery Script
 
 $DN1 = 'CUDeviceManager'
 $Name1 = 'CUDeviceManager'

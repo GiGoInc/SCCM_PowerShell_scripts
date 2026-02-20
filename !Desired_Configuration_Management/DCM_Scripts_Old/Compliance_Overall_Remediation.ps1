@@ -1,4 +1,7 @@
-﻿# "Overall/Combined Checks" Remediation Script
+# "Overall/Combined Checks" Remediation Script
+}
+    catch{$_.Exception.Message}
+# "Overall/Combined Checks" Remediation Script
 
 $OSArchitecture = Get-WmiObject -Class Win32_OperatingSystem | Select-Object OSArchitecture
 $ErrorActionPreference = "Stop"

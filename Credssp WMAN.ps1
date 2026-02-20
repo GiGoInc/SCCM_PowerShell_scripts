@@ -1,12 +1,15 @@
-﻿# Server Actions
+# Server Actions
+    Test-WSMan -ComputerName $Computer -Authentication Credssp -Credential $cred
+    $Computer = 'SERVER.DOMAIN.COM'
+# Server Actions
     Enable-PSRemoting -Force
     Enable-WSManCredSSP -Role Server -Force
     Restart-Service -Name WinRM -Force
 
 
 # Client Actions
-    # Enable-WSManCredSSP -Role Client -DelegateComputer *.domain.com -Force
-    Enable-WSManCredSSP  -Role Client –DelegateComputer $Computer -Force
+    # Enable-WSManCredSSP -Role Client -DelegateComputer *.DOMAIN.COM -Force
+    Enable-WSManCredSSP  -Role Client �DelegateComputer $Computer -Force
 
 
 
@@ -21,25 +24,25 @@
 # RUN THIS FROM CLIENT
     # Create encrypted password
     $Pfile = "D:\Powershell\securestring.txt"
-    $username = "domain\user1"
+    $username = "DOMAIN\SUPERUSER"
     Read-Host -AsSecureString | ConvertFrom-SecureString | Out-File $Pfile
 
 
 
 # USE CRED
     $Pfile = "D:\Powershell\securestring.txt"
-    $username = "domain\user1"
+    $username = "DOMAIN\SUPERUSER"
     $password = cat $Pfile | convertto-securestring
     $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $password
 # RUN COMMAND 
-    $Computer = 'scorch.domain.com'
+    $Computer = 'SERVER.DOMAIN.COM'
     Test-WSMan -ComputerName $Computer -Authentication CredSSP -Credential $cred
 
-    $Computer = 'scorch2.domain.com'
+    $Computer = 'SERVER.DOMAIN.COM'
     Test-WSMan -ComputerName $Computer -Authentication CredSSP -Credential $cred
     
-    $Computer = 'scorch01.domain.com'
+    $Computer = 'SERVER.DOMAIN.COM'
     Test-WSMan -ComputerName $Computer -Authentication Credssp -Credential $cred
     
-    $Computer = 'scorch02.domain.com'
+    $Computer = 'SERVER.DOMAIN.COM'
     Test-WSMan -ComputerName $Computer -Authentication Credssp -Credential $cred

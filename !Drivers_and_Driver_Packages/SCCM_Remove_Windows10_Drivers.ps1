@@ -1,9 +1,12 @@
-ï»¿# Import Module
+# Import Module
+#>
+    x64
+# Import Module
     $CMModulepath = $Env:SMS_ADMIN_UI_PATH.ToString().Substring(0, $Env:SMS_ADMIN_UI_PATH.Length - 5) + "\ConfigurationManager.psd1"
     Import-Module $CMModulepath -force
 
 # Change the site Code
-    CD SS1:
+    CD XX1:
 
 # Log File
     $Log = 'D:\Powershell\!SCCM_PS_scripts\!Drivers_and_Driver_Packages\SCCM_Remove_Windows10_Drivers--Results.csv'
@@ -28,7 +31,7 @@ ForEach ($C in $Categories)
     # Get-CMDriver  | Where-Object {(($_.LocalizedCategoryInstanceNames -like $C) -and ($_.ContentSourcePath -like 'E7440'))} #| Remove-CMDriver -Force
     Get-CMDriver  | Where-Object {($_.LocalizedCategoryInstanceNames -like $C)} | Remove-CMDriver -Force
     $EDate = (GET-DATE)
-    $Span = NEW-TIMESPAN â€“Start $SDate â€“End $EDate
+    $Span = NEW-TIMESPAN –Start $SDate –End $EDate
     $Min = $Span.minutes
     $Sec = $Span.Seconds
     Write-host "Ending... $EDate" -foregroundcolor green

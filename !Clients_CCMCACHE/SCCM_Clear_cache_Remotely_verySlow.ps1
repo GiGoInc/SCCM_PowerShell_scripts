@@ -1,4 +1,7 @@
-﻿$computer = 'W1TLET93'
+$computer = 'XXXXET93'
+#>
+[wmi]'ROOT\ccm\SoftMgmtAgent:CacheInfoEx.CacheId="a7c7c9d2-9d10-4b3e-9ab3-8e7d436e8c54"' | remove-wmiobject
+$computer = 'XXXXET93'
 $A = Get-WmiObject -Namespace "root\ccm\SoftMgmtAgent" -Class CacheInfoEx  -Impersonation 3 -ComputerName $computer
 
 
@@ -27,7 +30,7 @@ $cacheinfo.GetCacheElements()  | foreach {$cacheInfo.DeleteCacheElement($_.Cache
 ###### Another script
 ([wmi]"ROOT\ccm:SMS_Client=@").ClientVersion
 ([wmiclass]"ROOT\ccm:SMS_Client").GetAssignedSite().sSiteCode
-([wmi]"ROOT\ccm:SMS_Authority.Name='SMS:SS1'").CurrentManagementPoint
+([wmi]"ROOT\ccm:SMS_Authority.Name='SMS:XX1'").CurrentManagementPoint
 $a = get-wmiobject -query "SELECT * FROM CacheInfoEx" -namespace "\\$computer\ROOT\ccm\SoftMgmtAgent"
 ForEach ($item in $list)
 {

@@ -1,11 +1,14 @@
-﻿#Get current working paths
+#Get current working paths
+}
+    #Add-CMDeviceCollectionDirectMembershipRule -CollectionId XX100642 -ResourceID 16795598
+#Get current working paths
 $CurrentDirectory = split-path $MyInvocation.MyCommand.Path
 
 C:
 CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 
 $File = Get-Content ("$CurrentDirectory\!Direct_PC_addition_to_Device_Collection_PCList.txt")
@@ -27,5 +30,5 @@ ForEach ($item in $File)
     #                    }
     #Write-Output "$Comm"
     #Add-CMDeviceCollectionDirectMembershipRule @DeploymentHash
-    #Add-CMDeviceCollectionDirectMembershipRule -CollectionId SS100642 -ResourceID 16795598
+    #Add-CMDeviceCollectionDirectMembershipRule -CollectionId XX100642 -ResourceID 16795598
 }

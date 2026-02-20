@@ -1,12 +1,15 @@
-﻿# Load Modules
+# Load Modules
+
+# Join-Object -Left $L -Right $R -LeftJoinProperty Name -RightJoinProperty Manager -Type OnlyIfInBoth -RightProperties Department
+# Load Modules
     .'C:\Scripts\!Modules\Join-Object.ps1'
 
     # Load SCCM Module
     C:
     CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
     Import-Module ".\ConfigurationManager.psd1"
-    Set-Location SS1:
-    CD SS1:
+    Set-Location XX1:
+    CD XX1:
 
 
 ###########################################################################################################
@@ -23,7 +26,7 @@
 # Variables
     $AvailableTime = Get-Date -Format "MM/dd/yyyy hh:mm tt"      
     $Schedule1 = New-CMSchedule -Start "$AvailableTime" -RecurCount 14 -RecurInterval Days
-     $Comments = "Created by Automated PowerShell script - $AvailableTime - Isaac"
+     $Comments = "Created by Automated PowerShell script - $AvailableTime - SuperUser"
 
 # Get Deploy dates
     $DeployDates = @()

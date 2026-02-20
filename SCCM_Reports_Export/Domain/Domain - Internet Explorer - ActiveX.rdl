@@ -1,0 +1,2840 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_">
+      <DataSourceReference>/ConfigMgr_DC1/{5C6358F2-4BB6-4a1b-A16E-8D96795D8602}</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>11111111-1111-1111-1111-111111111111</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <CommandText>/* DataSet 1  */
+SELECT 
+      ClientInfo.Name As MachineName
+      ,IESystemInfo.[IEVer0] AS SystemIEVer
+      ,IEURLInfo.[Domain0] AS Domain
+      ,IEURLInfo.[URL0] AS URL
+      ,IEURLInfo.[NumberOfVisits0] AS NumberOfVisits
+      ,IEURLInfo.[Zone0] AS Zone
+      ,ActiveXInfo
+      ,IEURLInfo.[DocMode0] AS DocMode
+      ,IEURLInfo.[DocModeReason0] AS DocModeReason
+      ,IEURLInfo.[BrowserStateReason0] AS BrowserStateReason
+      ,IEURLInfo.[HangCount0]
+      ,IEURLInfo.[CrashCount0]
+  FROM
+      (
+	  SELECT IEURLInfo.[URL0], IEURLInfo.[ResourceID], IEURLInfo.[Domain0], IEURLInfo.[NumberOfVisits0], IEURLInfo.[Zone0], 
+	  IEURLInfo.[DocMode0], IEURLInfo.[DocModeReason0], IEURLInfo.[BrowserStateReason0], IEURLInfo.[HangCount0], IEURLInfo.[CrashCount0],
+	  Split.a.value('.', 'VARCHAR(100)') AS ActiveXInfo   FROM  
+	  (SELECT [URL0],[ResourceID],  [Domain0], [NumberOfVisits0], [Zone0], [DocMode0], [DocModeReason0], 
+	  [BrowserStateReason0], [HangCount0], [CrashCount0], CAST ('&lt;M&gt;' + REPLACE([ActiveXGUID0], ', ', '&lt;/M&gt;&lt;M&gt;') + '&lt;/M&gt;' AS XML) AS String
+		FROM  [CM_DC1].[dbo].[v_GS_IEURLINFO]) AS IEURLInfo 	
+		CROSS APPLY String.nodes ('/M') AS Split(a)  
+		) AS IEURLInfo,
+  [CM_DC1].[dbo].[v_ClientMachines] AS ClientInfo,
+  [CM_DC1].[dbo].[v_GS_IESYSTEMINFO] AS IESystemInfo,
+  [CM_DC1].[dbo].[v_GS_IECOUNTINFO] AS IECountInfo
+    Where  IEURLInfo.ResourceID = ClientInfo.ResourceID 
+	AND IESystemInfo.ResourceID = ClientInfo.ResourceID
+        AND IECountInfo.ResourceID = ClientInfo.ResourceID
+    order by IESystemInfo.ResourceID ASC, IEURLInfo.[CrashCount0] DESC</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="MachineName">
+          <DataField>MachineName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SystemIEVer">
+          <DataField>SystemIEVer</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Domain">
+          <DataField>Domain</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="URL">
+          <DataField>URL</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="NumberOfVisits">
+          <DataField>NumberOfVisits</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Zone">
+          <DataField>Zone</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="ActiveXInfo">
+          <DataField>ActiveXInfo</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="DocMode">
+          <DataField>DocMode</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="DocModeReason">
+          <DataField>DocModeReason</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="BrowserStateReason">
+          <DataField>BrowserStateReason</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="HangCount0">
+          <DataField>HangCount0</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="CrashCount0">
+          <DataField>CrashCount0</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="Tablix1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.61818in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.23636in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.71818in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.60909in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.49091in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.27273in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.60909in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.59091in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.66364in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Domain</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#622424</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#4e0000</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox3">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>URL</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox3</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#622424</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#4e0000</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox5">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Number Of Visits</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#622424</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#4e0000</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox7">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Zone</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox7</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#622424</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#4e0000</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox9">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>System IEVer</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox9</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#622424</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#4e0000</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox11">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Doc Mode</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox11</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#622424</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#4e0000</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox13">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Doc Mode Reason</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox13</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#622424</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#4e0000</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox15">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Browser State Reason</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox15</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#622424</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#4e0000</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox17">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Hang Count</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox17</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#622424</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#4e0000</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox19">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Crash Count</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox19</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#622424</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#4e0000</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Domain0">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Domain.Value</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Domain0</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="URL0">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!URL.Value</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>URL0</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="NumberOfVisits0">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!NumberOfVisits.Value</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>NumberOfVisits0</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Zone0">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Switch( 
+Fields!Zone.value= -1,"Invalid", 
+Fields!Zone.value= 0,"Local Machine", 
+Fields!Zone.value= 1,"Local Intranet", 
+Fields!Zone.value= 2,"Trusted Sites", 
+Fields!Zone.value= 3,"Internet", 
+Fields!Zone.value= 4,"Restricted Sites Zone"
+)</Value>
+                                  <ToolTip>=Switch( 
+Fields!Zone.value= -1,"Invalid Zone", 
+Fields!Zone.value= 0,"Local Machine", 
+Fields!Zone.value= 1,"Local intranet zone. The Local intranet zone includes all sites inside an organization's firewall (for computers connected to a local network). ", 
+Fields!Zone.value= 2,"Trusted sites zone. The Trusted sites zone can include all Internet sites that you know are trusted. For example, the Trusted sites zone might contain corporate subsidiaries' sites or the site of a trusted business partner.", 
+Fields!Zone.value= 3,"Internet zone. The Internet zone includes all sites on the Internet that are not in the Trusted sites or Restricted sites zones.", 
+Fields!Zone.value= 4,"Restricted sites zone. The Restricted sites zone can include all sites that you do not trust."
+)</ToolTip>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Zone0</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="SystemIEVer">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!SystemIEVer.Value</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>SystemIEVer</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DocMode0">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!DocMode.Value</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>DocMode0</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DocModeReason0">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Switch( 
+Fields!DocModeReason.Value = 0,"Uninitialized",
+Fields!DocModeReason.Value = 12,"Webplatform version supplied", 
+Fields!DocModeReason.Value = 3,"FEATURE_DOCUMENT_COMPATIBLE_MODE fck", 
+Fields!DocModeReason.Value = 4,"X-UA-Compatible meta tag", 
+Fields!DocModeReason.Value = 5,"X-UA-Compatible HTTP header", 
+Fields!DocModeReason.Value = 6,"CVList-imposed mode", 
+Fields!DocModeReason.Value = 7,"Native XML Parsing Mode", 
+Fields!DocModeReason.Value = 8,"Toplevel QME FCK was set",
+Fields!DocModeReason.Value = 9,"Due to page's doctype and the browser mode", 
+Fields!DocModeReason.Value = 2,"Session document mode supplied", 
+Fields!DocModeReason.Value = 13,"Top level image file is set", 
+Fields!DocModeReason.Value = 14,"Feed viewer mode determines doc mode"
+)</Value>
+                                  <ToolTip>=Switch( 
+Fields!DocModeReason.Value = 0,"Uninitialized",
+Fields!DocModeReason.Value = 12,"Webplatform version supplied; therefore align doc mode to webplatform version", 
+Fields!DocModeReason.Value = 3,"FEATURE_DOCUMENT_COMPATIBLE_MODE fck", 
+Fields!DocModeReason.Value = 4,"X-UA-Compatible meta tag", 
+Fields!DocModeReason.Value = 5,"X-UA-Compatible HTTP header", 
+Fields!DocModeReason.Value = 6,"CVList-imposed mode", 
+Fields!DocModeReason.Value = 7,"Native XML Parsing Mode", 
+Fields!DocModeReason.Value = 8,"Toplevel QME FCK was set, and mode was determined by it",
+Fields!DocModeReason.Value = 9,"Document mode is the result of the page's doctype and the browser mode", 
+Fields!DocModeReason.Value = 2,"Session document mode supplied", 
+Fields!DocModeReason.Value = 13,"Top level image file is set, and mode was determined by it", 
+Fields!DocModeReason.Value = 14,"Feed viewer mode determines doc mode"
+)</ToolTip>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>DocModeReason0</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="BrowserStateReason0">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Switch( 
+Fields!BrowserStateReason.Value = 0,"Unitialized", 
+Fields!BrowserStateReason.Value = 1,"Intranet sites in Compatibility View checked",
+Fields!BrowserStateReason.Value = 2,"Site is on Group Policy CV list", 
+Fields!BrowserStateReason.Value = 3,"Added to the CV list by the user", 
+Fields!BrowserStateReason.Value = 4,"X-UA-Compatible applied to page",
+Fields!BrowserStateReason.Value = 5,"Set by the developer toolbar", 
+Fields!BrowserStateReason.Value = 6,"FEATURE_BROWSER_EMULATION fck", 
+Fields!BrowserStateReason.Value = 7,"Site on MS CV list  ", 
+Fields!BrowserStateReason.Value = 8,"Site on Quirks Group Policy list", 
+Fields!BrowserStateReason.Value = 10,"WebPlatform version supplied",
+Fields!BrowserStateReason.Value = 11,"Browser Default"
+)</Value>
+                                  <ToolTip>=Switch( 
+Fields!BrowserStateReason.Value = 0,"Unitialized", 
+Fields!BrowserStateReason.Value = 1,"Display intranet sites in Compatibility View", 
+Fields!BrowserStateReason.Value = 2,"Site is on Group Policy CV list", 
+Fields!BrowserStateReason.Value = 3,"This site has been added to the CV list by the user", 
+Fields!BrowserStateReason.Value = 4,"X-UA-Compatible applied to page",
+Fields!BrowserStateReason.Value = 5,"Set by the developer toolbar", 
+Fields!BrowserStateReason.Value = 6,"FEATURE_BROWSER_EMULATION fck", 
+Fields!BrowserStateReason.Value = 7,"Site on MS CV list  ", 
+Fields!BrowserStateReason.Value = 8,"Site on Quirks Group Policy list", 
+Fields!BrowserStateReason.Value = 10,"WebPlatform version supplied",
+Fields!BrowserStateReason.Value = 11,"Browser Default"
+)</ToolTip>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>BrowserStateReason0</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="HangCount0">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!HangCount0.Value</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>HangCount0</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="CrashCount0">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!CrashCount0.Value</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>CrashCount0</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox50">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox50</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e8a25a</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#f3af67</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox51">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox51</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e8a25a</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#f3af67</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox52">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!NumberOfVisits.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox52</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e8a25a</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#f3af67</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox60">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox60</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e8a25a</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#f3af67</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox54">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox54</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e8a25a</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#f3af67</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox55">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox55</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e8a25a</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#f3af67</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox81">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox81</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e8a25a</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#f3af67</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox57">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox57</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e8a25a</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#f3af67</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox58">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!HangCount0.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox58</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e8a25a</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#f3af67</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox59">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CrashCount0.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox59</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e8a25a</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#f3af67</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox39">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox39</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#de9646</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#ea9e52</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox40">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox40</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#de9646</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#ea9e52</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox41">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!NumberOfVisits.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox41</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#de9646</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#ea9e52</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox42">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox42</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#de9646</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#ea9e52</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox43">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox43</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#de9646</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#ea9e52</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox44">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox44</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#de9646</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#ea9e52</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox84">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox84</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#de9646</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#ea9e52</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox85">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox85</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#de9646</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#ea9e52</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox47">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!HangCount0.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox47</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#de9646</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#ea9e52</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox48">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CrashCount0.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>#4e0000</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox48</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#de9646</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#ea9e52</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox27">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox27</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#a81616</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#920202</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox28">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox28</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#a81616</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#920202</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox29">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!NumberOfVisits.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox29</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#a81616</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#920202</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox30">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=CountDistinct(Fields!Zone.Value)</Value>
+                                  <ToolTip>="Distinct Zone Visits"</ToolTip>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox30</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#a81616</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#920202</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox31">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=CountDistinct(Fields!SystemIEVer.Value)</Value>
+                                  <ToolTip>="Number of different IE Versions used"</ToolTip>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox31</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#a81616</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#920202</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox32">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <ToolTip>="Number of Distinct Document Mode Visited"</ToolTip>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox32</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#a81616</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#920202</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox82">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox82</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#a81616</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#920202</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox83">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox83</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#a81616</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#920202</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox35">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!HangCount0.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox35</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#a81616</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#920202</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox36">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Sum(Fields!CrashCount0.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Verdana</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox36</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#a81616</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#920202</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>0.88182in</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox23">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>Machine Name</Value>
+                                <Style>
+                                  <FontFamily>Verdana</FontFamily>
+                                  <FontWeight>Bold</FontWeight>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox23</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>#622424</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#4e0000</BackgroundColor>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <TablixMembers>
+                    <TablixMember>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="Textbox21">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>ActiveX GUID</Value>
+                                    <Style>
+                                      <FontFamily>Verdana</FontFamily>
+                                      <FontWeight>Bold</FontWeight>
+                                      <Color>White</Color>
+                                    </Style>
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>Textbox21</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Color>#622424</Color>
+                                <Style>Solid</Style>
+                              </Border>
+                              <BackgroundColor>#4e0000</BackgroundColor>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                      <TablixMembers>
+                        <TablixMember>
+                          <TablixHeader>
+                            <Size>1.89091in</Size>
+                            <CellContents>
+                              <Textbox Name="Textbox72">
+                                <CanGrow>true</CanGrow>
+                                <KeepTogether>true</KeepTogether>
+                                <Paragraphs>
+                                  <Paragraph>
+                                    <TextRuns>
+                                      <TextRun>
+                                        <Value>ActiveX Info</Value>
+                                        <Style>
+                                          <FontFamily>Verdana</FontFamily>
+                                          <FontWeight>Bold</FontWeight>
+                                          <Color>White</Color>
+                                        </Style>
+                                      </TextRun>
+                                    </TextRuns>
+                                    <Style />
+                                  </Paragraph>
+                                </Paragraphs>
+                                <rd:DefaultName>Textbox72</rd:DefaultName>
+                                <Style>
+                                  <Border>
+                                    <Color>#622424</Color>
+                                    <Style>Solid</Style>
+                                  </Border>
+                                  <BackgroundColor>#4e0000</BackgroundColor>
+                                  <PaddingLeft>2pt</PaddingLeft>
+                                  <PaddingRight>2pt</PaddingRight>
+                                  <PaddingTop>2pt</PaddingTop>
+                                  <PaddingBottom>2pt</PaddingBottom>
+                                </Style>
+                              </Textbox>
+                            </CellContents>
+                          </TablixHeader>
+                          <TablixMembers>
+                            <TablixMember />
+                          </TablixMembers>
+                        </TablixMember>
+                      </TablixMembers>
+                    </TablixMember>
+                  </TablixMembers>
+                  <KeepWithGroup>After</KeepWithGroup>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="MachineName">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!MachineName.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!MachineName.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <TablixHeader>
+                    <Size>0.88182in</Size>
+                    <CellContents>
+                      <Textbox Name="MachineName">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>=Fields!MachineName.Value</Value>
+                                <Style>
+                                  <FontFamily>Verdana</FontFamily>
+                                  <FontSize>9pt</FontSize>
+                                  <FontWeight>Bold</FontWeight>
+                                  <Color>#4e0000</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>MachineName</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>#de9646</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#ea9e52</BackgroundColor>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="ActiveXInfo">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!ActiveXInfo.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!ActiveXInfo.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="ActiveXInfo">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>=Fields!ActiveXInfo.Value</Value>
+                                    <Style>
+                                      <FontFamily>Verdana</FontFamily>
+                                      <FontSize>9pt</FontSize>
+                                      <FontWeight>Bold</FontWeight>
+                                      <Color>#4e0000</Color>
+                                    </Style>
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>ActiveXInfo</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Color>#e8a25a</Color>
+                                <Style>Solid</Style>
+                              </Border>
+                              <BackgroundColor>#f3af67</BackgroundColor>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                      <TablixMembers>
+                        <TablixMember>
+                          <TablixHeader>
+                            <Size>1.89091in</Size>
+                            <CellContents>
+                              <Textbox Name="ActiveXInfo1">
+                                <CanGrow>true</CanGrow>
+                                <KeepTogether>true</KeepTogether>
+                                <Paragraphs>
+                                  <Paragraph>
+                                    <TextRuns>
+                                      <TextRun>
+                                        <Value>=Switch( 
+Fields!ActiveXInfo.Value = "{47833539-D0C5-4125-9FA8-0819E2EAAC93}","Adobe Acrobat Create PDF Toolbar",
+Fields!ActiveXInfo.Value = "{28BCCB9A-E66B-463C-82A4-09F320DE94D7}","F12 Developer Tools",
+Fields!ActiveXInfo.Value = "{31D09BA0-12F5-4CCE-BE8A-2923E76605DA}","Lync Browser Helper",
+Fields!ActiveXInfo.Value = "{AE7CD045-E861-484f-8273-0445EE161910}","Adobe Acrobat Create PDF Helper",
+Fields!ActiveXInfo.Value = "{B4F3A835-0E21-4959-BA22-42B3008E02FF}","Office Document Cache Handler",
+Fields!ActiveXInfo.Value = "{D0498E0A-45B7-42AE-A9AA-ABA463DBD3BF}","Microsoft SkyDrive Pro Browser Helper",
+Fields!ActiveXInfo.Value = "{F4971EE7-DAA0-4053-9964-665D8EE6A077}","Adobe Acrobat Create PDF from Selection",
+Fields!ActiveXInfo.Value = "{48E73304-E1D6-4330-914C-F5F514E3486C}","Send to OneNote",
+Fields!ActiveXInfo.Value = "{31D09BA0-12F5-4CCE-BE8A-2923E76605DA}","Lync Click to Call",
+Fields!ActiveXInfo.Value = "{FFFDC614-B694-4AE6-AB38-5D6374584B52}","OneNote Linked Notes",
+Fields!ActiveXInfo.Value = "{10336656-40D7-4530-BCC0-86CD3D77D25F}","MeetingJoinHelper Class",
+Fields!ActiveXInfo.Value = "{1542FC7D-8D51-43D5-B757-67C763F27BF4}","Microsoft Lync Web App Version Plug-in (64-bit)",
+Fields!ActiveXInfo.Value = "{25336920-03F9-11CF-8FD0-00AA00686F13}","HTML Document",
+Fields!ActiveXInfo.Value = "{2933BF90-7B36-11D2-B20E-00C04F983E60}","XML DOM Document",
+Fields!ActiveXInfo.Value = "{4FCEE402-10E9-4446-AE0F-AE48D6D62E9A}","Groove Site Client ActiveX",
+Fields!ActiveXInfo.Value = "{52A2AAAE-085D-4187-97EA-8C30DB990436}","HHCtrl Object",
+Fields!ActiveXInfo.Value = "{6BF52A52-394A-11D3-B153-00C04F79FAA6}","Windows Media Player",
+Fields!ActiveXInfo.Value = "{7ECF6F97-B4F3-4168-9835-F59C06D7875F}","Microsoft Lync Web App Plug-in (64-bit)",
+Fields!ActiveXInfo.Value = "{8075831E-5146-11D5-A672-00B0D022E945}","SharepointOpenXMLDocuments",
+Fields!ActiveXInfo.Value = "{8856F961-340A-11D0-A96B-00C04FD705A2}","Microsoft Web Browser",
+Fields!ActiveXInfo.Value = "{96CAE7ED-F021-4FEB-A5E9-7CC58829A67A}","Microsoft Lync Web App Plug-in (64-bit)",
+Fields!ActiveXInfo.Value = "{971127BB-259F-48C2-BD75-5F97A3331551}","Microsoft RDP Client Control (redistributable) - version 3a",
+Fields!ActiveXInfo.Value = "{D27CDB6E-AE6D-11CF-96B8-444553540000}","Shockwave Flash Object",
+Fields!ActiveXInfo.Value = "{DFEAF541-F3E1-4C24-ACAC-99C30715084A}","Microsoft Silverlight",
+Fields!ActiveXInfo.Value = "{ED8C108E-4349-11D2-91A4-00C04F7969E8}","XML HTTP Request",
+Fields!ActiveXInfo.Value = "{EE09B103-97E0-11CF-978F-00A02463E06F}","Scripting.Dictionary",
+Fields!ActiveXInfo.Value = "{F5078F32-C551-11D3-89B9-0000F81FE221}","XML DOM Document 3.0",
+Fields!ActiveXInfo.Value = "{F6D90F11-9C73-11D3-B32E-00C04F990BB4}","XML DOM Document",
+Fields!ActiveXInfo.Value = "{F6D90F16-9C73-11D3-B32E-00C04F990BB4}","XML HTTP",
+Fields!ActiveXInfo.Value = "{DFEAF541-F3E1-4c24-ACAC-99C30715084A}","Microsoft Silverlight",
+Fields!ActiveXInfo.Value = "{52A2AAAE-085D-4187-97EA-8C30DB990436}","HHCtrl Object",
+Fields!ActiveXInfo.Value = "{54CE37E0-9834-41ae-9896-4DAB69DC022B}","Microsoft RDP Client Control (redistributable) - version 5a",
+Fields!ActiveXInfo.Value = "{6A6F4B83-45C5-4ca9-BDD9-0D81C12295E4}","Microsoft RDP Client Control (redistributable) - version 4a",
+Fields!ActiveXInfo.Value = "{971127BB-259F-48c2-BD75-5F97A3331551}","Microsoft RDP Client Control (redistributable) - version 3a",
+Fields!ActiveXInfo.Value = "{41B23C28-488E-4E5C-ACE2-BB0BBABE99E8}","HHCtrl Object",
+Fields!ActiveXInfo.Value = "{8AD9C840-044E-11D1-B3E9-00805F499D93}","Java Plug-in 10.21.2",
+Fields!ActiveXInfo.Value = "{8D9563A9-8D5F-459B-87F2-BA842255CB9A}","Forefront UAG client components",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-0016-0000-0045-ABCDEFFEDCBA}","Java Plug-in 1.6.0_45",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-0017-0000-0021-ABCDEFFEDCBA}","Java Plug-in 1.7.0_21",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-FFFF-FFFF-FFFF-ABCDEFFEDCBA}","Java Plug-in 1.7.0_21",
+Fields!ActiveXInfo.Value = "{FCADE536-93F5-4577-80A3-E7C32FAC4C7D}","Loader Class v5",
+Fields!ActiveXInfo.Value = "{761497BB-D6F0-462C-B6EB-D4DAF1D92D43}","Java(tm) Plug-In SSV Helper",
+Fields!ActiveXInfo.Value = "{DBC80044-A445-435b-BC74-9C25C1C588A9}","Java(tm) Plug-In 2 SSV Helper",
+Fields!ActiveXInfo.Value = "{07B06095-5687-4D13-9E32-12B4259C9813}","STSUpld.UploadCtl",
+Fields!ActiveXInfo.Value = "{18DF081C-E8AD-4283-A596-FA578C2EBDC3}","Adobe PDF Link Helper",
+Fields!ActiveXInfo.Value = "{1CC6F158-C938-424B-A757-8DC337545084}","Microsoft Lync Web App Plug-in",
+Fields!ActiveXInfo.Value = "{233C1507-6A77-46A4-9443-F871F945D258}","Shockwave ActiveX Control",
+Fields!ActiveXInfo.Value = "{28BCCB9A-E66B-463C-82A4-09F320DE94D7}","F12 Developer Tools",
+Fields!ActiveXInfo.Value = "{3605B612-C3CF-4AB4-A426-2D853391DB2E}","Certificates Class",
+Fields!ActiveXInfo.Value = "{3640A335-73A6-424C-A6E8-B21DCCCABD0C}","Whale SSL Wrapper",
+Fields!ActiveXInfo.Value = "{40C37B6C-D273-41E2-8122-A338BBDB2528}","Microsoft Lync Web App Plug-in",
+Fields!ActiveXInfo.Value = "{424BE3CD-34AB-4F51-9C57-4341166DC8FA}","(no CLSID name)",
+Fields!ActiveXInfo.Value = "{53C06A7B-FC1E-40E6-9668-31CD219BAEA7}","Microsoft Lync Web App Version Plug-in",
+Fields!ActiveXInfo.Value = "{611B6CB4-ACE6-4655-8D60-15FAC4AD0952}","Gatekeeper Class",
+Fields!ActiveXInfo.Value = "{62B4D041-4667-40B6-BB50-4BC0A5043A73}","SharePoint Export Database Launcher",
+Fields!ActiveXInfo.Value = "{656E5CEE-3585-4C95-AD65-037CB12288F6}","Forefront UAG endpoint detection",
+Fields!ActiveXInfo.Value = "{65BCBEE4-7728-41A0-97BE-14E1CAE36AAE}","Microsoft Office List 15.0",
+Fields!ActiveXInfo.Value = "{8AC780E1-BCDB-4816-A6EA-A88BCC064453}","LyncForwarder Class",
+Fields!ActiveXInfo.Value = "{9203C2CB-1DC1-482D-967E-597AFF270F0D}","SharePoint OpenDocuments Class",
+Fields!ActiveXInfo.Value = "{9ED13477-E909-45BC-BADC-2106D04D6BD7}","SharePoint DragUpload Control",
+Fields!ActiveXInfo.Value = "{A0651028-BA7A-4D71-877F-12E0175A5806}","UCOfficeIntegration Class",
+Fields!ActiveXInfo.Value = "{A99E6846-B0A9-4E5E-AED1-ACEA8CBEF92E}","Device Session Cleanup",
+Fields!ActiveXInfo.Value = "{BDEADEF5-C265-11D0-BCED-00A0C90AB50F}","SharePoint Stssync Handler",
+Fields!ActiveXInfo.Value = "{CA8A9780-280D-11CF-A24D-444553540000}","Adobe PDF Reader",
+Fields!ActiveXInfo.Value = "{E18FEC31-2EA1-49A2-A7A6-902DC0D1FF05}","NameCtrl Class",
+Fields!ActiveXInfo.Value = "{E7339A62-0E31-4A5E-BA3D-F2FEDFBF8BE5}","PersonalSite Class",
+Fields!ActiveXInfo.Value = "{00024522-0000-0000-C000-000000000046}","RefEdit.Ctrl",
+Fields!ActiveXInfo.Value = "{261B8CA9-3BAF-4BD0-B0C2-BF04286785C6}","Microsoft Outlook View Control",
+Fields!ActiveXInfo.Value = "{233C1507-6A77-46A4-9443-F871F945D258}","Shockwave ActiveX Control",
+Fields!ActiveXInfo.Value = "{3605B612-C3CF-4ab4-A426-2D853391DB2E}","Certificates Class",
+Fields!ActiveXInfo.Value = "{3D8152C1-0CFD-4968-9684-794046886E31}","Microsoft Animation Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{9A948063-66C3-4F63-AB46-582EDAA35047}","Microsoft TabStrip Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{4D588145-A84B-4100-85D7-FD2EA1D19831}","Microsoft Date and Time Picker Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{F1651457-356D-4CA2-989D-701606A4C828}","Microsoft MonthView Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{F8CF7A98-2C45-4c8d-9151-2D716989DDAB}","Microsoft Visio Document",
+Fields!ActiveXInfo.Value = "{556C2772-F1AD-4DE1-8456-BD6E8F66113B}","Microsoft ImageList Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{A0E7BF67-8D30-4620-8825-7111714C7CAB}","Microsoft ProgressBar Control, version 6.0",
+Fields!ActiveXInfo.Value = "{CEDFFAFD-3C2F-4552-9FD3-3DC4299057FD}","Microsoft UpDown Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{585AA280-ED8B-46B2-93AE-132ECFA1DAFC}","Microsoft StatusBar Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{550C8FFB-4DC0-4756-828C-862E6D0AE74F}","Chain Class",
+Fields!ActiveXInfo.Value = "{8B2ADD10-33B7-4506-9569-0A1E1DBBEBAE}","Microsoft Toolbar Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{91D221C4-0CD4-461C-A728-01D509321556}","Store Class",
+Fields!ActiveXInfo.Value = "{95F0B3BE-E8AC-4995-9DCA-419849E06410}","Microsoft TreeView Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{CCDB0DF2-FD1A-4856-80BC-32929D8359B7}","Microsoft ListView Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-DEC7-0000-0001-ABCDEFFEDCBA}","Deployment Toolkit",
+Fields!ActiveXInfo.Value = "{87DACC48-F1C5-4AF3-84BA-A2A72C2AB959}","Microsoft ImageComboBox Control, version 6.0",
+Fields!ActiveXInfo.Value = "{9171C115-7DD9-46BA-B1E5-0ED50AFFC1B8}","Certificate Class",
+Fields!ActiveXInfo.Value = "{0B314611-2C19-4AB4-8513-A6EEA569D3C4}","Microsoft Slider Control, version 6.0",
+Fields!ActiveXInfo.Value = "{CFA7636D-CAA1-4F18-868F-8720624C8B86}","Microsoft Flat Scrollbar Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{3BCEAAF6-6774-4137-BC4E-BD8A2CD4CA95}","ALM Platform Loader v11.5x",
+Fields!ActiveXInfo.Value = "{47833539-D0C5-4125-9FA8-0819E2EAAC93}","Adobe PDF",
+Fields!ActiveXInfo.Value = "{6D53EC84-6AAE-4787-AEEE-F4628F01010C}","Symantec Intrusion Prevention",
+Fields!ActiveXInfo.Value = "{AE7CD045-E861-484f-8273-0445EE161910}","Adobe PDF Conversion Toolbar Helper",
+Fields!ActiveXInfo.Value = "{F4971EE7-DAA0-4053-9964-665D8EE6A077}","SmartSelect Class",
+Fields!ActiveXInfo.Value = "{FF059E31-CC5A-4E2E-BF3B-96E929D65503}","Research",
+Fields!ActiveXInfo.Value = "{0468C085-CA5B-11D0-AF08-00609797F0E0}","Outlook Today's Data-binding control",
+Fields!ActiveXInfo.Value = "{08B0E5C0-4FCB-11CF-AAA5-00401C608501}","(no CLSID name)",
+Fields!ActiveXInfo.Value = "{88D96A0A-F192-11D4-A65F-0040963251E5}","XML HTTP 6.0",
+Fields!ActiveXInfo.Value = "{7466A304-ABF5-4998-88AE-F78D6F134E00}","ImexGridCtrl.2 Object",
+Fields!ActiveXInfo.Value = "{444D2D27-02E8-486B-9018-3644958EF8A9}","FieldListCtrl.2 Object",
+Fields!ActiveXInfo.Value = "{46857999-9b7c-4895-9d22-81a4a2478868}","Web Test Recorder 12.0",
+Fields!ActiveXInfo.Value = "{3050F819-98B5-11CF-BB82-00AA00BDCE0B}","HtmlDlgSafeHelper Class",
+Fields!ActiveXInfo.Value = "{432DD630-7E03-4C97-9D62-B99F52DF4FC2}","Microsoft Web Test Recorder 12.0 Helper",
+Fields!ActiveXInfo.Value = "{432dd630-7e03-4c97-9d62-b99f52df4fc2}","Microsoft Web Test Recorder 12.0 Helper",
+Fields!ActiveXInfo.Value = "{6D53EC84-6AAE-4787-AEEE-F4628F01010C}","Symantec Vulnerability Protection",
+Fields!ActiveXInfo.Value = "{02BCC737-B171-4746-94C9-0D8A0B2C0089}","Microsoft Office Template and Media Control",
+Fields!ActiveXInfo.Value = "{02BF25D5-8C17-4B23-BC80-D3488ABDDC6B}","QuickTime Plugin Control",
+Fields!ActiveXInfo.Value = "{036F8A56-0BC8-4607-8F98-D3231E6FF5ED}","CentraUpdaterAxCtl Class",
+Fields!ActiveXInfo.Value = "{17492023-C23A-453E-A040-C7C580BBF700}","Windows Genuine Advantage Validation Tool",
+Fields!ActiveXInfo.Value = "{82774781-8F4E-11D1-AB1C-0000F8773BF0}","DLC Class",
+Fields!ActiveXInfo.Value = "{8AD9C840-044E-11D1-B3E9-00805F499D93}","Java Plug-in 1.6.0_16",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-0016-0000-0016-ABCDEFFEDCBA}","Java Plug-in 1.6.0_16",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-FFFF-FFFF-FFFF-ABCDEFFEDCBA}","Java Plug-in 1.6.0_16",
+Fields!ActiveXInfo.Value = "{E06E2E99-0AA1-11D4-ABA6-0060082AA75C}","GpcContainer Class",
+Fields!ActiveXInfo.Value = "{18DF081C-E8AD-4283-A596-FA578C2EBDC3}","Adobe PDF Link Helper",
+Fields!ActiveXInfo.Value = "{CF819DA3-9882-4944-ADF5-6EF17ECF3C6E}","Fiddler",
+Fields!ActiveXInfo.Value = "{08B0E5C0-4FCB-11CF-AAA5-00401C608501}","Web Browser Applet Control",
+Fields!ActiveXInfo.Value = "{22D6F312-B0F6-11D0-94AB-0080C74C7E95}","Windows Media Player",
+Fields!ActiveXInfo.Value = "{25336921-03F9-11CF-8FD0-00AA00686F13}","Microsoft HTML Document 6.0",
+Fields!ActiveXInfo.Value = "{2933BF94-7B36-11D2-B20E-00C04F983E60}","XSL Template",
+Fields!ActiveXInfo.Value = "{38481807-CA0E-42D2-BF39-B33AF135CC4D}","IETag Factory",
+Fields!ActiveXInfo.Value = "{39125640-8D80-11DC-A2FE-C5C455D89593}","Google Talk ActiveX Plugin",
+Fields!ActiveXInfo.Value = "{3FD37ABB-F90A-4DE5-AA38-179629E64C2F}","SharePoint Spreadsheet Launcher",
+Fields!ActiveXInfo.Value = "{4063BE15-3B08-470D-A0D5-B37161CFFD69}","QuickTime Plugin Control",
+Fields!ActiveXInfo.Value = "{55136805-B2DE-11D1-B9F2-00A0C98BC547}","Shell Name Space",
+Fields!ActiveXInfo.Value = "{5852F5ED-8BF4-11D4-A245-0080C6F74284}","isInstalled Class",
+Fields!ActiveXInfo.Value = "{61E40D31-993D-4777-8FA0-19CA59B6D0BB}","Contact Selector",
+Fields!ActiveXInfo.Value = "{88D969E5-F192-11D4-A65F-0040963251E5}","XML DOM Document 5.0",
+Fields!ActiveXInfo.Value = "{88D969EA-F192-11D4-A65F-0040963251E5}","XML HTTP 5.0",
+Fields!ActiveXInfo.Value = "{88D96A05-F192-11D4-A65F-0040963251E5}","XML DOM Document 6.0",
+Fields!ActiveXInfo.Value = "{AB9F4455-E591-4132-A386-0B91EAEDB96C}","Google Talk Video Renderer",
+Fields!ActiveXInfo.Value = "{C3101A8B-0EE1-4612-BFE9-41FFC1A3C19D}","Google Update Plugin",
+Fields!ActiveXInfo.Value = "{C442AC41-9200-4770-8CC0-7CDB4F245C55}","Google Update Plugin",
+Fields!ActiveXInfo.Value = "{CD3AFA76-B84F-48F0-9393-7EDC34128127}","AUDIO__MP3 Moniker Class",
+Fields!ActiveXInfo.Value = "{CD3AFA99-B84F-48F0-9393-7EDC34128127}","VIDEO__MP4 Moniker Class",
+Fields!ActiveXInfo.Value = "{CFBFAE00-17A6-11D0-99CB-00C04FD64497}","Microsoft Url Search Hook",
+Fields!ActiveXInfo.Value = "{F5078F35-C551-11D3-89B9-0000F81FE221}","XML HTTP 3.0",
+Fields!ActiveXInfo.Value = "{F6D90F12-9C73-11D3-B32E-00C04F990BB4}","Free Threaded XML DOM Document",
+Fields!ActiveXInfo.Value = "{261B8CA9-3BAF-4BD0-B0C2-BF04286785C6}","Microsoft Office Outlook View Control",
+Fields!ActiveXInfo.Value = "{1A6FE369-F28C-4AD9-A3E6-2BCB50807CF1}","Developer Tools",
+Fields!ActiveXInfo.Value = "{72853161-30C5-4D22-B7F9-0BBC1D38A37E}","Groove GFS Browser Helper",
+Fields!ActiveXInfo.Value = "{7DB2D5A0-7241-4E79-B68D-6309F01C5231}","scriptproxy",
+Fields!ActiveXInfo.Value = "{0468C085-CA5B-11D0-AF08-00609797F0E0}","(no CLSID name)",
+Fields!ActiveXInfo.Value = "{88D96A06-F192-11D4-A65F-0040963251E5}","Free Threaded XML DOM Document 6.0",
+Fields!ActiveXInfo.Value = "{88D96A08-F192-11D4-A65F-0040963251E5}","XSL Template 6.0",
+Fields!ActiveXInfo.Value = "{AD17B774-7F87-4141-BB9C-2AEE3841DC4E}","Aspera Web",
+Fields!ActiveXInfo.Value = "{8AD9C840-044E-11D1-B3E9-00805F499D93}","Java Plug-in 10.55.2",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-FFFF-FFFF-FFFF-ABCDEFFEDCBA}","Java Plug-in 10.55.2",
+Fields!ActiveXInfo.Value = "{02BF25D5-8C17-4B23-BC80-D3488ABDDC6B}","QuickTime Object",
+Fields!ActiveXInfo.Value = "{1A6FE369-F28C-4AD9-A3E6-2BCB50807CF1}","Developer Tools",
+Fields!ActiveXInfo.Value = "{238F6F83-B8B4-11CF-8771-00A024541EE3}","Citrix ICA Client",
+Fields!ActiveXInfo.Value = "{4063BE15-3B08-470D-A0D5-B37161CFFD69}","QuickTime Object",
+Fields!ActiveXInfo.Value = "{531D5A4A-03D9-4404-AFF7-235A48E6B61E}","AwInstaller Class",
+Fields!ActiveXInfo.Value = "{88D969C0-F192-11D4-A65F-0040963251E5}","XML DOM Document 4.0",
+Fields!ActiveXInfo.Value = "{88D969C5-F192-11D4-A65F-0040963251E5}","XML HTTP 4.0",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-DEC7-0000-0001-ABCDEFFEDCBA}","Deployment Toolkit",
+Fields!ActiveXInfo.Value = "{CB927D12-4FF7-4A9E-A169-56E4B8A75598}","Behavior Object",
+Fields!ActiveXInfo.Value = "{D9806E4E-82CE-4A75-83D0-A062EC605349}","AFContextMenuCtrl Class",
+Fields!ActiveXInfo.Value = "{DE4AF3B0-F4D4-11D3-B41A-0050DA2E6C21}","QuickTimeCheck Class",
+Fields!ActiveXInfo.Value = "{2BEC8FA8-1193-4A15-B8AF-C6DF6E6930C7}","Microsoft UpDown Control, version 5.0 (SP2)",
+Fields!ActiveXInfo.Value = "{E44F7BD4-3AB1-4D55-9190-FC53343AD2D2}","Microsoft TreeView Control, version 5.0 (SP2)",
+Fields!ActiveXInfo.Value = "{612685EF-57C8-469F-88AB-E4E0B595C5AB}","Microsoft ProgressBar Control, version 5.0 (SP2)",
+Fields!ActiveXInfo.Value = "{D8C1B55B-12DC-457F-97EC-4B84305FAA13}","Microsoft Hierarchical FlexGrid Control 6.0 (SP6) (OLEDB)",
+Fields!ActiveXInfo.Value = "{261399BF-4DBC-4731-B79F-EF8871D7CB36}","Microsoft Animation Control, version 5.0 (SP2)",
+Fields!ActiveXInfo.Value = "{1EAC2F2A-251F-4BA8-8617-99A8DD715453}","StdDataValue Object",
+Fields!ActiveXInfo.Value = "{2B577565-36F7-4351-B2E7-DAFC75E9D72A}","Microsoft Slider Control, version 5.0 (SP2)",
+Fields!ActiveXInfo.Value = "{894BA3A3-3CA3-402F-B4FE-CD08337E9535}","Microsoft Rich Textbox Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{79C784C5-8F0D-4A55-ADB3-590CCFC8EB0D}","Microsoft ListView Control, version 5.0 (SP2)",
+Fields!ActiveXInfo.Value = "{53749718-F78D-4A67-8703-8AE050075170}","Microsoft ImageList Control, version 5.0 (SP2)",
+Fields!ActiveXInfo.Value = "{97992019-74A6-46C7-9CA3-7F8C0D39940B}","Microsoft Toolbar Control, version 5.0 (SP2)",
+Fields!ActiveXInfo.Value = "{74DD2713-BA98-4D10-A16E-270BBEB9B555}","Microsoft FlexGrid Control, version 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{E8F8E80F-02EB-44CC-ABB5-6E5132BA6B24}","Microsoft StatusBar Control, version 5.0 (SP2)",
+Fields!ActiveXInfo.Value = "{7E96FC67-468E-4E70-B246-D42078DD2361}","StdDataFormat Object",
+Fields!ActiveXInfo.Value = "{D606EEC9-8368-4F10-88DB-BF5563EC36F6}","StdDataFormats Object",
+Fields!ActiveXInfo.Value = "{44E266A2-CD46-47A0-9ED5-EEEC5F0C2A6E}","Microsoft TabStrip Control, version 5.0 (SP2)",
+Fields!ActiveXInfo.Value = "{942085FD-8AEE-465F-ADD7-5E7AA28F8C14}","Microsoft Tabbed Dialog Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{225957BB-0005-48B9-8BFB-11AEE66779FB}","Microsoft DataGrid Control 6.0 (SP6) (OLEDB)",
+Fields!ActiveXInfo.Value = "{8F0F480A-4366-4737-8265-2AD6FDAC8C31}","Microsoft Common Dialog Control, version 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{8AD9C840-044E-11D1-B3E9-00805F499D93}","Java Plug-in 1.6.0_45",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-FFFF-FFFF-FFFF-ABCDEFFEDCBA}","Java Plug-in 1.6.0_45",
+Fields!ActiveXInfo.Value = "{E06E2E99-0AA1-11D4-ABA6-0060082AA75C}","(no CLSID name)",
+Fields!ActiveXInfo.Value = "{31D09BA0-12F5-4CCE-BE8A-2923E76605DA}","Lync add-on",
+Fields!ActiveXInfo.Value = "{424BE3CD-34AB-4F51-9C57-4341166DC8FA}","UCOfficeIntegration Class",
+Fields!ActiveXInfo.Value = "{8ABE89E2-1A1E-469B-8AF0-0A11192.CFA5}","Gatekeeper Class",
+Fields!ActiveXInfo.Value = "{AA570693-00E2-4907-B6F1-60A1199B030C}","JuniperSetupClientControl64 Class",
+Fields!ActiveXInfo.Value = "{DF912424-425A-4F52-985D-1F83DA468AEB}","MeetingJoinHelper Class",
+Fields!ActiveXInfo.Value = "{773373E5-DD6A-40EB-9ED3-B16FB47F316A}","FileMgt.FileMgtCtrl",
+Fields!ActiveXInfo.Value = "{8AD9C840-044E-11D1-B3E9-00805F499D93}","Java Plug-in 10.40.2",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-0016-0000-0043-ABCDEFFEDCBA}","Java Plug-in 1.6.0_43",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-FFFF-FFFF-FFFF-ABCDEFFEDCBA}","Java Plug-in 10.40.2",
+Fields!ActiveXInfo.Value = "{E5F5D008-DD2C-4D32-977D-1A0ADF03058B}","JuniperSetupControlXP Class",
+Fields!ActiveXInfo.Value = "{F27237D7-93C8-44C2-AC6E-D6057B9A918F}","JuniperSetupClientControl Class",
+Fields!ActiveXInfo.Value = "{64247C52-5C34-4597-B2A3-17BF5617F17F}","Taxonomy Control",
+Fields!ActiveXInfo.Value = "{901E885F-631B-42C8-982C-76884E5E21A0}","Contact Selector",
+Fields!ActiveXInfo.Value = "{F8CF7A98-2C45-4C8D-9151-2D716989DDAB}","Microsoft Visio Document",
+Fields!ActiveXInfo.Value = "{8AD9C840-044E-11D1-B3E9-00805F499D93}","Java Plug-in 1.6.0_43",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-FFFF-FFFF-FFFF-ABCDEFFEDCBA}","Java Plug-in 1.6.0_43",
+Fields!ActiveXInfo.Value = "{0468C085-CA5B-11D0-AF08-00609797F0E0}","DataCtl Class",
+Fields!ActiveXInfo.Value = "{8AD9C840-044E-11D1-B3E9-00805F499D93}","Java Plug-in 1.6.0_24",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-0016-0000-0024-ABCDEFFEDCBA}","Java Plug-in 1.6.0_24",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-FFFF-FFFF-FFFF-ABCDEFFEDCBA}","Java Plug-in 1.6.0_24",
+Fields!ActiveXInfo.Value = "{8dcb7100-df86-4384-8842-8fa844297b3f}","Bing Bar",
+Fields!ActiveXInfo.Value = "{d2ce3e00-f94a-4740-988e-03dc2f38c34f}","Bing Bar Helper",
+Fields!ActiveXInfo.Value = "{5220CB21-C88D-11CF-B347-00AA00A28331}","Microsoft Licensed Class Manager 1.0",
+Fields!ActiveXInfo.Value = "{F9043C85-F6F2-101A-A3C9-08002B2F49FB}","Microsoft Common Dialog Control, version 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{8AD9C840-044E-11D1-B3E9-00805F499D93}","Java Plug-in 1.5.0_14",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-0015-0000-0014-ABCDEFFEDCBA}","Java Plug-in 1.5.0_14",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-FFFF-FFFF-FFFF-ABCDEFFEDCBA}","Java Plug-in 1.5.0_14",
+Fields!ActiveXInfo.Value = "{761497BB-D6F0-462C-B6EB-D4DAF1D92D43}","SSVHelper Class",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-0015-0000-0014-ABCDEFFEDCBC}","Sun Java Console",
+Fields!ActiveXInfo.Value = "{8AD9C840-044E-11D1-B3E9-00805F499D93}","Java Plug-in 1.5.0_22",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-0015-0000-0022-ABCDEFFEDCBA}","Java Plug-in 1.5.0_22",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-FFFF-FFFF-FFFF-ABCDEFFEDCBA}","Java Plug-in 1.5.0_22",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-0015-0000-0022-ABCDEFFEDCBC}","Sun Java Console",
+Fields!ActiveXInfo.Value = "{8AD9C840-044E-11D1-B3E9-00805F499D93}","Java Plug-in 10.0.0",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-0017-0000-0000-ABCDEFFEDCBA}","Java Plug-in 1.7.0",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-FFFF-FFFF-FFFF-ABCDEFFEDCBA}","Java Plug-in 1.7.0",
+Fields!ActiveXInfo.Value = "{2E5E4BAC-FEC7-4DD6-AFAF-F4139B1B9FB7}","LsiBrowserHook Class",
+Fields!ActiveXInfo.Value = "{95F35795-64B1-495D-9DE7-390EECC31EC0}","Microsoft Office Project Task Launch Control",
+Fields!ActiveXInfo.Value = "{CFC399AF-D876-11D0-9C10-00C04FC99C8E}","Msxml",
+Fields!ActiveXInfo.Value = "{5AE58FCF-6F6A-49B2-B064-02492C66E3F4}","MUCatalogWebControl Class",
+Fields!ActiveXInfo.Value = "{8AD9C840-044E-11D1-B3E9-00805F499D93}","Java Plug-in 1.6.0_21",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-0016-0000-0031-ABCDEFFEDCBA}","Java Plug-in 1.6.0_31",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-FFFF-FFFF-FFFF-ABCDEFFEDCBA}","Java Plug-in 1.6.0_31",
+Fields!ActiveXInfo.Value = "{0A9CDB52-EBDF-4210-9C6A-B90C2FD410AB}","PowerBroker Desktops Browser Helper",
+Fields!ActiveXInfo.Value = "{2E5E4BAC-FEC7-4DD6-AFAF-F4139B1B9FB6}","LsiBrowserHook Class",
+Fields!ActiveXInfo.Value = "{24DA047B-40C0-4018-841B-6B7409F730FC}","Adobe Acrobat Sharepoint OpenDocuments Component",
+Fields!ActiveXInfo.Value = "{8075631E-5146-11D5-A672-00B0D022E945}","SharepointOpenXMLDocuments",
+Fields!ActiveXInfo.Value = "{36D792B3-CEA5-454E-A7EF-5B045E60EDEF}","DBGrid  Control",
+Fields!ActiveXInfo.Value = "{E304B70C-0FCE-4E1B-9C81-CDAAD9F7DA55}","Microsoft DBList Control, version 6.0",
+Fields!ActiveXInfo.Value = "{783D26D7-B4A4-4CFB-8531-78C5DCF52C8E}","WebClass",
+Fields!ActiveXInfo.Value = "{47DEF242-7DAF-4828-936A-895FC81D92F8}","Microsoft MAPI Session Control, version 6.0",
+Fields!ActiveXInfo.Value = "{1B6413C2-C55E-4BA7-B4DF-1A71DBC6ACC2}","Microsoft MAPI Messages Control, version 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{20E72BC7-287F-4FCD-BFB7-156FF242C27C}","ExportFormat Object",
+Fields!ActiveXInfo.Value = "{018BCA43-2122-4211-9589-458B6A6E2A63}","ExportFormats Object",
+Fields!ActiveXInfo.Value = "{6E5311A1-325D-4FFD-9AF4-B373F02AE458}","Microsoft WinSock Control, version 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{AFB66F3E-7A33-41E9-A4F7-FE87B64F5555}","Microsoft Picture Clip Control, version 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{D7FFEFBC-C693-4E6F-AE2E-ED001389CB17}","DataAdapter Object",
+Fields!ActiveXInfo.Value = "{62B025F5-F551-44A9-8BA8-0118EFB9127C}","Microsoft Chart Control 6.0 (SP6) (OLEDB)",
+Fields!ActiveXInfo.Value = "{6785E9BB-087E-4772-8CA5-3331CC3B574E}","Microsoft RemoteData Control, version 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{E2D211D5-11E4-4D9E-B6DB-1E902C851A49}","Microsoft Internet Transfer Control 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{7466A304-ABF5-4998-88AE-F78D6F134E00}","ImexGridCtrl.1 Object",
+Fields!ActiveXInfo.Value = "{444D2D27-02E8-486B-9018-3644958EF8A9}","FieldListCtrl.1 Object",
+Fields!ActiveXInfo.Value = "{4EE74AEC-8008-455E-AEC5-9726CF1E85BB}","BindingCollection Object",
+Fields!ActiveXInfo.Value = "{E9AEB8A9-DB8B-425F-8133-69CA06187353}","Microsoft DataRepeater Control, version 6.0",
+Fields!ActiveXInfo.Value = "{A7F31C6B-5300-47C8-A642-5AC673794C92}","Microsoft Data Report Runtime 6.0 (SP4)",
+Fields!ActiveXInfo.Value = "{F6565773-FA54-45E9-941C-2505E54D5710}","Microsoft Communications Control, version 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{234086BB-0242-46C5-B71F-5A9B961DB911}","Microsoft ADO Data Control 6.0 (SP6) (OLEDB)",
+Fields!ActiveXInfo.Value = "{D88A442E-9C85-48E3-A6F8-EF61C93989A0}","Microsoft SysInfo Control, version 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{12E15F8F-412E-4760-94E3-BE47521668BA}","Data Report",
+Fields!ActiveXInfo.Value = "{CB2C5FC2-C7ED-4CC1-AF07-5C5485DAB3B1}","DHTMLPageRuntime Object",
+Fields!ActiveXInfo.Value = "{E436987E-F427-4AD7-8738-6D0895A3E93F}","Addin Class",
+Fields!ActiveXInfo.Value = "{AB5357A7-3179-47F9-A705-966B8B936D5E}","Addin Class",
+Fields!ActiveXInfo.Value = "{1E9B270D-5829-490E-84F5-1C25D74BF01D}","DHTMLPageRuntimeWinEvent Object",
+Fields!ActiveXInfo.Value = "{F65348F7-505D-4FAB-B66C-D76CFFC2BD78}","Microsoft Multimedia Control, version 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{A57635FC-8D02-4D32-8B6E-4FBD4E2DB8A7}","Microsoft Masked Edit Control, version 6.0 (SP6)",
+Fields!ActiveXInfo.Value = "{D6F004C5-DC12-4B65-8730-2E95AD459F10}","DHTMLPageRuntimeEvent Object",
+Fields!ActiveXInfo.Value = "{E404CD92-E7B8-4037-918D-5A18CFD09ED3}","Microsoft DataList Control, version 6.0 (SP6) (OLEDB)",
+Fields!ActiveXInfo.Value = "{D3CCB2F7-0D00-4F26-9569-D7C368DE34E2}","Microsoft DataCombo Control, version 6.0 (SP6) (OLEDB)",
+Fields!ActiveXInfo.Value = "{30854451-8F2D-4282-8070-73A801B560A3}","Microsoft DBCombo Control, version 6.0",
+Fields!ActiveXInfo.Value = "{0D43FE01-F093-11CF-8940-00A0C9054228}","FileSystem Object",
+Fields!ActiveXInfo.Value = "{48123BC4-99D9-11D1-A6B3-00C04FD91555}","XML Document",
+Fields!ActiveXInfo.Value = "{4EB89FF4-7F78-4A0F-8B8D-2BF02E94E4B2}","Microsoft RDP Client Control (redistributable) - version 6",
+Fields!ActiveXInfo.Value = "{72C24DD5-D70A-438B-8A42-98424B88AFB8}","Windows Script Host Shell Object",
+Fields!ActiveXInfo.Value = "{F5078F40-C551-11D3-89B9-0000F81FE221}","XML Document 3.0",
+Fields!ActiveXInfo.Value = "{3356DB7C-58A7-11D4-AA5C-006097314BF8}","LaunchObj Class",
+Fields!ActiveXInfo.Value = "{38681FBD-D4CC-4A59-A527-B3136DB711D3}","Tumbleweed SecureTransport FileTransfer English",
+Fields!ActiveXInfo.Value = "{4871A87A-BFDD-4106-8153-FFDE2BAC2967}","DLM Control",
+Fields!ActiveXInfo.Value = "{99098758-CB85-4A90-924F-F21898796281}","Microsoft Office Slide Library Control",
+Fields!ActiveXInfo.Value = "{F9152AEC-3462-4632-8087-EEE3C3CDDA24}","GEPluginCoClass Object",
+Fields!ActiveXInfo.Value = "{24B224E0-9545-4A2F-ABD5-86AA8A849385}","Microsoft TabStrip Control, version 6.0",
+Fields!ActiveXInfo.Value = "{F91CAF91-225B-43A7-BB9E-472F991FC402}","Microsoft ImageList Control, version 6.0",
+Fields!ActiveXInfo.Value = "{7DC6F291-BF55-4E50-B619-EF672D9DCC58}","Microsoft Toolbar Control, version 6.0",
+Fields!ActiveXInfo.Value = "{627C8B79-918A-4C5C-9E19-20F66BF30B86}","Microsoft StatusBar Control, version 6.0",
+Fields!ActiveXInfo.Value = "{996BF5E0-8044-4650-ADEB-0B013914E99C}","Microsoft ListView Control, version 6.0",
+Fields!ActiveXInfo.Value = "{9181DC5F-E07D-418A-ACA6-8EEA1ECB8E9E}","Microsoft TreeView Control, version 6.0",
+Fields!ActiveXInfo.Value = "{12A66224-5E8A-4679-8941-0B9B960BF5EA}","VistaWUWebControl Class",
+Fields!ActiveXInfo.Value = "{166B1BCA-3F9C-11CF-8075-444553540000}","Shockwave ActiveX Control",
+Fields!ActiveXInfo.Value = "{2A646672-9C3A-4C28-9A7A-1FB0F63F28B6}","IE 4.x-6.x BHO for Internet Download Accelerator",
+Fields!ActiveXInfo.Value = "{9819CC0E-9669-4D01-9CD7-2C66DA43AC6C}","&amp;Internet Download Accelerator",
+Fields!ActiveXInfo.Value = "{0055C089-8582-441B-A0BF-17B458C2A3A8}","IDM integration (IDMIEHlprObj Class)",
+Fields!ActiveXInfo.Value = "{0002E541-0000-0000-C000-000000000046}","Microsoft Office Spreadsheet 10.0",
+Fields!ActiveXInfo.Value = "{0002E542-0000-0000-C000-000000000046}","Microsoft Office PivotTable 10.0",
+Fields!ActiveXInfo.Value = "{0002E543-0000-0000-C000-000000000046}","Microsoft Office Data Source Control 10.0",
+Fields!ActiveXInfo.Value = "{0002E546-0000-0000-C000-000000000046}","Microsoft Office Chart 10.0",
+Fields!ActiveXInfo.Value = "{A9667083-5060-4f44-88FB-9FF7487BBA1B}","Intuit QuickBooks Connector",
+Fields!ActiveXInfo.Value = "{99D1A18F-504B-4539-8AD2-9603D4F764B8}","HHClass Class",
+Fields!ActiveXInfo.Value = "{D20F1B09-2417-47B9-9C6A-95ABE4B98D28}","InstanceFinderUtil Class",
+Fields!ActiveXInfo.Value = "{6D2459CD-9AA2-48a1-A4FB-ABB8E87F4C0D}","AnswerWorks 5 API",
+Fields!ActiveXInfo.Value = "{2318C2B1-4965-11d4-9B18-009027A5CD4F}","Google Toolbar",
+Fields!ActiveXInfo.Value = "{AA58ED58-01DD-4d91-8333-CF10577473F7}","Google Toolbar Helper",
+Fields!ActiveXInfo.Value = "{AF69DE43-7D58-4638-B6FA-CE66B5AD205D}","Google Toolbar Notifier BHO",
+Fields!ActiveXInfo.Value = "{D5233FCD-D258-4903-89B8-FB1568E7413D}","Act.UI.InternetExplorer.Plugins.AttachFile.CAttachFile",
+Fields!ActiveXInfo.Value = "{6F431AC3-364A-478b-BBDB-89C7CE1B18F6}","Attach Web page to ACT! contact...",
+Fields!ActiveXInfo.Value = "{8AD9C840-044E-11D1-B3E9-00805F499D93}","Java Plug-in 1.6.0_37",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-0016-0000-0037-ABCDEFFEDCBA}","Java Plug-in 1.6.0_37",
+Fields!ActiveXInfo.Value = "{CAFEEFAC-FFFF-FFFF-FFFF-ABCDEFFEDCBA}","Java Plug-in 1.6.0_37",
+Fields!ActiveXInfo.Value = "{CD3AFA8F-B84F-48F0-9393-7EDC34128127}","VIDEO__X_MS_ASF Moniker Class",
+Fields!ActiveXInfo.Value = "{CD3AFA9A-B84F-48F0-9393-7EDC34128127}","VIDEO__QUICKTIME Moniker Class"
+)</Value>
+                                        <Style>
+                                          <FontFamily>Verdana</FontFamily>
+                                          <FontSize>9pt</FontSize>
+                                          <FontWeight>Bold</FontWeight>
+                                          <Color>#4e0000</Color>
+                                        </Style>
+                                      </TextRun>
+                                    </TextRuns>
+                                    <Style />
+                                  </Paragraph>
+                                </Paragraphs>
+                                <rd:DefaultName>ActiveXInfo1</rd:DefaultName>
+                                <Style>
+                                  <Border>
+                                    <Color>#e8a25a</Color>
+                                    <Style>Solid</Style>
+                                  </Border>
+                                  <BackgroundColor>#f3af67</BackgroundColor>
+                                  <PaddingLeft>2pt</PaddingLeft>
+                                  <PaddingRight>2pt</PaddingRight>
+                                  <PaddingTop>2pt</PaddingTop>
+                                  <PaddingBottom>2pt</PaddingBottom>
+                                </Style>
+                              </Textbox>
+                            </CellContents>
+                          </TablixHeader>
+                          <TablixMembers>
+                            <TablixMember>
+                              <Group Name="Details" />
+                              <Visibility>
+                                <Hidden>true</Hidden>
+                                <ToggleItem>ActiveXInfo</ToggleItem>
+                              </Visibility>
+                            </TablixMember>
+                            <TablixMember>
+                              <KeepWithGroup>Before</KeepWithGroup>
+                            </TablixMember>
+                          </TablixMembers>
+                        </TablixMember>
+                      </TablixMembers>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                        <ToggleItem>MachineName</ToggleItem>
+                      </Visibility>
+                    </TablixMember>
+                    <TablixMember>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="Textbox77">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value />
+                                    <Style>
+                                      <FontFamily>Verdana</FontFamily>
+                                      <FontSize>9pt</FontSize>
+                                      <FontWeight>Bold</FontWeight>
+                                      <Color>#4e0000</Color>
+                                    </Style>
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>Textbox75</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Color>#de9646</Color>
+                                <Style>Solid</Style>
+                              </Border>
+                              <BackgroundColor>#ea9e52</BackgroundColor>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                      <TablixMembers>
+                        <TablixMember>
+                          <TablixHeader>
+                            <Size>1.89091in</Size>
+                            <CellContents>
+                              <Textbox Name="Textbox75">
+                                <CanGrow>true</CanGrow>
+                                <KeepTogether>true</KeepTogether>
+                                <Paragraphs>
+                                  <Paragraph>
+                                    <TextRuns>
+                                      <TextRun>
+                                        <Value />
+                                        <Style>
+                                          <FontFamily>Verdana</FontFamily>
+                                          <FontSize>9pt</FontSize>
+                                          <FontWeight>Bold</FontWeight>
+                                          <Color>#4e0000</Color>
+                                        </Style>
+                                      </TextRun>
+                                    </TextRuns>
+                                    <Style />
+                                  </Paragraph>
+                                </Paragraphs>
+                                <rd:DefaultName>Textbox75</rd:DefaultName>
+                                <Style>
+                                  <Border>
+                                    <Color>#de9646</Color>
+                                    <Style>Solid</Style>
+                                  </Border>
+                                  <BackgroundColor>#ea9e52</BackgroundColor>
+                                  <PaddingLeft>2pt</PaddingLeft>
+                                  <PaddingRight>2pt</PaddingRight>
+                                  <PaddingTop>2pt</PaddingTop>
+                                  <PaddingBottom>2pt</PaddingBottom>
+                                </Style>
+                              </Textbox>
+                            </CellContents>
+                          </TablixHeader>
+                          <TablixMembers>
+                            <TablixMember />
+                          </TablixMembers>
+                        </TablixMember>
+                      </TablixMembers>
+                      <KeepWithGroup>Before</KeepWithGroup>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixMember>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>0.88182in</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox25">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>Total</Value>
+                                <Style>
+                                  <FontFamily>Verdana</FontFamily>
+                                  <FontSize>9pt</FontSize>
+                                  <FontWeight>Bold</FontWeight>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox25</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>#a81616</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#920202</BackgroundColor>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <TablixMembers>
+                    <TablixMember>
+                      <TablixHeader>
+                        <Size>1.5in</Size>
+                        <CellContents>
+                          <Textbox Name="Textbox26">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value />
+                                    <Style>
+                                      <FontFamily>Verdana</FontFamily>
+                                      <FontSize>9pt</FontSize>
+                                      <FontWeight>Bold</FontWeight>
+                                      <Color>White</Color>
+                                    </Style>
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>Textbox26</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Color>#a81616</Color>
+                                <Style>Solid</Style>
+                              </Border>
+                              <BackgroundColor>#920202</BackgroundColor>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                      <TablixMembers>
+                        <TablixMember>
+                          <TablixHeader>
+                            <Size>1.89091in</Size>
+                            <CellContents>
+                              <Textbox Name="Textbox76">
+                                <CanGrow>true</CanGrow>
+                                <KeepTogether>true</KeepTogether>
+                                <Paragraphs>
+                                  <Paragraph>
+                                    <TextRuns>
+                                      <TextRun>
+                                        <Value />
+                                        <Style>
+                                          <FontFamily>Verdana</FontFamily>
+                                          <FontSize>9pt</FontSize>
+                                          <FontWeight>Bold</FontWeight>
+                                          <Color>White</Color>
+                                        </Style>
+                                      </TextRun>
+                                    </TextRuns>
+                                    <Style />
+                                  </Paragraph>
+                                </Paragraphs>
+                                <rd:DefaultName>Textbox76</rd:DefaultName>
+                                <Style>
+                                  <Border>
+                                    <Color>#a81616</Color>
+                                    <Style>Solid</Style>
+                                  </Border>
+                                  <BackgroundColor>#920202</BackgroundColor>
+                                  <PaddingLeft>2pt</PaddingLeft>
+                                  <PaddingRight>2pt</PaddingRight>
+                                  <PaddingTop>2pt</PaddingTop>
+                                  <PaddingBottom>2pt</PaddingBottom>
+                                </Style>
+                              </Textbox>
+                            </CellContents>
+                          </TablixHeader>
+                          <TablixMembers>
+                            <TablixMember />
+                          </TablixMembers>
+                        </TablixMember>
+                      </TablixMembers>
+                    </TablixMember>
+                  </TablixMembers>
+                  <KeepWithGroup>Before</KeepWithGroup>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet1</DataSetName>
+            <Height>1.25in</Height>
+            <Width>16.08182in</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+        </ReportItems>
+        <Height>2.25in</Height>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Body>
+      <Width>16.08182in</Width>
+      <Page>
+        <PageFooter>
+          <Height>0.01042in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageFooter>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>http://msdcsccmdb1/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
+</Report>
