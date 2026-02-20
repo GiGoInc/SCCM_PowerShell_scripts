@@ -1,13 +1,16 @@
-﻿<#
+<#
+}
+    }
+<#
 .Synopsis
    This script reads Collection Refresh Schedule date/time
 .DESCRIPTION
 .EXAMPLE
-    .\SCCM_Get_CollectionsRefreshSchedules.ps1 -SiteCode SS1 -SiteServer SCCMSERVER -CSV -output D:\Powershell\!SCCM_PS_scripts\!Collections\SCCM_Get_CollectionsRefreshSchedules.csv
+    .\SCCM_Get_CollectionsRefreshSchedules.ps1 -SiteCode XX1 -SiteServer SERVER -CSV -output D:\Powershell\!SCCM_PS_scripts\!Collections\SCCM_Get_CollectionsRefreshSchedules.csv
 .EXAMPLE
-    .\SCCM_Get_CollectionsRefreshSchedules.ps1 -SiteCode SS1 -SiteServer SCCMSERVER -CSV -output D:\Powershell\!SCCM_PS_scripts\!Collections\SCCM_Get_CollectionsRefreshSchedules.html
+    .\SCCM_Get_CollectionsRefreshSchedules.ps1 -SiteCode XX1 -SiteServer SERVER -CSV -output D:\Powershell\!SCCM_PS_scripts\!Collections\SCCM_Get_CollectionsRefreshSchedules.html
 .NOTES
-    Developed by Kaido Järvemets
+    Developed by Kaido J�rvemets
     Version 2.0
  
 #>
@@ -29,8 +32,8 @@ Param(
 )
 
 <#    
-    $SiteCode = 'SS1'
-    $SiteServer = 'SCCMSERVER'
+    $SiteCode = 'XX1'
+    $SiteServer = 'SERVER'
     $CSV = 'D:\Powershell\!SCCM_PS_scripts\!Collections\SCCM_Get_CollectionsRefreshSchedules.csv'
     $HTML = 'D:\Powershell\!SCCM_PS_scripts\!Collections\SCCM_Get_CollectionsRefreshSchedules.html'
     $Output = $CSV

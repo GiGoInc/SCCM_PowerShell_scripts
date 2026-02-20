@@ -1,4 +1,7 @@
-﻿<#
+<#
+If($SMSCli){$SMSCli.TriggerSchedule("{00000000-0000-0000-0000-000000000022}")}	# Evaluate Machine Policies}
+$SMSCli = [wmiclass] "\\$PC\root\ccm:SMS_Client"
+<#
 .Synopsis
    Initiate the evaluation of Configuration Manager client configuration baselines.
  
@@ -89,7 +92,7 @@ Function Invoke-CMClientBaselineEvaluation
 
 
 
-$PC = 'L6N5WJ12'
+$PC = 'COMPUTER00'
 Invoke-CMClientBaselineEvaluation -ComputerName $PC
 
 $SMSCli = [wmiclass] "\\$PC\root\ccm:SMS_Client"

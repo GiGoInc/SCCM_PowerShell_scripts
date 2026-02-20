@@ -1,4 +1,7 @@
-Ôªø# ALTERNATE CLEANUP - FROM SCCM CLIENT CENTER - CLEANUP ORPHANED ITEMS
+# ALTERNATE CLEANUP - FROM SCCM CLIENT CENTER - CLEANUP ORPHANED ITEMS
+	"Cleaned Items:" + $Cleaned
+	
+# ALTERNATE CLEANUP - FROM SCCM CLIENT CENTER - CLEANUP ORPHANED ITEMS
 	$CacheElements =  get-wmiobject -query "SELECT * FROM CacheInfoEx" -namespace "ROOT\ccm\SoftMgmtAgent"
 	$ElementGroup = $CacheElements | Group-Object ContentID
 	[int]$Cleaned = 0;
@@ -16,7 +19,7 @@
 			$ElementsToRemove = $CacheElements | where {$_.contentid -eq $ElementID.Name -and $_.ContentVer-ne $Max}
 			foreach ($Element in $ElementsToRemove)
 			{
-				Write-Host ‚ÄúDeleting‚Äù$Element.ContentID‚Äùwith version‚Äù$Element.ContentVersion -ForegroundColor Red
+				Write-Host ìDeletingî$Element.ContentIDîwith versionî$Element.ContentVersion -ForegroundColor Red
 				
 				Remove-Item $Element.Location -recurse
 				$Element.Delete()

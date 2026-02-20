@@ -1,4 +1,7 @@
-﻿$Computers = Get-Content "D:\Powershell\!SCCM_PS_scripts\!Desired_Configuration_Management\SCCM_Trigger_DCM_remotely--PCList.txt"
+$Computers = Get-Content "D:\Powershell\!SCCM_PS_scripts\!Desired_Configuration_Management\SCCM_Trigger_DCM_remotely--PCList.txt"
+
+$Computers | ForEach-Object {Invoke-Command -ScriptBlock ${function:Invoke-SccmBaselineEvaluation} -ArgumentList $_}
+$Computers = Get-Content "D:\Powershell\!SCCM_PS_scripts\!Desired_Configuration_Management\SCCM_Trigger_DCM_remotely--PCList.txt"
 
 
 Function Invoke-SccmBaselineEvaluation

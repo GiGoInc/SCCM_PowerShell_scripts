@@ -1,4 +1,7 @@
 #	2014-10-09	IBL	This script is working as expected.
+#>
+    -WhatIf									I.E. - CommonParameters
+#	2014-10-09	IBL	This script is working as expected.
 #					DeploymentList.txt needs to be formatted with each line containing Application Name and Collection ID like the next two lines:
 #					.Net 2.0,SCOrch - .Net framework 2.0 for XP
 #					.Net 3.5,SCOrch - .Net framework 3.5 for XP
@@ -6,7 +9,7 @@
 
 
 Import-Module 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1'
-Set-Location SS1:
+Set-Location XX1:
 
 
 $File = "$PSScriptRoot\DeploymentList.txt"

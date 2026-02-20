@@ -1,4 +1,7 @@
 #	2015-05-28	IBL	This script is working as expected.
+CD C:
+(Get-Content $File) | foreach-Object {invoke-command -ScriptBlock ${function:RunFunc} -ArgumentList $_}
+#	2015-05-28	IBL	This script is working as expected.
 #					SCCM_Get_Software_Update_ADR_list.txt needs to be formatted with each line containing ADR name like the next two lines:
 #					ADR: Server Reporting - Critical patches
 #					ADR: Workstations - 3rd Party Updates - Weekly
@@ -8,8 +11,8 @@
 C:
 CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 $File = "D:\Powershell\!SCCM_PS_scripts\!Software_Updates\SCCM_Get_Software_Update_ADR_list.txt"
 $ADate = Get-Date -Format "yyyy_MM-dd_hh-mm-ss"

@@ -1,4 +1,7 @@
-﻿<#
+<#
+}
+    Write-Verbose -Message "Script execution: $($StartTime.Elapsed.Minutes) min and $($StartTime.Elapsed.Seconds) seconds"
+<#
 .SYNOPSIS
     Perform a clean up of expired and/or supersded Software Updates in all Software Update Groups
 .DESCRIPTION

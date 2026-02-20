@@ -1,4 +1,7 @@
-﻿$computer = 'LACOET04'
+$computer = 'LACOET04'
+Exit-PSSession
+Restart-Service CcmExec
+$computer = 'LACOET04'
 
 
 

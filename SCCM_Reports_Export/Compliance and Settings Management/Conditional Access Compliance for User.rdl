@@ -1,0 +1,1880 @@
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <rdl:Language xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">=User!Language</rdl:Language>
+  <DataSources>
+    <DataSource Name="AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_">
+      <DataSourceReference>default_reference</DataSourceReference>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet0">
+      <Fields>
+        <Field Name="CA_PolicyName">
+          <DataField>CA_PolicyName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ResourceID">
+          <DataField>ResourceID</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Netbios_Name0">
+          <DataField>Netbios_Name0</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="DeviceID">
+          <DataField>DeviceID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="UniqueUserName">
+          <DataField>UniqueUserName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Agent_Edition">
+          <DataField>Agent_Edition</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="OS_Client_Version">
+          <DataField>OS_Client_Version</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CloudUserId">
+          <DataField>CloudUserId</DataField>
+          <rd:TypeName>System.Guid</rd:TypeName>
+        </Field>
+        <Field Name="LastConnected">
+          <DataField>LastConnected</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="ComplianceState_Desc">
+          <DataField>ComplianceState_Desc</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ComplianceState">
+          <DataField>ComplianceState</DataField>
+          <rd:TypeName>System.Byte</rd:TypeName>
+        </Field>
+        <Field Name="ErrorSettings">
+          <DataField>ErrorSettings</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="NonCompliantSettings">
+          <DataField>NonCompliantSettings</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="AAD_DeviceID">
+          <DataField>AAD_DeviceID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="CAC_AAD_ComplianceStatus">
+          <DataField>CAC_AAD_ComplianceStatus</DataField>
+          <rd:TypeName>System.Byte</rd:TypeName>
+        </Field>
+        <Field Name="CAC_AAD_Time">
+          <DataField>CAC_AAD_Time</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <CommandText>
+          -- The first two variables are for the report: 1st on is defined by the user and the 2nd is an internal/hidden parameter:
+          -- DECLARE @UserAlias nvarchar(256) = N'sid';
+          DECLARE @Win10SupportedVersion nvarchar(50) = N'10.0.10240.0';
+
+          DECLARE  @User nvarchar(256)
+          ,@CloudUserId uniqueidentifier
+          ,@Win10_First smallint
+          ,@Win10_Secnd smallint
+          ,@Win10_Third smallint
+          ,@Win10_Forth smallint;
+          SELECT  @Win10_First = PARSENAME(@Win10SupportedVersion,(LEN(@Win10SupportedVersion)-LEN(REPLACE(@Win10SupportedVersion,N'.',N'')))+1)
+          ,@Win10_Secnd = PARSENAME(@Win10SupportedVersion,(LEN(@Win10SupportedVersion)-LEN(REPLACE(@Win10SupportedVersion,N'.',N''))))
+          ,@Win10_Third = PARSENAME(@Win10SupportedVersion,(LEN(@Win10SupportedVersion)-LEN(REPLACE(@Win10SupportedVersion,N'.',N'')))-1)
+          ,@Win10_Forth = ISNULL(PARSENAME(@Win10SupportedVersion,(LEN(@Win10SupportedVersion)-LEN(REPLACE(@Win10SupportedVersion,N'.',N'')))-2),0);
+
+          -- Get the full UserName but ensure we only get one. For those with multiple records we'll grab the latest one based on the Creation Dates:
+          SELECT  TOP 1
+          @User = Unique_User_Name0
+          ,@CloudUserId = CloudUserId
+          FROM dbo.v_R_User
+          WHERE User_Name0 = @UserAlias
+          ORDER BY  AD_Object_Creation_Time0 DESC
+          ,Creation_Date0 DESC;
+
+          WITH XMLNAMESPACES ( 'http://schemas.microsoft.com/SystemsCenterConfigurationManager/2009/07/10/DesiredConfiguration' as dcm
+          ,'http://schemas.microsoft.com/SystemsCenterConfigurationManager/2009/06/14/Rules' as rul)
+          ,Policies AS ( -- This gets all CA policies and what they are "applicable to" along with the collections to which they are targeted:
+          SELECT  DISTINCT cis.CI_ID
+          ,cis.SDMPackageDigest.value(N'(/dcm:DesiredConfigurationDigest/dcm:ConfigurationPolicy/rul:Annotation/rul:DisplayName/@Text)[1]',N'nvarchar(513)') AS [CA_PolicyName]
+          ,CASE
+          WHEN plt.OSPlatform IN (N'x64',N'I386') AND (cis.ConfigurationFlags &amp; 3) = 3 AND plt.OSMinVersion = N'6.30.0000.0' THEN 'ConfigMgr Win8.1'
+          WHEN plt.OSPlatform IN (N'x64',N'I386') AND (cis.ConfigurationFlags &amp; 3) = 3 AND plt.OSMinVersion = N'6.20.0000.0' THEN 'ConfigMgr Win8'
+          WHEN plt.OSPlatform IN (N'x64',N'I386') AND (cis.ConfigurationFlags &amp; 3) = 3 AND plt.OSMinVersion = N'6.10.0000.0' THEN 'ConfigMgr Win7'
+          WHEN plt.OSPlatform IN (N'x64',N'I386') AND (cis.ConfigurationFlags &amp; 3) = 3 AND plt.OSMinVersion = N'10.00.0000.0' THEN 'ConfigMgr Win10'
+          WHEN plt.OSPlatform IN (N'x64',N'I386') AND (cis.ConfigurationFlags &amp; 1) = 1 AND plt.OSMinVersion = N'6.30.0000.0' THEN 'NDJ Win8.1'
+          WHEN plt.OSPlatform IN (N'x64',N'I386') AND (cis.ConfigurationFlags &amp; 1) = 1 AND plt.OSMinVersion = N'10.00.0000.0' THEN 'NDJ Win10'
+          WHEN plt.OSPlatform = N'Windows Phone' AND plt.OSMinVersion = N'8.10.0000.0' THEN 'WindowsPhone 8.1' -- cis.ConfigurationFlags = 1
+          WHEN plt.OSPlatform = N'Windows Phone' AND plt.OSMinVersion = N'10.00.0000.0' THEN 'WindowsPhone 10' -- cis.ConfigurationFlags = 1
+          WHEN plt.OSPlatform = N'Android' AND plt.CI_UniqueID LIKE '%AndroidForWork%' THEN 'AndroidForWork'
+          WHEN plt.OSPlatform = N'Android' THEN 'Android'
+          WHEN plt.OSPlatform = N'iOS' THEN 'iOS'
+          END AS [ApplicableTo]
+          ,col.CollectionID
+          FROM dbo.CI_ConfigurationItems cis
+          CROSS APPLY cis.SDMPackageDigest.nodes(N'//rul:PlatformApplicabilityCondition/rul:OperatingSystemExpression/rul:Operands/rul:RuleExpression') pac(RuleApplicability)
+          INNER JOIN dbo.SupportedPlatforms plt
+          ON pac.RuleApplicability.value(N'./@RuleId',N'nvarchar(max)') = plt.CI_UniqueID
+          INNER JOIN dbo.CI_AssignmentTargetedCIs ass -- this is to get the assignment info for the policy
+          ON cis.CI_ID = ass.CI_ID
+          INNER JOIN dbo.v_CIAssignment asm
+          ON ass.AssignmentID = asm.AssignmentID
+          INNER JOIN dbo.v_Collection col -- this is to just get the assignment for the user based assignment &amp; the Collection Targeted to determine applicable devices
+          ON asm.CollectionID = col.CollectionID
+          AND col.CollectionType = 1 -- User = 1; Machine = 2
+          WHERE cis.CIType_ID = 50
+          AND cis.IsLatest = 1
+          AND cis.ConfigurationFlags &amp; 3 IN (1,3)
+          )
+          ,UserDevices AS ( -- This gets all the devices associated with the supplied user (using UDA and ConditionalAccessCompliance for CM machines):
+          SELECT  umr.UniqueUserName
+          ,sis.ResourceID
+          ,sis.Netbios_Name0
+          ,sis.SMS_Unique_Identifier0
+          ,dvc.Agent_Edition
+          ,CASE sis.AgentEdition0
+          WHEN 0 THEN ISNULL(REPLACE(REPLACE(REPLACE(sis.Build01,N'(',N'.'),N' ',N''),N')',N''),ops.Version0)
+          ELSE sis.Client_Version0
+          END AS [OS_Client_Version]
+          FROM dbo.v_UserMachineRelation umr
+          INNER JOIN dbo.v_R_System sis
+          ON umr.MachineResourceID = sis.ResourceID
+          AND ISNULL(sis.Obsolete0,0) = 0
+          AND umr.RelationActive = 1
+          LEFT OUTER JOIN (
+          SELECT  ResourceID
+          ,Version0
+          ,ROW_NUMBER() OVER (PARTITION BY ResourceID ORDER BY TimeStamp DESC) AS [LatestOSRecord]
+          FROM dbo.v_GS_OPERATING_SYSTEM
+          ) ops
+          ON sis.ResourceID = ops.ResourceID
+          AND ops.LatestOSRecord = 1
+          LEFT OUTER JOIN dbo.UserMachineSourceRelation usr
+          ON umr.RelationshipResourceID = usr.RelationshipResourceID
+          AND usr.SourceID = 5 -- "DeviceManagement" records only (for MDM)
+          CROSS APPLY ( -- This is used so that we don't have to repeat the CASE multiple times...
+          SELECT  CASE sis.AgentEdition0
+          WHEN 0  THEN CASE WHEN ISNULL(REPLACE(REPLACE(REPLACE(sis.Build01,N'(',N'.'),N' ',N''),N')',N''),ops.Version0) = N'6.3.9600' THEN 'ConfigMgr Win8.1'
+          WHEN ISNULL(REPLACE(REPLACE(REPLACE(sis.Build01,N'(',N'.'),N' ',N''),N')',N''),ops.Version0) = N'6.1.7601' THEN 'ConfigMgr Win7'
+          WHEN CONVERT(smallint,ISNULL(PARSENAME(REPLACE(REPLACE(REPLACE(sis.Build01,N'(',N'.'),N' ',N''),N')',N''),3),PARSENAME(ops.Version0,(LEN(ops.Version0)-LEN(REPLACE(ops.Version0,N'.',N'')))+1))) &gt;= @Win10_First
+          AND CONVERT(smallint,ISNULL(PARSENAME(REPLACE(REPLACE(REPLACE(sis.Build01,N'(',N'.'),N' ',N''),N')',N''),2),PARSENAME(ops.Version0,(LEN(ops.Version0)-LEN(REPLACE(ops.Version0,N'.',N'')))))) = @Win10_Secnd
+          AND CONVERT(smallint,ISNULL(PARSENAME(REPLACE(REPLACE(REPLACE(sis.Build01,N'(',N'.'),N' ',N''),N')',N''),1),PARSENAME(ops.Version0,(LEN(ops.Version0)-LEN(REPLACE(ops.Version0,N'.',N'')))-1))) &gt;= @Win10_Third
+          THEN 'ConfigMgr Win10'
+          ELSE 'Unsupported ConfigMgr'
+          END
+          WHEN 1  THEN CASE WHEN sis.CPUType0 LIKE N'%ARM%' THEN 'WindowsRT'
+          WHEN sis.CPUType0 IS NULL THEN 'Unknown OMADM'
+          WHEN sis.Client_Version0 = N'6.3.9600' THEN 'NDJ Win8.1'
+          WHEN CONVERT(smallint,PARSENAME(sis.Client_Version0,(LEN(sis.Client_Version0)-LEN(REPLACE(sis.Client_Version0,N'.',N'')))+1)) &gt;= @Win10_First
+          AND CONVERT(smallint,PARSENAME(sis.Client_Version0,(LEN(sis.Client_Version0)-LEN(REPLACE(sis.Client_Version0,N'.',N''))))) = @Win10_Secnd
+          AND CONVERT(smallint,PARSENAME(sis.Client_Version0,(LEN(sis.Client_Version0)-LEN(REPLACE(sis.Client_Version0,N'.',N'')))-1)) &gt;= @Win10_Third
+          AND ISNULL(CONVERT(smallint,PARSENAME(sis.Client_Version0,(LEN(sis.Client_Version0)-LEN(REPLACE(sis.Client_Version0,N'.',N'')))-2)),0) &gt;= @Win10_Forth
+          THEN 'NDJ Win10'
+          ELSE 'Unsupported NDJ'
+          END
+          WHEN 4  THEN CASE --WHEN sis.Client_Version0 LIKE N'8.0.%' THEN 'WindowsPhone 8'
+          WHEN sis.Client_Version0 LIKE N'8.1%' THEN 'WindowsPhone 8.1'
+          WHEN CONVERT(smallint,PARSENAME(sis.Client_Version0,(LEN(sis.Client_Version0)-LEN(REPLACE(sis.Client_Version0,N'.',N'')))+1)) &gt;= @Win10_First
+          AND CONVERT(smallint,PARSENAME(sis.Client_Version0,(LEN(sis.Client_Version0)-LEN(REPLACE(sis.Client_Version0,N'.',N''))))) = @Win10_Secnd
+          AND CONVERT(smallint,PARSENAME(sis.Client_Version0,(LEN(sis.Client_Version0)-LEN(REPLACE(sis.Client_Version0,N'.',N'')))-1)) &gt;= @Win10_Third
+          AND ISNULL(CONVERT(smallint,PARSENAME(sis.Client_Version0,(LEN(sis.Client_Version0)-LEN(REPLACE(sis.Client_Version0,N'.',N'')))-2)),0) &gt;= @Win10_Forth
+          THEN 'WindowsPhone 10'
+          ELSE 'Unsupported WP'
+          END
+          WHEN 8  THEN 'iPhone'
+          WHEN 9  THEN 'iPad'
+          WHEN 10 THEN 'iPodTouch'
+          WHEN 11 THEN 'Android'
+          WHEN 17 THEN 'AndroidForWork'
+          END
+          ) dvc(Agent_Edition)
+          WHERE umr.UniqueUserName = @User
+          AND CASE WHEN sis.AgentEdition0 &gt; 0 THEN usr.SourceID ELSE 5 END = 5 -- this is to get only the "DeviceManagement" records for the MDM devices
+          UNION
+          SELECT  usr.Unique_User_Name0
+          ,sis.ResourceID
+          ,sis.Netbios_Name0
+          ,sis.SMS_Unique_Identifier0
+          ,dvc.Agent_Edition
+          ,ISNULL(REPLACE(REPLACE(REPLACE(sis.Build01,N'(',N'.'),N' ',N''),N')',N''),ops.Version0) AS [OS_Client_Version]
+          FROM dbo.ConditionalAccessCompliance cac
+          INNER JOIN dbo.v_R_User usr
+          ON cac.UserItemKey = usr.ResourceID
+          INNER JOIN dbo.v_R_System sis
+          ON cac.DeviceItemKey = sis.ResourceID
+          LEFT OUTER JOIN (
+          SELECT  ResourceID
+          ,Version0
+          ,ROW_NUMBER() OVER (PARTITION BY ResourceID ORDER BY TimeStamp DESC) AS [LatestOSRecord]
+          FROM dbo.v_GS_OPERATING_SYSTEM
+          ) ops
+          ON sis.ResourceID = ops.ResourceID
+          AND ops.LatestOSRecord = 1
+          CROSS APPLY ( -- This is used so that we don't have to repeat the CASE multiple times...
+          SELECT  CASE sis.AgentEdition0
+          WHEN 0  THEN CASE 
+          WHEN ISNULL(REPLACE(REPLACE(REPLACE(sis.Build01,N'(',N'.'),N' ',N''),N')',N''),ops.Version0) = N'6.3.9600' THEN 'ConfigMgr Win8.1'
+          WHEN ISNULL(REPLACE(REPLACE(REPLACE(sis.Build01,N'(',N'.'),N' ',N''),N')',N''),ops.Version0) = N'6.2.9200' THEN 'ConfigMgr Win8'
+          WHEN ISNULL(REPLACE(REPLACE(REPLACE(sis.Build01,N'(',N'.'),N' ',N''),N')',N''),ops.Version0) = N'6.1.7601' THEN 'ConfigMgr Win7'
+          WHEN CONVERT(smallint,ISNULL(PARSENAME(REPLACE(REPLACE(REPLACE(sis.Build01,N'(',N'.'),N' ',N''),N')',N''),3),PARSENAME(ops.Version0,(LEN(ops.Version0)-LEN(REPLACE(ops.Version0,N'.',N'')))+1))) &gt;= @Win10_First
+          AND CONVERT(smallint,ISNULL(PARSENAME(REPLACE(REPLACE(REPLACE(sis.Build01,N'(',N'.'),N' ',N''),N')',N''),2),PARSENAME(ops.Version0,(LEN(ops.Version0)-LEN(REPLACE(ops.Version0,N'.',N'')))))) = @Win10_Secnd
+          AND CONVERT(smallint,ISNULL(PARSENAME(REPLACE(REPLACE(REPLACE(sis.Build01,N'(',N'.'),N' ',N''),N')',N''),1),PARSENAME(ops.Version0,(LEN(ops.Version0)-LEN(REPLACE(ops.Version0,N'.',N'')))-1))) &gt;= @Win10_Third
+          THEN 'ConfigMgr Win10'
+          ELSE 'Unsupported ConfigMgr'
+          END
+          END
+          ) dvc(Agent_Edition)
+          WHERE usr.Unique_User_Name0 = @User
+          )
+          ,ApplicableDevices AS ( -- This determines which devices and CA policies are applicable for the user:
+          -- Note: records found in "ConditionalAccessCompliance" for machines that don't match the "applicableto" in a policy will be removed...
+          --  i.e., a record for a machine with an OS of 8.1 will be removed if there is not a policy applicable to ConfigMgr Win8.1
+          SELECT  DISTINCT usd.ResourceID
+          ,usd.Netbios_Name0
+          ,usd.SMS_Unique_Identifier0
+          ,usd.UniqueUserName
+          ,usd.Agent_Edition
+          ,usd.OS_Client_Version
+          ,pol.CA_PolicyName
+          ,pol.CI_ID
+          FROM UserDevices usd
+          INNER JOIN Policies pol
+          ON CASE WHEN usd.Agent_Edition IN ('iPhone','iPad','iPodTouch') THEN 'iOS' ELSE usd.Agent_Edition END = pol.ApplicableTo
+          INNER JOIN dbo.vCollectionMembers mem
+          ON pol.CollectionID = mem.SiteID
+          AND usd.UniqueUserName = mem.SMSID
+          )
+          ,Results AS ( -- This returns the applicable devices along with the status from CurrentComplianceStatus:
+          SELECT  dvc.ResourceID
+          ,dvc.Netbios_Name0
+          ,dvc.SMS_Unique_Identifier0
+          ,dvc.UniqueUserName
+          ,dvc.Agent_Edition
+          ,dvc.CA_PolicyName
+          ,dvc.CI_ID
+          ,dvc.OS_Client_Version
+          ,snm.StateName
+          ,sts.ComplianceState
+          ,sts.IsApplicable
+          --,ROW_NUMBER() OVER(PARTITION BY dvc.ResourceID,dvc.CA_PolicyName ORDER BY sts.UserID DESC) AS [MaxUserIDNum] -- this is used later to ensure that we are only getting one record per resource with our preference being the non "(SYSTEM)" record
+          ,sts.CI_CurrentComplianceStatusID
+          FROM ApplicableDevices dvc
+          LEFT OUTER JOIN dbo.v_CICurrentComplianceStatus sts
+          ON dvc.ResourceID = sts.ResourceID
+          AND dvc.CI_ID = sts.CI_ID
+          --AND dvc.UniqueUserName = sts.FullName  -- do we want to see the status returned by other users??
+          -- can't put isapplicable = 1 because that will mess up the "Unknown" stats....
+          LEFT OUTER JOIN dbo.v_StateNames snm
+          ON sts.ComplianceState = snm.StateID
+          AND snm.TopicType = 401
+          )
+
+          -- This is the final resultset which returns error and non-compliance details for each device in one record rather than multiple:
+          SELECT  rst.CA_PolicyName
+          ,rst.ResourceID
+          ,mdm.DeviceID
+          ,rst.Netbios_Name0
+          ,rst.UniqueUserName
+          ,@CloudUserId AS [CloudUserId]
+          ,rst.Agent_Edition
+          ,rst.OS_Client_Version
+          ,atv.ActiveDate AS [LastConnected]
+          ,ISNULL(rst.StateName,N'Unknown') AS [ComplianceState_Desc]
+          ,ISNULL(rst.ComplianceState,99) AS [ComplianceState]
+          ,STUFF(ers.Settings,1,2,N'') AS [ErrorSettings]
+          ,STUFF(csd.NonCompliantSettings,1,2,N'') AS [NonCompliantSettings]
+          --,cac.IsCompliant
+          --,CASE WHEN cac.ComplianceSetTime != N'' THEN CONVERT(datetime,cac.ComplianceSetTime) END AS [ComplianceEvalTime]
+          ,ISNULL(mdm.AAD_DeviceID,cac.AADDeviceID) AS [AAD_DeviceID]
+          --,mdm.AAD_UpdateTime
+          --,mdm.AAD_ComplianceStatus
+          ,ISNULL(cac.IsCompliant,mdm.AAD_ComplianceStatus) AS [CAC_AAD_ComplianceStatus]
+          ,ISNULL(CASE WHEN cac.ComplianceSetTime != N'' THEN CONVERT(datetime,cac.ComplianceSetTime) END,mdm.AAD_UpdateTime) AS [CAC_AAD_Time]
+          --,cac.ComplianceEvalTime
+          --,mdm.AAD_UpdateTime
+          FROM Results rst
+          LEFT OUTER JOIN (
+          SELECT  ResourceId
+          ,MAX(AgentTime) AS [ActiveDate]
+          FROM dbo.v_AgentDiscoveries
+          WHERE AgentName IN ('MP_ClientRegistration', 'Heartbeat Discovery','MP_INVENTORY_MANAGER')
+          GROUP BY ResourceId
+          ) atv
+          ON rst.ResourceID = atv.ResourceId
+          LEFT OUTER JOIN dbo.v_R_User usr
+          ON rst.UniqueUserName = usr.Unique_User_Name0
+          LEFT OUTER JOIN dbo.ConditionalAccessCompliance cac
+          ON rst.ResourceID = cac.DeviceItemKey
+          AND usr.ResourceID = cac.UserItemKey
+          LEFT OUTER JOIN (
+          SELECT  CONVERT(nvarchar(256),cli.DeviceID) AS [DeviceID]
+          ,cli.ClientState
+          ,MIN(CASE WHEN prp.PropertyName = N'ReferenceGUID' THEN prp.PropertyValue END) AS [AAD_DeviceID]
+          ,MIN(CASE WHEN prp.PropertyName = N'GraphIsCompliantLastUpdateTime' THEN CASE WHEN prp.PropertyValue NOT IN (N'',N'01/01/0001 00:00:00.000') THEN CONVERT(datetime,prp.PropertyValue) END END) AS [AAD_UpdateTime]
+          ,MIN(CASE WHEN prp.PropertyName = N'IsCompliant' THEN prp.PropertyValue END) AS [AAD_ComplianceStatus]
+          FROM dbo.MDMClientIdentity cli
+          LEFT OUTER JOIN dbo.v_MDMDeviceProperty prp
+          ON cli.DeviceID = prp.DeviceID
+          AND PropertyName IN (N'ReferenceGUID',N'GraphIsCompliantLastUpdateTime',N'IsCompliant')
+          GROUP BY  CONVERT(nvarchar(256),cli.DeviceID)
+          ,cli.ClientState
+          ) mdm
+          ON rst.SMS_Unique_Identifier0 = mdm.DeviceID
+          -- Error Info
+          CROSS APPLY (
+          SELECT  N', '+stg.SettingName
+          FROM dbo.v_CI_CurrentErrorDetails err
+          LEFT OUTER JOIN dbo.v_CISettings stg
+          ON err.CI_ID = stg.CI_ID
+          AND err.SettingID = stg.Setting_ID
+          WHERE err.CurrentComplianceStatusID = rst.CI_CurrentComplianceStatusID
+          FOR XML PATH ('')
+          ) ers(Settings)
+          -- Non-Compliant Info
+          CROSS APPLY (
+          SELECT  N', '+Setting_UniqueID
+          FROM dbo.v_CIComplianceStatusDetail
+          WHERE CI_ID = rst.CI_ID
+          AND ResourceID = rst.ResourceID
+          AND FullName = rst.UniqueUserName
+          FOR XML PATH ('')
+          ) csd(NonCompliantSettings)
+          WHERE ISNULL(rst.IsApplicable,1) = 1;
+        </CommandText>
+        <QueryParameters>
+          <QueryParameter Name="@UserAlias">
+            <Value>=Parameters!UserAlias.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+      </Query>
+    </DataSet>
+    <DataSet Name="DataSetAdminID">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@UserTokenSIDs">
+            <Value>=Parameters!UserTokenSIDs.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select dbo.fn_rbac_GetAdminIDsfromUserSIDs(@UserTokenSIDs) as UserSIDs</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="UserSIDs">
+          <DataField>UserSIDs</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <Body>
+    <ReportItems>
+      <Tablix Name="CompByUserTable">
+        <TablixBody>
+          <TablixColumns>
+            <TablixColumn>
+              <Width>2.86in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>1.62in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>2.99in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>3.55in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>1.81in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>1.81in</Width>
+            </TablixColumn>
+          </TablixColumns>
+          <TablixRows>
+            <TablixRow>
+              <Height>0.25in</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox45">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("CAForUser_Agent_Edition", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox45</rd:DefaultName>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox13">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("CAForUser_OS_Version", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox13</rd:DefaultName>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox49">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("CAForUser_Last_Heartbeat", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox49</rd:DefaultName>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox32">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("CAForUser_Last_Heartbeat", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox32</rd:DefaultName>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox33">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("CAForUser_Last_Heartbeat", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox33</rd:DefaultName>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox4">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("CAForUser_Last_Heartbeat", User!Language)</Value>
+                              <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                                <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                <rdl:FontSize>9pt</rdl:FontSize>
+                                <rdl:FontWeight>Bold</rdl:FontWeight>
+                                <rdl:Color>Black</rdl:Color>
+                              </rdl:Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox4</rd:DefaultName>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                        <rdl:Border>
+                          <rdl:Color>#557eb9</rdl:Color>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:Border>
+                        <rdl:TopBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:TopBorder>
+                        <rdl:BottomBorder>
+                          <rdl:Style>Solid</rdl:Style>
+                          <rdl:Width>1.5pt</rdl:Width>
+                        </rdl:BottomBorder>
+                        <rdl:LeftBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:LeftBorder>
+                        <rdl:RightBorder>
+                          <rdl:Style>None</rdl:Style>
+                        </rdl:RightBorder>
+                        <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                        <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                        <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                        <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                        <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                        <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                      </rdl:Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+            <TablixRow>
+              <Height>0.25in</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Agent_Edition1">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!Agent_Edition.Value</Value>
+                              <Style />
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Agent_Edition1</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <BackgroundColor>CornflowerBlue</BackgroundColor>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="OS_Client_Version1">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!OS_Client_Version.Value</Value>
+                              <Style />
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>OS_Client_Version1</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <BackgroundColor>CornflowerBlue</BackgroundColor>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="LastConnected">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!LastConnected.Value</Value>
+                              <Style />
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>LastConnected</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <BackgroundColor>CornflowerBlue</BackgroundColor>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox57">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value />
+                              <Style />
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox57</rd:DefaultName>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox43">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value />
+                              <Style />
+                            </TextRun>
+                          </TextRuns>
+                          <Style />
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox43</rd:DefaultName>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox60">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value />
+                              <Style />
+                            </TextRun>
+                          </TextRuns>
+                          <Style />
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox60</rd:DefaultName>
+                      <Visibility>
+                        <Hidden>true</Hidden>
+                      </Visibility>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+            <TablixRow>
+              <Height>0.25in</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox47">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("CAForUser_Compliance_Policy", User!Language)</Value>
+                              <Style>
+                                <FontWeight>Bold</FontWeight>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox47</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <BackgroundColor>Silver</BackgroundColor>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox22">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("CAForUser_Compliance_State", User!Language)</Value>
+                              <Style>
+                                <FontWeight>Bold</FontWeight>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox22</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <BackgroundColor>Silver</BackgroundColor>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox51">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("CAForUser_Error_Settings", User!Language)</Value>
+                              <Style>
+                                <FontWeight>Bold</FontWeight>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox51</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <BackgroundColor>Silver</BackgroundColor>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox23">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("CAForUser_NonCompliant_Settings", User!Language)</Value>
+                              <Style>
+                                <FontWeight>Bold</FontWeight>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox23</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <BackgroundColor>Silver</BackgroundColor>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox24">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=IIf(Fields!Agent_Edition.Value Like "ConfigMgr*",SrsResources.Localization.GetString("CAForUser_CAC_Compliance_Status", User!Language),SrsResources.Localization.GetString("CAForUser_AAD_Compliance_Status", User!Language))</Value>
+                              <Style>
+                                <FontWeight>Bold</FontWeight>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox24</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <BackgroundColor>Silver</BackgroundColor>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox61">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=SrsResources.Localization.GetString("CAForUser_AAD_Update_Time", User!Language)</Value>
+                              <Style>
+                                <FontWeight>Bold</FontWeight>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox61</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <BackgroundColor>Silver</BackgroundColor>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+            <TablixRow>
+              <Height>0.25in</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="CA_PolicyName1">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!CA_PolicyName.Value</Value>
+                              <Style />
+                            </TextRun>
+                          </TextRuns>
+                          <Style />
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>CA_PolicyName1</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="ComplianceState_Desc1">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!ComplianceState_Desc.Value</Value>
+                              <Style />
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>ComplianceState_Desc1</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox58">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Replace(Fields!ErrorSettings.Value,", ",VbCrLf)</Value>
+                              <Style />
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox58</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="ErrorSettings1">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Replace(Fields!NonCompliantSettings.Value,", ",VbCrLf)</Value>
+                              <Style />
+                            </TextRun>
+                          </TextRuns>
+                          <Style />
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>ErrorSettings1</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="NonCompliantSettings1">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=IIf(IsNothing(Fields!CAC_AAD_ComplianceStatus.Value),Nothing,IIf(Fields!CAC_AAD_ComplianceStatus.Value=0,"No","Yes"))</Value>
+                              <Style />
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>NonCompliantSettings1</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="CAC_AAD_Time">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!CAC_AAD_Time.Value</Value>
+                              <Style />
+                            </TextRun>
+                          </TextRuns>
+                          <Style>
+                            <TextAlign>Center</TextAlign>
+                          </Style>
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>CAC_AAD_Time</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>LightGrey</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+          </TablixRows>
+        </TablixBody>
+        <TablixColumnHierarchy>
+          <TablixMembers>
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+            <TablixMember />
+          </TablixMembers>
+        </TablixColumnHierarchy>
+        <TablixRowHierarchy>
+          <TablixMembers>
+            <TablixMember>
+              <TablixHeader>
+                <Size>4.32in</Size>
+                <CellContents>
+                  <Textbox Name="Textbox19">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value />
+                            <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                              <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                              <rdl:FontSize>9pt</rdl:FontSize>
+                              <rdl:FontWeight>Bold</rdl:FontWeight>
+                              <rdl:Color>Black</rdl:Color>
+                            </rdl:Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style />
+                      </Paragraph>
+                    </Paragraphs>
+                    <rd:DefaultName>Textbox19</rd:DefaultName>
+                    <Visibility>
+                      <Hidden>true</Hidden>
+                    </Visibility>
+                    <rdl:Style xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+                      <rdl:Border>
+                        <rdl:Color>#557eb9</rdl:Color>
+                        <rdl:Style>None</rdl:Style>
+                      </rdl:Border>
+                      <rdl:TopBorder>
+                        <rdl:Style>Solid</rdl:Style>
+                        <rdl:Width>1.5pt</rdl:Width>
+                      </rdl:TopBorder>
+                      <rdl:BottomBorder>
+                        <rdl:Style>Solid</rdl:Style>
+                        <rdl:Width>1.5pt</rdl:Width>
+                      </rdl:BottomBorder>
+                      <rdl:LeftBorder>
+                        <rdl:Style>None</rdl:Style>
+                      </rdl:LeftBorder>
+                      <rdl:RightBorder>
+                        <rdl:Style>None</rdl:Style>
+                      </rdl:RightBorder>
+                      <rdl:BackgroundColor>White</rdl:BackgroundColor>
+                      <rdl:VerticalAlign>Bottom</rdl:VerticalAlign>
+                      <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                      <rdl:PaddingRight>5pt</rdl:PaddingRight>
+                      <rdl:PaddingTop>5pt</rdl:PaddingTop>
+                      <rdl:PaddingBottom>5pt</rdl:PaddingBottom>
+                    </rdl:Style>
+                  </Textbox>
+                </CellContents>
+              </TablixHeader>
+              <TablixMembers>
+                <TablixMember />
+              </TablixMembers>
+              <KeepWithGroup>After</KeepWithGroup>
+            </TablixMember>
+            <TablixMember>
+              <Group Name="Group1">
+                <GroupExpressions>
+                  <GroupExpression>=Fields!ResourceID.Value</GroupExpression>
+                </GroupExpressions>
+              </Group>
+              <SortExpressions>
+                <SortExpression>
+                  <Value>=Fields!ResourceID.Value</Value>
+                </SortExpression>
+              </SortExpressions>
+              <TablixHeader>
+                <Size>4.32in</Size>
+                <CellContents>
+                  <Textbox Name="Netbios_Name01">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>="&lt;b&gt;" &amp; Fields!Netbios_Name0.Value &amp; "&lt;/b&gt;" &amp; IIf(IsNothing(Fields!DeviceID.Value),Nothing, "&lt;br&gt;" &amp; "&lt;i&gt;" &amp; "&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;" &amp; "&lt;u&gt;" &amp; SrsResources.Localization.GetString("CAForUser_DeviceID", User!Language) &amp; ":" &amp; "&lt;/u&gt;" &amp; "&amp;nbsp;" &amp; Fields!DeviceID.Value &amp; "&lt;/i&gt;") &amp; IIf(IsNothing(Fields!AAD_DeviceID.Value),Nothing, "&lt;br&gt;" &amp; "&lt;i&gt;" &amp; "&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;" &amp; "&lt;u&gt;" &amp; SrsResources.Localization.GetString("CAForUser_AAD_DeviceID", User!Language) &amp; ":" &amp; "&lt;/u&gt;" &amp; "&amp;nbsp;" &amp; Fields!AAD_DeviceID.Value &amp; "&lt;/i&gt;")</Value>
+                            <MarkupType>HTML</MarkupType>
+                            <Style />
+                          </TextRun>
+                        </TextRuns>
+                        <Style />
+                      </Paragraph>
+                    </Paragraphs>
+                    <rd:DefaultName>Netbios_Name01</rd:DefaultName>
+                    <Style>
+                      <Border>
+                        <Color>LightGrey</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <BackgroundColor>CornflowerBlue</BackgroundColor>
+                      <PaddingLeft>2pt</PaddingLeft>
+                      <PaddingRight>2pt</PaddingRight>
+                      <PaddingTop>2pt</PaddingTop>
+                      <PaddingBottom>2pt</PaddingBottom>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixHeader>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember>
+                  <Visibility>
+                    <Hidden>true</Hidden>
+                    <ToggleItem>Netbios_Name01</ToggleItem>
+                  </Visibility>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="Details" />
+                  <Visibility>
+                    <Hidden>true</Hidden>
+                    <ToggleItem>Netbios_Name01</ToggleItem>
+                  </Visibility>
+                </TablixMember>
+              </TablixMembers>
+            </TablixMember>
+          </TablixMembers>
+        </TablixRowHierarchy>
+        <DataSetName>DataSet0</DataSetName>
+        <rdl:Top xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">0.83in
+    </rdl:Top>
+        <rdl:Left xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">0in</rdl:Left>
+        <Height>1in</Height>
+        <Width>18.97208in</Width>
+        <ZIndex>1</ZIndex>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Tablix>
+      <Textbox Name="Textbox2">
+        <CanGrow>true</CanGrow>
+        <KeepTogether>true</KeepTogether>
+        <Paragraphs>
+          <Paragraph>
+            <TextRuns>
+              <TextRun>
+                <Value>=SrsResources.Localization.GetString("CAForUser_Cloud_UserID", User!Language) &amp; ":" &amp; First(Fields!CloudUserId.Value, "DataSet0") </Value>
+                <Style>
+                  <FontStyle>Italic</FontStyle>
+                </Style>
+              </TextRun>
+            </TextRuns>
+            <Style />
+          </Paragraph>
+        </Paragraphs>
+        <rd:DefaultName>Textbox2</rd:DefaultName>
+        <rdl:Top xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">0.33in
+    </rdl:Top>
+        <Left>0.12167in</Left>
+        <Height>0.26042in</Height>
+        <Width>12.1875in</Width>
+        <ZIndex>2</ZIndex>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <PaddingBottom>2pt</PaddingBottom>
+        </Style>
+      </Textbox>
+      <Textbox Name="ExecutionTime">
+        <CanGrow>true</CanGrow>
+        <KeepTogether>true</KeepTogether>
+        <Paragraphs>
+          <Paragraph>
+            <TextRuns>
+              <TextRun>
+                <Value>=Globals!ExecutionTime</Value>
+                <Style />
+              </TextRun>
+            </TextRuns>
+            <Style />
+          </Paragraph>
+        </Paragraphs>
+        <rd:DefaultName>ExecutionTime</rd:DefaultName>
+        <rdl:Top xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">2.19458in
+    </rdl:Top>
+        <Left>0.11125in</Left>
+        <Height>0.30375in</Height>
+        <Width>2.51042in</Width>
+        <ZIndex>3</ZIndex>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <PaddingBottom>2pt</PaddingBottom>
+        </Style>
+      </Textbox>
+      <rdl:Rectangle Name="ReportDescriptionRectangle" xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+        <rdl:ReportItems>
+          <rdl:Tablix Name="ReportDescriptionTablix">
+            <rdl:DataSetName>DataSet0</rdl:DataSetName>
+            <rdl:TablixBody>
+              <rdl:TablixColumns>
+                <rdl:TablixColumn>
+                  <rdl:Width>1.25in</rdl:Width>
+                </rdl:TablixColumn>
+                <rdl:TablixColumn>
+                  <rdl:Width>17.583330154418945in</rdl:Width>
+                </rdl:TablixColumn>
+              </rdl:TablixColumns>
+              <rdl:TablixRows>
+                <rdl:TablixRow>
+                  <rdl:Height>0.4in</rdl:Height>
+                  <rdl:TablixCells>
+                    <rdl:TablixCell>
+                      <rdl:CellContents>
+                        <rdl:Textbox Name="DescriptionLabelTextbox">
+                          <rdl:CanGrow>true</rdl:CanGrow>
+                          <rdl:KeepTogether>true</rdl:KeepTogether>
+                          <rdl:Paragraphs>
+                            <rdl:Paragraph>
+                              <rdl:TextRuns>
+                                <rdl:TextRun>
+                                  <rdl:Value>=SrsResources.Localization.GetString("Description", User!Language)</rdl:Value>
+                                  <rdl:Style>
+                                    <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                    <rdl:FontWeight>Bold</rdl:FontWeight>
+                                    <rdl:FontSize>9pt</rdl:FontSize>
+                                    <rdl:Color>Black</rdl:Color>
+                                  </rdl:Style>
+                                </rdl:TextRun>
+                              </rdl:TextRuns>
+                              <rdl:Style />
+                            </rdl:Paragraph>
+                          </rdl:Paragraphs>
+                          <rd:DefaultName>Textbox16</rd:DefaultName>
+                          <rdl:Style>
+                            <rdl:Border>
+                              <rdl:Color>LightGrey</rdl:Color>
+                              <rdl:Style>Solid</rdl:Style>
+                            </rdl:Border>
+                            <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+                            <rdl:PaddingLeft>2pt</rdl:PaddingLeft>
+                            <rdl:PaddingRight>2pt</rdl:PaddingRight>
+                            <rdl:PaddingTop>2pt</rdl:PaddingTop>
+                            <rdl:PaddingBottom>2pt</rdl:PaddingBottom>
+                          </rdl:Style>
+                        </rdl:Textbox>
+                      </rdl:CellContents>
+                    </rdl:TablixCell>
+                    <rdl:TablixCell>
+                      <rdl:CellContents>
+                        <rdl:Textbox Name="DescriptionTextbox">
+                          <rdl:CanGrow>true</rdl:CanGrow>
+                          <rdl:KeepTogether>true</rdl:KeepTogether>
+                          <rdl:Paragraphs>
+                            <rdl:Paragraph>
+                              <rdl:TextRuns>
+                                <rdl:TextRun>
+                                  <rdl:Value>=SrsResources.Localization.GetString("CAForUser_Description", User!Language)</rdl:Value>
+                                  <rdl:Style>
+                                    <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                                    <rdl:FontSize>9pt</rdl:FontSize>
+                                    <rdl:FontWeight>Normal</rdl:FontWeight>
+                                    <rdl:Color>Black</rdl:Color>
+                                  </rdl:Style>
+                                </rdl:TextRun>
+                              </rdl:TextRuns>
+                              <rdl:Style />
+                            </rdl:Paragraph>
+                          </rdl:Paragraphs>
+                          <rd:DefaultName>Textbox18</rd:DefaultName>
+                          <rdl:Visibility>
+                            <rdl:Hidden>true</rdl:Hidden>
+                            <rdl:ToggleItem>DescriptionLabelTextbox</rdl:ToggleItem>
+                          </rdl:Visibility>
+                          <rdl:Style>
+                            <rdl:Border>
+                              <rdl:Color>LightGrey</rdl:Color>
+                              <rdl:Style>Solid</rdl:Style>
+                            </rdl:Border>
+                            <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+                            <rdl:PaddingLeft>5pt</rdl:PaddingLeft>
+                            <rdl:PaddingRight>2pt</rdl:PaddingRight>
+                            <rdl:PaddingTop>2pt</rdl:PaddingTop>
+                            <rdl:PaddingBottom>2pt</rdl:PaddingBottom>
+                          </rdl:Style>
+                        </rdl:Textbox>
+                      </rdl:CellContents>
+                    </rdl:TablixCell>
+                  </rdl:TablixCells>
+                </rdl:TablixRow>
+              </rdl:TablixRows>
+            </rdl:TablixBody>
+            <rdl:TablixColumnHierarchy>
+              <rdl:TablixMembers>
+                <rdl:TablixMember />
+                <rdl:TablixMember />
+              </rdl:TablixMembers>
+            </rdl:TablixColumnHierarchy>
+            <rdl:TablixRowHierarchy>
+              <rdl:TablixMembers>
+                <rdl:TablixMember />
+              </rdl:TablixMembers>
+            </rdl:TablixRowHierarchy>
+            <rdl:Top>0.0in</rdl:Top>
+            <rdl:Height>0.2in</rdl:Height>
+            <rdl:Style>
+              <rdl:Border>
+                <rdl:Style>None</rdl:Style>
+              </rdl:Border>
+            </rdl:Style>
+          </rdl:Tablix>
+        </rdl:ReportItems>
+        <rdl:KeepTogether>true</rdl:KeepTogether>
+        <rdl:Left>0in</rdl:Left>
+        <rdl:Height>0.21181in</rdl:Height>
+        <rdl:Top>0.0in</rdl:Top>
+        <rdl:Width>19.083330154418945in</rdl:Width>
+        <rdl:ZIndex>1</rdl:ZIndex>
+        <rdl:Style>
+          <rdl:Border>
+            <rdl:Style>None</rdl:Style>
+          </rdl:Border>
+          <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+        </rdl:Style>
+      </rdl:Rectangle>
+      <rdl:Line Name="ReportDescriptionLine" xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+        <rdl:Top>0.25in</rdl:Top>
+        <rdl:Left>0in</rdl:Left>
+        <rdl:Height>0in</rdl:Height>
+        <rdl:Width>19.083330154418945in</rdl:Width>
+        <rdl:ZIndex>2</rdl:ZIndex>
+        <rdl:Style>
+          <rdl:Border>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:Border>
+          <rdl:TopBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:TopBorder>
+          <rdl:BottomBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:BottomBorder>
+          <rdl:LeftBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:LeftBorder>
+          <rdl:RightBorder>
+            <rdl:Style>Double</rdl:Style>
+            <rdl:Width>1.5pt</rdl:Width>
+          </rdl:RightBorder>
+        </rdl:Style>
+      </rdl:Line>
+    </ReportItems>
+    <Height>2.6025in</Height>
+    <Style />
+  </Body>
+  <Width>19.08333in</Width>
+  <rdl:Page xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+    <rdl:PageHeader>
+      <rdl:Height>1.1in</rdl:Height>
+      <rdl:PrintOnFirstPage>true</rdl:PrintOnFirstPage>
+      <rdl:PrintOnLastPage>true</rdl:PrintOnLastPage>
+      <rdl:ReportItems>
+        <rdl:Rectangle Name="BackgroundColorRectangle">
+          <rdl:ReportItems>
+            <rdl:Image Name="RightHeaderImage">
+              <rdl:Source>External</rdl:Source>
+              <rdl:Value>/ConfigMgr_DC1/Report Resources/Report_Header_Right.png</rdl:Value>
+              <rdl:Top>0.0in</rdl:Top>
+              <rdl:Left>16.743330240249634in</rdl:Left>
+              <rdl:Height>0.75in</rdl:Height>
+              <rdl:Width>2.3399999141693115in</rdl:Width>
+              <rdl:Style>
+                <rdl:Border>
+                  <rdl:Style>None</rdl:Style>
+                </rdl:Border>
+              </rdl:Style>
+            </rdl:Image>
+            <rdl:Image Name="CenterHeaderImage">
+              <rdl:Source>External</rdl:Source>
+              <rdl:Sizing>Fit</rdl:Sizing>
+              <rdl:Value>/ConfigMgr_DC1/Report Resources/Report_Header_Center.png</rdl:Value>
+              <rdl:Top>0.0in</rdl:Top>
+              <rdl:Left>0.20999999344348907in</rdl:Left>
+              <rdl:Height>0.75in</rdl:Height>
+              <rdl:Width>16.5333309173584in</rdl:Width>
+              <rdl:Style>
+                <rdl:Border>
+                  <rdl:Style>None</rdl:Style>
+                </rdl:Border>
+              </rdl:Style>
+            </rdl:Image>
+            <rdl:Image Name="LeftHeaderImage">
+              <rdl:Source>External</rdl:Source>
+              <rdl:Value>/ConfigMgr_DC1/Report Resources/Report_Header_Left.png</rdl:Value>
+              <rdl:Top>0.0in</rdl:Top>
+              <rdl:Left>0.0in</rdl:Left>
+              <rdl:Height>0.75in</rdl:Height>
+              <rdl:Width>0.20999999344348907in</rdl:Width>
+              <rdl:ZIndex>1</rdl:ZIndex>
+              <rdl:Style>
+                <rdl:Border>
+                  <rdl:Style>None</rdl:Style>
+                </rdl:Border>
+              </rdl:Style>
+            </rdl:Image>
+          </rdl:ReportItems>
+          <rdl:KeepTogether>true</rdl:KeepTogether>
+          <rdl:Top>0.0in</rdl:Top>
+          <rdl:Left>0in</rdl:Left>
+          <rdl:Height>0.75in</rdl:Height>
+          <rdl:Width>19.083330154418945in</rdl:Width>
+          <rdl:Style>
+            <rdl:Border>
+              <rdl:Style>None</rdl:Style>
+            </rdl:Border>
+            <rdl:BackgroundColor>#e2e9f2</rdl:BackgroundColor>
+          </rdl:Style>
+        </rdl:Rectangle>
+        <rdl:Textbox Name="ReportTitleTextbox">
+          <rdl:CanGrow>true</rdl:CanGrow>
+          <rdl:KeepTogether>true</rdl:KeepTogether>
+          <rdl:Paragraphs>
+            <rdl:Paragraph>
+              <rdl:TextRuns>
+                <rdl:TextRun>
+                  <rdl:Value>=SrsResources.Localization.GetString("CAForUser_Name", User!Language) + "  "</rdl:Value>
+                  <rdl:Style>
+                    <rdl:FontFamily>Segoe UI</rdl:FontFamily>
+                    <rdl:FontSize>17pt</rdl:FontSize>
+                    <rdl:FontWeight>Bold</rdl:FontWeight>
+                    <rdl:Color>Black</rdl:Color>
+                  </rdl:Style>
+                </rdl:TextRun>
+              </rdl:TextRuns>
+              <rdl:Style />
+            </rdl:Paragraph>
+          </rdl:Paragraphs>
+          <rd:DefaultName>Textbox54</rd:DefaultName>
+          <rdl:Top>0.75in</rdl:Top>
+          <rdl:Left>0in</rdl:Left>
+          <rdl:Height>0.35in</rdl:Height>
+          <rdl:Width>19.083330154418945in</rdl:Width>
+          <rdl:ZIndex>1</rdl:ZIndex>
+          <rdl:Style>
+            <rdl:Border>
+              <rdl:Style>None</rdl:Style>
+            </rdl:Border>
+            <rdl:BackgroundColor>Gainsboro</rdl:BackgroundColor>
+            <rdl:PaddingLeft>2pt</rdl:PaddingLeft>
+            <rdl:PaddingRight>2pt</rdl:PaddingRight>
+            <rdl:PaddingTop>2pt</rdl:PaddingTop>
+            <rdl:PaddingBottom>2pt</rdl:PaddingBottom>
+          </rdl:Style>
+        </rdl:Textbox>
+      </rdl:ReportItems>
+      <rdl:Style>
+        <rdl:Border>
+          <rdl:Style>None</rdl:Style>
+        </rdl:Border>
+      </rdl:Style>
+    </rdl:PageHeader>
+    <rdl:PageFooter>
+      <rdl:Height>0.45in</rdl:Height>
+      <rdl:PrintOnFirstPage>true</rdl:PrintOnFirstPage>
+      <rdl:PrintOnLastPage>true</rdl:PrintOnLastPage>
+      <rdl:Style>
+        <rdl:Border>
+          <rdl:Style>None</rdl:Style>
+        </rdl:Border>
+      </rdl:Style>
+    </rdl:PageFooter>
+    <rdl:PageHeight>27.94cm</rdl:PageHeight>
+    <rdl:PageWidth>21.59cm</rdl:PageWidth>
+    <rdl:LeftMargin>2.54cm</rdl:LeftMargin>
+    <rdl:RightMargin>2.54cm</rdl:RightMargin>
+    <rdl:TopMargin>2.54cm</rdl:TopMargin>
+    <rdl:BottomMargin>2.54cm</rdl:BottomMargin>
+    <rdl:Style />
+  </rdl:Page>
+  <rdl:CodeModules xmlns:rdl="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
+    <rdl:CodeModule>SrsResources, culture=neutral</rdl:CodeModule>
+  </rdl:CodeModules>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportID>e4a17e46-7706-4ba8-9304-96c9909e56d0</rd:ReportID>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <ReportParameters>
+    <ReportParameter Name="UserTokenSIDs">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=SrsResources.UserIdentity.GetUserSIDs(User!UserID)</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="UserSIDs">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <DataSetReference>
+          <DataSetName>DataSetAdminID</DataSetName>
+          <ValueField>UserSIDs</ValueField>
+        </DataSetReference>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="UserAlias">
+      <DataType>String</DataType>
+      <Prompt>User Alias</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+</Report>

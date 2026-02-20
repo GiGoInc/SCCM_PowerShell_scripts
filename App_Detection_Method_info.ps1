@@ -1,4 +1,7 @@
-ï»¿<#######################################
+<#######################################
+#>
+#################################################################################################
+<#######################################
 # SQL QUERY
 ;WITH XMLNAMESPACES ( DEFAULT 'http://schemas.microsoft.com/SystemCenterConfigurationManager/2009/AppMgmtDigest') 
 SELECT app.Manufacturer
@@ -90,7 +93,7 @@ $AppNum++
 (gc $OutputLog) | ? {$_.trim() -ne "" } | Set-Content $OutputLog
 # END DATE
 $ADateE = Get-Date
-$t = NEW-TIMESPAN â€“Start $ADateS â€“End $ADateE | select Minutes,Seconds
+$t = NEW-TIMESPAN –Start $ADateS –End $ADateE | select Minutes,Seconds
 $min = $t.Minutes
 $sec = $t.seconds
 Write-Host "Script ran: $min minutes and $sec seconds."
@@ -103,7 +106,7 @@ $AppNames = Get-CMApplication | select LocalizedDisplayName,PackageID
 #$($AppNames.LocalizedDisplayName) | Set-Content "D:\Powershell\!SCCM_PS_scripts\Get_Application_DeploymentType_DetectionMethods--ApplicationNames.csv"
 # END DATE
 $ADateE = Get-Date
-$t = NEW-TIMESPAN â€“Start $ADateS â€“End $ADateE | select Minutes,Seconds
+$t = NEW-TIMESPAN –Start $ADateS –End $ADateE | select Minutes,Seconds
 $min = $t.Minutes
 $sec = $t.seconds
 cls
@@ -133,7 +136,7 @@ $AppNames = 'Attachmate EXTRA X-treme 9.1 - Host Sessions', `
             'Noble - Winscrape', `
             'Office 2013 Pro Plus w SP1 64bit', `
             'Micro Focus Reflection Desktop', `
-            'Verint Impact 360 for Banker Solutions', `
+            'Verint Impact 360 for Part2er Solutions', `
             'Microsoft Visual C PlusPlus 2012'           
 ForEach ($AppName in $AppNames)
 {

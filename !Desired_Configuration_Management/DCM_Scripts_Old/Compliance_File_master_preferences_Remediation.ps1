@@ -1,4 +1,7 @@
-﻿# "File Content" Remediation Script
+# "File Content" Remediation Script
+catch{$_}
+}
+# "File Content" Remediation Script
 
 $list = '{
 	"homepage": "http://thesource",

@@ -1,4 +1,7 @@
-﻿ #---------------------------------------------------------------------------#
+ #---------------------------------------------------------------------------#
+"CCM Installed on $CCMTime" 
+$CCMTime = Get-Item -Path C:\Windows\ccmsetup\ccmsetup.cab | Select-Object -Property CreationTime
+ #---------------------------------------------------------------------------#
 #                           SCCM 2012 Client Repair                         #
 # AUTH: David Bennett                                                       #
 #                                                                           #

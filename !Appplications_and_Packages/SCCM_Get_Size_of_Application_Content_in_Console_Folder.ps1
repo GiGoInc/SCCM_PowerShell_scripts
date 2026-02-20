@@ -1,4 +1,7 @@
 <#
+write-host "$(($totalsize / 1GB).ToString(".00")) GB" -ForegroundColor Green
+write-host "Total Size of all content files for every application in the '$FolderName' folder is:" -ForegroundColor Green
+<#
  
 This script gets the total size of all the content files for each deployment type for each application in the console folder you specify.
  

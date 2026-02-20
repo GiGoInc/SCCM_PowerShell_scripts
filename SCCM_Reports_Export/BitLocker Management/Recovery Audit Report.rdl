@@ -1,0 +1,1100 @@
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns:nt="http://schemas.microsoft.com/EndpointManagerConfigurationManager/2020/12/02/reportext">
+  <nt:NoTransform>true</nt:NoTransform>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_">
+      <DataSourceReference>default_reference</DataSourceReference>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="RecoveryAuditReportDataSet">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@Requestor">
+            <Value>=Parameters!Requestor.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
+          <QueryParameter Name="@Requestee">
+            <Value>=Parameters!Requestee.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
+          <QueryParameter Name="@StartDate">
+            <Value>=Parameters!StartDate.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
+          <QueryParameter Name="@EndDate">
+            <Value>=Parameters!EndDate.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandType>StoredProcedure</CommandType>
+        <CommandText>ComplianceRead.GetAuditInformation</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="RecoveryDateTime">
+          <DataField>RecoveryDateTime</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Source">
+          <DataField>Source</DataField>
+          <rd:TypeName>System.Nullable`1[System.Int32]</rd:TypeName>
+        </Field>
+        <Field Name="RecoverySucceeded">
+          <DataField>RecoverySucceeded</DataField>
+          <rd:TypeName>System.Boolean</rd:TypeName>
+        </Field>
+        <Field Name="RecoveryInfoTypeId">
+          <DataField>RecoveryInfoTypeId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="RequesteeName">
+          <DataField>RequesteeName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RequesteeDomainName">
+          <DataField>RequesteeDomainName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RequestorName">
+          <DataField>RequestorName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="RequestorDomainName">
+          <DataField>RequestorDomainName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Reason">
+          <DataField>Reason</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="MachineDomainName">
+          <DataField>MachineDomainName</DataField>
+          <rd:UserDefined>true</rd:UserDefined>
+        </Field>
+        <Field Name="MachineName">
+          <DataField>MachineName</DataField>
+          <rd:UserDefined>true</rd:UserDefined>
+        </Field>
+      </Fields>
+      <Filters>
+        <Filter>
+          <FilterExpression>=IIf(Fields!RecoverySucceeded.Value,1,0)</FilterExpression>
+          <Operator>In</Operator>
+          <FilterValues>
+            <FilterValue>=Parameters!RequestResult.Value</FilterValue>
+          </FilterValues>
+        </Filter>
+        <Filter>
+          <FilterExpression>=Fields!RecoveryInfoTypeId.Value</FilterExpression>
+          <Operator>In</Operator>
+          <FilterValues>
+            <FilterValue>=Parameters!KeyType.Value</FilterValue>
+          </FilterValues>
+        </Filter>
+      </Filters>
+    </DataSet>
+    <DataSet Name="DataSetAdminID">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@UserTokenSIDs">
+            <Value>=Parameters!UserTokenSIDs.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select dbo.fn_rbac_GetAdminIDsfromUserSIDs(@UserTokenSIDs) as UserSIDs</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="UserSIDs">
+          <DataField>UserSIDs</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="Tablix1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.57614in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.96992in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.96992in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.54117in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.69404in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.58327in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.05632in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.47913in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.36805in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="RequestDateTime">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!RecoveryDateTime.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Request Date and Time</Value>
+                                  <Style>
+                                    <FontStyle>Normal</FontStyle>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#e0e0e0</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <RightBorder>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="RequestSource">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Source.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Audit Request Source</Value>
+                                  <Style>
+                                    <FontStyle>Normal</FontStyle>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox4</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e0e0e0</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <RightBorder>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="RequestResult">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!RecoverySucceeded.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Request Result</Value>
+                                  <Style>
+                                    <FontStyle>Normal</FontStyle>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#e0e0e0</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <RightBorder>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Requestor">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!RequestorName.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Helpdesk User</Value>
+                                  <Style>
+                                    <FontStyle>Normal</FontStyle>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#e0e0e0</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <RightBorder>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Requestee">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!RequesteeName.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>End User</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#e0e0e0</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <RightBorder>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Computer</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e0e0e0</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <RightBorder>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="KeyType">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!RecoveryInfoTypeId.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Key Type</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Color>#e0e0e0</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <RightBorder>
+                              <Style>Solid</Style>
+                              <Width>1pt</Width>
+                            </RightBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox79">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=IIf(Fields!Reason.Value = "Reset PIN Lockout", "Reset PIN lockout", IIf(Fields!Reason.Value = "Turn on TPM", "Turn on TPM", IIf(Fields!Reason.Value = "Turn off TPM", "Turn off TPM", IIf(Fields!Reason.Value = "Change TPM password", "Change TPM password", IIf(Fields!Reason.Value = "Clear TPM", "Clear TPM", IIf(Fields!Reason.Value = "Operating System Boot Order changed", "Operating System Boot Order changed", IIf(Fields!Reason.Value = "BIOS changed", "BIOS changed", IIf(Fields!Reason.Value = "Operating System files modified", "Operating System files modified", IIf(Fields!Reason.Value = "Lost Startup Key", "Lost Startup Key", IIf(Fields!Reason.Value = "Lost PIN", "Lost PIN", IIf(Fields!Reason.Value = "TPM Reset", "TPM Reset", IIf(Fields!Reason.Value = "Lost Passphrase", "Lost Passphrase", IIf(Fields!Reason.Value = "Lost Smartcard", "Lost Smartcard", IIf(Fields!Reason.Value = "Other", "Other", Fields!Reason.Value))))))))))))))</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Reason Description</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>8pt</FontSize>
+                                    <Color>#666666</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox79</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <BackgroundColor>White</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.80555in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=System.TimeZone.CurrentTimeZone.ToLocalTime(Fields!RecoveryDateTime.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(nothing) Mod 2, "WhiteSmoke","White")</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>6pt</PaddingRight>
+                            <PaddingTop>6pt</PaddingTop>
+                            <PaddingBottom>4pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="RecoverySourceCell">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIf(IsNothing(Fields!Source.Value), "", Switch(Fields!Source.Value = 1, "Administration Service", Fields!Source.Value = 2, "Helpdesk", Fields!Source.Value = 3, "Self-Service Portal", Fields!Source.Value = 4, "Agent TPM unlock"))</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>RecoverySourceCell</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(nothing) Mod 2, "WhiteSmoke","White")</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>6pt</PaddingRight>
+                            <PaddingTop>6pt</PaddingTop>
+                            <PaddingBottom>4pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox53">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIf(Fields!RecoverySucceeded.Value, "Successful", "Failed")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox53</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(nothing) Mod 2, "WhiteSmoke","White")</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>6pt</PaddingRight>
+                            <PaddingTop>6pt</PaddingTop>
+                            <PaddingBottom>4pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox54">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIf(Fields!RequestorName.Value is nothing, "", Fields!RequestorName.Value + "@" + Fields!RequestorDomainName.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox54</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(nothing) Mod 2, "WhiteSmoke","White")</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>6pt</PaddingRight>
+                            <PaddingTop>6pt</PaddingTop>
+                            <PaddingBottom>4pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox55">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIf(Fields!RequesteeName.Value is nothing, "", Fields!RequesteeDomainName.Value + "\" + Fields!RequesteeName.Value)</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox55</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(nothing) Mod 2, "WhiteSmoke","White")</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>6pt</PaddingRight>
+                            <PaddingTop>6pt</PaddingTop>
+                            <PaddingBottom>4pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox3">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIf(Fields!MachineName.Value is nothing, "Not Applicable", IIf(Fields!MachineDomainName.Value = "", Fields!MachineName.Value, Fields!MachineDomainName.Value + "\" + Fields!MachineName.Value))</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox3</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(nothing) Mod 2, "WhiteSmoke","White")</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>6pt</PaddingRight>
+                            <PaddingTop>6pt</PaddingTop>
+                            <PaddingBottom>4pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox56">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Switch(Fields!RecoveryInfoTypeId.Value = 1, "Recovery Key Password", Fields!RecoveryInfoTypeId.Value = 2, "Recovery Key IDs", Fields!RecoveryInfoTypeId.Value = 3, "TPM Password Hash")</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox56</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(nothing) Mod 2, "WhiteSmoke","White")</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>6pt</PaddingRight>
+                            <PaddingTop>6pt</PaddingTop>
+                            <PaddingBottom>4pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox80">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIf(Fields!Reason.Value = "Reset PIN Lockout", "Reset PIN lockout", IIf(Fields!Reason.Value = "Turn on TPM", "Turn on TPM", IIf(Fields!Reason.Value = "Turn off TPM", "Turn off TPM", IIf(Fields!Reason.Value = "Change TPM password", "Change TPM password", IIf(Fields!Reason.Value = "Clear TPM", "Clear TPM", IIf(Fields!Reason.Value = "Operating System Boot Order changed", "Operating System Boot Order changed", IIf(Fields!Reason.Value = "BIOS changed", "BIOS changed", IIf(Fields!Reason.Value = "Operating System files modified", "Operating System files modified", IIf(Fields!Reason.Value = "Lost Startup Key", "Lost Startup Key", IIf(Fields!Reason.Value = "Lost PIN", "Lost PIN", IIf(Fields!Reason.Value = "TPM Reset", "TPM Reset", IIf(Fields!Reason.Value = "Lost Passphrase", "Lost Passphrase", IIf(Fields!Reason.Value = "Lost Smartcard", "Lost Smartcard", IIf(Fields!Reason.Value = "Other", "Other", Fields!Reason.Value))))))))))))))</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox80</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(nothing) Mod 2, "WhiteSmoke","White")</BackgroundColor>
+                            <PaddingLeft>6pt</PaddingLeft>
+                            <PaddingRight>6pt</PaddingRight>
+                            <PaddingTop>6pt</PaddingTop>
+                            <PaddingBottom>4pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="Details" />
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>RecoveryAuditReportDataSet</DataSetName>
+            <Top>1.78719in</Top>
+            <Left>0.25206in</Left>
+            <Height>1.1736in</Height>
+            <Width>11.35832in</Width>
+            <Style>
+              <Border>
+                <Color>#cccccc</Color>
+                <Style>Solid</Style>
+              </Border>
+              <TopBorder>
+                <Style>Solid</Style>
+                <Width>1pt</Width>
+              </TopBorder>
+              <BottomBorder>
+                <Style>Solid</Style>
+                <Width>1pt</Width>
+              </BottomBorder>
+              <LeftBorder>
+                <Style>Solid</Style>
+                <Width>1pt</Width>
+              </LeftBorder>
+              <RightBorder>
+                <Style>Solid</Style>
+                <Width>1pt</Width>
+              </RightBorder>
+              <BackgroundColor>=iif((RowNumber(nothing)-1) Mod 2, "WhiteSmoke","White")</BackgroundColor>
+            </Style>
+          </Tablix>
+          <Image Name="Image2">
+            <Source>Embedded</Source>
+            <Value>Icon_Report</Value>
+            <Sizing>FitProportional</Sizing>
+            <Top>0.15333in</Top>
+            <Left>0.25209in</Left>
+            <Height>0.5in</Height>
+            <Width>0.5in</Width>
+            <ZIndex>1</ZIndex>
+            <ToolTip>Recovery Audit Report</ToolTip>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Image>
+          <Textbox Name="Textbox20">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Recovery Audit Report</Value>
+                    <Style>
+                      <FontFamily>Segoe UI</FontFamily>
+                      <FontSize>16pt</FontSize>
+                      <Color>#444444</Color>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value />
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Segoe UI</FontFamily>
+                      <FontWeight>Normal</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#666666</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox19</rd:DefaultName>
+            <Top>0.15333in</Top>
+            <Left>0.82153in</Left>
+            <Height>0.34791in</Height>
+            <Width>5.21183in</Width>
+            <ZIndex>2</ZIndex>
+            <ToolTip>Recovery Audit Report</ToolTip>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox26">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Recovery Key Access Audit Results</Value>
+                    <Style>
+                      <FontFamily>Segoe UI</FontFamily>
+                      <FontSize>9pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox2</rd:DefaultName>
+            <Top>1.57538in</Top>
+            <Left>0.25206in</Left>
+            <Height>0.21181in</Height>
+            <Width>11.75832in</Width>
+            <ZIndex>3</ZIndex>
+            <Style>
+              <Border>
+                <Color>#b6b8e4</Color>
+                <Style>None</Style>
+              </Border>
+              <TopBorder>
+                <Style>Solid</Style>
+              </TopBorder>
+              <LeftBorder>
+                <Style>Solid</Style>
+              </LeftBorder>
+              <RightBorder>
+                <Style>Solid</Style>
+              </RightBorder>
+              <BackgroundImage>
+                <Source>Embedded</Source>
+                <Value>ListHeader_Bkgd_Repeatx</Value>
+                <BackgroundRepeat>RepeatX</BackgroundRepeat>
+              </BackgroundImage>
+              <PaddingLeft>4pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox21">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>The Recovery Audit report displays information about the recovery data access requests that were made. This report displays who accessed recovery data, who requested recovery data, and the types of recovery data that were requested.</Value>
+                    <Style>
+                      <FontStyle>Normal</FontStyle>
+                      <FontFamily>Segoe UI</FontFamily>
+                      <FontWeight>Normal</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                      <Color>#666666</Color>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox19</rd:DefaultName>
+            <Top>0.52902in</Top>
+            <Left>0.82153in</Left>
+            <Height>0.84791in</Height>
+            <Width>5.21183in</Width>
+            <ZIndex>4</ZIndex>
+            <ToolTip>The Recovery Audit report displays information about the recovery data access requests that were made. This report displays who accessed recovery data, who requested recovery data, and the types of recovery data that were requested.</ToolTip>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+        </ReportItems>
+        <Height>3.09664in</Height>
+        <Style />
+      </Body>
+      <Width>11.61038in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="UserTokenSIDs">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=SrsResources.UserIdentity.GetUserSIDs(User!UserID)</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="UserSIDs">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <DataSetReference>
+          <DataSetName>DataSetAdminID</DataSetName>
+          <ValueField>UserSIDs</ValueField>
+        </DataSetReference>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="Requestor">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <DefaultValue>
+        <Values>
+          <Value xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
+        </Values>
+      </DefaultValue>
+      <Prompt>Helpdesk User</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="Requestee">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <DefaultValue>
+        <Values>
+          <Value xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
+        </Values>
+      </DefaultValue>
+      <Prompt>End User</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="RequestResult">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>1</Value>
+          <Value>0</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Request Result</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>1</Value>
+            <Label>Successful</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>0</Value>
+            <Label>Failed</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+      <MultiValue>true</MultiValue>
+    </ReportParameter>
+    <ReportParameter Name="KeyType">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>1</Value>
+          <Value>2</Value>
+          <Value>3</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Key Type</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>1</Value>
+            <Label>Recovery Key Password</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>2</Value>
+            <Label>Recovery Key ID</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>3</Value>
+            <Label>TPM Password Hash</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+      <MultiValue>true</MultiValue>
+    </ReportParameter>
+    <ReportParameter Name="StartDate">
+      <DataType>DateTime</DataType>
+      <Nullable>true</Nullable>
+      <DefaultValue>
+        <Values>
+          <Value xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
+        </Values>
+      </DefaultValue>
+      <Prompt>Start Date</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="EndDate">
+      <DataType>DateTime</DataType>
+      <Nullable>true</Nullable>
+      <DefaultValue>
+        <Values>
+          <Value xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" />
+        </Values>
+      </DefaultValue>
+      <Prompt>End Date</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <EmbeddedImages>
+    <EmbeddedImage Name="Icon_Report">
+      <MIMEType>image/png</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+    <EmbeddedImage Name="ListHeader_Bkgd_Repeatx">
+      <MIMEType>image/png</MIMEType>
+      <ImageData>iVBORw0KGgoAAAANSUhEUgAAAAUAAAAWCAYAAAAILVbQAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNAay06AAAAAWdEVYdENyZWF0aW9uIFRpbWUAMTEvMDcvMDd3s0FQAAAAQ0lEQVQYlaWOMQ4AIAgDMeH/n3VwsBR36YCR8XIXOjaYdp1XZOYU1JkKsp+3zb98rl0hIMxAXe8R0mznynz4Lk0x6QDIbT6yRJgP3QAAAABJRU5ErkJggg==</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <Language>=User!Language</Language>
+  <CodeModules>
+    <CodeModule>SrsResources, culture=neutral</CodeModule>
+  </CodeModules>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>ed40db1d-53be-4d21-9f23-271c79e77d1d</rd:ReportID>
+</Report>

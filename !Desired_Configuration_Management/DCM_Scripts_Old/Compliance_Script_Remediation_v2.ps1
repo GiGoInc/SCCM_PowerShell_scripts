@@ -1,4 +1,7 @@
-ÔªøIf(!(Test-Path 'C:\Windows\Logs\Software')){New-Item -Path 'C:\Windows\Logs\Software' -ItemType Directory -Force}
+If(!(Test-Path 'C:\Windows\Logs\Software')){New-Item -Path 'C:\Windows\Logs\Software' -ItemType Directory -Force}
+}
+        }
+If(!(Test-Path 'C:\Windows\Logs\Software')){New-Item -Path 'C:\Windows\Logs\Software' -ItemType Directory -Force}
 $log = 'C:\Windows\Logs\Software\SCCM_client_cache_cleanup.log'
 
 
@@ -136,7 +139,7 @@ ElseIf (($foldersize -ne '0') -and ($bytes -eq '0')){
         					$ElementsToRemove = $CacheElements | where {$_.contentid -eq $ElementID.Name -and $_.ContentVer-ne $Max}
         					foreach ($Element in $ElementsToRemove)
         					{
-        						#Write-Host ‚ÄúDeleting‚Äù$Element.ContentID‚Äùwith version‚Äù$Element.ContentVersion -ForegroundColor Red
+        						#Write-Host ìDeletingî$Element.ContentIDîwith versionî$Element.ContentVersion -ForegroundColor Red
         						"$(get-date -format MM/dd/yyy)  *  $(get-date -format HH:mm:ss)   ****   Deleting $Element.ContentID with version $Element.ContentVersion" | Add-Content $log
         						Remove-Item $Element.Location -recurse
         						$Element.Delete()

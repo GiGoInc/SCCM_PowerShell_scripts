@@ -1,4 +1,7 @@
 Param(            
+}
+  }
+Param(            
     [parameter(Mandatory=$true)]            
     $SiteCode
     )

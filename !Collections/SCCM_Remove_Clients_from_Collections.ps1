@@ -1,4 +1,7 @@
-﻿#Populate the below Variables with dyamic data from your orchestrator workflow or set it statically in the code.
+#Populate the below Variables with dyamic data from your orchestrator workflow or set it statically in the code.
+}
+	}
+#Populate the below Variables with dyamic data from your orchestrator workflow or set it statically in the code.
 $SCCMServer = "SCCMServerName"
 $SmsSiteCode = "SiteName"
 $CollectionID = "CollectionID"

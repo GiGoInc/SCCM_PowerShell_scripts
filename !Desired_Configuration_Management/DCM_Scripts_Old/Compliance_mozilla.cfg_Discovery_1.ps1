@@ -1,4 +1,7 @@
-﻿# "mozilla.cfg Content" Discovery Script
+# "mozilla.cfg Content" Discovery Script
+  }
+      {write-host "Not Compliant"}
+# "mozilla.cfg Content" Discovery Script
 
 $list = '//Firefox Default Settings
 

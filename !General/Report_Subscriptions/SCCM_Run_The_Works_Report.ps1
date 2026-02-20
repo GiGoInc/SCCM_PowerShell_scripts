@@ -1,9 +1,15 @@
-﻿# Use saved password are $Cred
-$username = "Domain\user1"
+# Use saved password are $Cred
+#>
+
+# Use saved password are $Cred
+#>
+
+# Use saved password are $Cred
+$username = "DOMAIN\SUPERUSER"
 <# ######################################################
 
 Syntax for specific Reports
-http://sccmserverdb/ReportServer?%2   ****REPLACE WITH REPORT NAME***   &rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $cred -outfile $destination
+http://SERVER/ReportServer?%2   ****REPLACE WITH REPORT NAME***   &rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $cred -outfile $destination
 
 ###################################################### #>
 
@@ -12,35 +18,35 @@ $cred = new-object -typename System.Management.Automation.PSCredential -argument
 
 
 
-$ComputerName = "6DJS182"
+$ComputerName = "PC1"
 $destination = "D:\Powershell\!SCCM_PS_scripts\Report_Subscriptions\SCCM_The_Works.csv"
 
-invoke-webrequest "http://sccmserverdb/ReportServer?%2fConfigMgr_SS1%2FCorp%20Name%2FCOM%20-%20Software%20Updates%20Compliance%20-%20Management%20Report&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $cred -outfile $destination 
+invoke-webrequest "http://SERVER/ReportServer?%2fConfigMgr_XX1%2FDOMAIN%20Part2%2FCOM%20-%20Software%20Updates%20Compliance%20-%20Management%20Report&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $cred -outfile $destination 
 
 break
 ##############################################################################################################################################################
 # Use saved password are $Cred
-$username = "Domain\user1"
+$username = "DOMAIN\SUPERUSER"
 $password = cat "D:\Powershell\securestring.txt" | convertto-securestring
 $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $password
 
 
 
-$ComputerName = "6DJS182"
+$ComputerName = "PC1"
 $destination = "D:\Powershell\!SCCM_PS_scripts\Report_Subscriptions\SCCM_The_Works.csv"
 
-invoke-webrequest "http://sccmserverdb/ReportServer?%2fConfigMgr_SS1%2FCorp%20Name%2FCOM%20-%20Software%20Updates%20Compliance%20-%20Management%20Report&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $cred -outfile $destination 
+invoke-webrequest "http://SERVER/ReportServer?%2fConfigMgr_XX1%2FDOMAIN%20Part2%2FCOM%20-%20Software%20Updates%20Compliance%20-%20Management%20Report&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $cred -outfile $destination 
 
 break
 ##############################################################################################################################################################
-http://sccmserverdb/ReportServer?%2ConfigMgr_NR1%2fAsset+Intelligence%2fHardware+05A+-+Console+users+on+a+specific+computer&Name=$ComputerName&rs:Comm and=Render&rc:toolbar=false&rs:Format=CSV" 
+http://SERVER/ReportServer?%2ConfigMgr_NR1%2fAsset+Intelligence%2fHardware+05A+-+Console+users+on+a+specific+computer&Name=$ComputerName&rs:Comm and=Render&rc:toolbar=false&rs:Format=CSV" 
 
 
-<Report xsi:schemaLocation="DOMAIN_x0020_-_x0020_Software_x0020_Updates_x0020_Compliance_x0020_-_x0020_Management_x0020_Report 
+<Report xsi:schemaLocation="COM_x0020_-_x0020_Software_x0020_Updates_x0020_Compliance_x0020_-_x0020_Management_x0020_Report 
 
-http://sccmserverdb/ReportServer?%2F
+http://SERVER/ReportServer?%2F
 
-ConfigMgr_SS1%2FCorp%20Name%2FCOM%20-%20Software%20Updates%20Compliance%20-%20Management%20Report
+ConfigMgr_XX1%2FDOMAIN%20Part2%2FCOM%20-%20Software%20Updates%20Compliance%20-%20Management%20Report
 
 
 &amp;rs%3ACommand=Render&amp;rs%3AFormat=XML&amp;rs%3ASessionID=xv2f2dildph1ib55ofnrr145&amp;rc%3ASchema=True" 
@@ -52,7 +58,7 @@ ConfigMgr_SS1%2FCorp%20Name%2FCOM%20-%20Software%20Updates%20Compliance%20-%20Ma
 $ComputerName = "BGF4B42"
 $destination = "D:\!Powershell\!SCCM_PS_scripts\Report_Subscriptions\SCCM_The_Works.csv"
 
-invoke-webrequest "http://sccmserverdb/ReportServer?%2fConfigMgr_SS1%2fCorp+Name%2fCOM+-+The+Works+(PC+to+User+to+Model+to+OS+to+Client+Status)&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $creds -outfile $destination 
+invoke-webrequest "http://SERVER/ReportServer?%2fConfigMgr_XX1%2fDOMAIN+Part2%2fCOM+-+The+Works+(PC+to+User+to+Model+to+OS+to+Client+Status)&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $creds -outfile $destination 
 
 
 <# ORIGINAL CODE INFORMATION
@@ -84,8 +90,8 @@ Disk information report about a certain computer:
 
 iwr -credential $creds "http://sccmserver/ReportServer?%2fConfigMgr_NR1%2fHardware +-+Disk%2fDisk+information+for+a+specific+computer+-+Physical+disks&variable=$ComputerName&rs:Command=Render&rc:toolbar=false&rs:Format=CSV" -outfile $diskdestination
 
-#"http://sccmserverdb/ReportServer?%2fConfigMgr_SS1%2fAsset+Intelligence%2fSoftware+02E+-+Installed+software+on+a+specific+computer&Name=$ComputerName&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $creds -outfile $destination 
-#"http://sccmserverdb/ReportServer?%2fConfigMgr_SS1%2fCorp+Name%2fCOM+-+The+Works+(PC+to+User+to+Model+to+OS+to+Client+Status)&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $creds -outfile $destination 
+#"http://SERVER/ReportServer?%2fConfigMgr_XX1%2fAsset+Intelligence%2fSoftware+02E+-+Installed+software+on+a+specific+computer&Name=$ComputerName&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $creds -outfile $destination 
+#"http://SERVER/ReportServer?%2fConfigMgr_XX1%2fDOMAIN+Part2%2fCOM+-+The+Works+(PC+to+User+to+Model+to+OS+to+Client+Status)&rs:Command=Render&rs:Format=CSV&rc:Toolbar=False" -credential $creds -outfile $destination 
 
 
 #>

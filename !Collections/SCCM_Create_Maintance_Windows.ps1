@@ -301,7 +301,7 @@ IsEnabled              : True
 IsGMT                  : False
 Name                   : 4th Tuesday
 RecurrenceType         : 4
-ServiceWindowID        : {7B11CEA7-1720-4EB3-A6B8-D7927ABBD05F}
+ServiceWindowID        : {7B11CEA7-192.-4EB3-A6B8-D7927ABBD05F}
 ServiceWindowSchedules : 028E5ADE48231800
 ServiceWindowType      : 1
 StartTime              : 5/14/2013 8:00:00 PM

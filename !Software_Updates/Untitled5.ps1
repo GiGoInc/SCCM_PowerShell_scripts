@@ -1,4 +1,7 @@
-﻿<#
+<#
+$application.Put() | Out-Null
+$application.SDMPackageXML = $newappxml
+<#
 Took some input for this script from http://blogs.msdn.com/b/one_line_of_code_at_a_time/archive/2012/01/17/microsoft-system-center-configuration-manager-2012-package-conversion-manager-plugin.aspx
 This script can change some basic settings for ConfigMgr 2012 Applications or their DeploymentTypes.
 In this version I can set some basic stuff regarding content behaviour.

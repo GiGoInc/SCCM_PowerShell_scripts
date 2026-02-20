@@ -1,0 +1,1259 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
+  <Description>Sub-linked report</Description>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="CM">
+      <DataSourceReference>/ConfigMgr_dc1/{5C6358F2-4BB6-4a1b-A16E-8D96795D8602}</DataSourceReference>
+      <rd:SecurityType xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">None</rd:SecurityType>
+      <rd:DataSourceID xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">c99379ec-b771-4f00-b269-96dace60f08b</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="Applicable_Updates">
+      <Query>
+        <DataSourceName>CM</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@OS">
+            <Value>=Parameters!OS.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@Category">
+            <Value>=Parameters!Category.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@DaysScanned">
+            <Value>=Parameters!DaysScanned.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@StartDate">
+            <Value>=Parameters!StartDate.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@EndDate">
+            <Value>=Parameters!EndDate.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>WITH SoftwareUpdates AS (
+    Select
+        Distinct ui.CI_ID,
+        ui.Title,
+        ui.ArticleID,
+        ui.BulletinID,
+        ui.DateRevised,
+        cica.CategoryInstanceName,
+        CASE
+            ui.IsDeployed
+            When 1 Then 'Yes'
+            Else 'No'
+        End as 'Deployed'
+    From
+        v_UpdateInfo ui
+        JOIN v_CICategoryInfo_All cica
+        JOIN v_CategoryInfo ci on cica.CategoryInstanceID = ci.CategoryInstanceID
+        AND cica.CategoryInstanceName IN (@Category) on ui.CI_ID = cica.CI_ID
+        JOIN v_Update_ComplianceStatus ucs on ucs.CI_ID = ui.CI_ID
+    Where
+        ui.IsSuperseded = 0
+        AND ui.IsExpired = 0
+        AND ucs.ResourceID IN (
+            SELECT
+                DISTINCT rs.ResourceID
+            FROM
+                v_R_System rs
+                JOIN v_UpdateScanStatus uss on uss.ResourceID = rs.ResourceID
+            WHERE
+                (
+                    (
+                        @OS = 'Server 2016'
+                        AND rs.Operating_System_Name_and0 like 'Microsoft Windows NT%Server 10%'
+                        AND rs.Build01 &lt; '10.0.17763'
+                    )
+                    OR (
+                        @OS = 'Server 2019'
+                        AND rs.Operating_System_Name_and0 like 'Microsoft Windows NT%Server 10%'
+                        AND rs.Build01 &gt;= '10.0.17763'
+                    )
+                    OR (
+                        @OS NOT IN ('Server 2016', 'Server 2019')
+                        AND rs.Operating_System_Name_and0 like 'Microsoft Windows NT%' + @OS + '%'
+                    )
+                )
+                AND (
+                    rs.Operating_System_Name_and0 NOT LIKE 'Microsoft Windows NT%Workstation 5%'
+                    AND rs.Operating_System_Name_and0 NOT LIKE 'Microsoft Windows NT%Workstation 6.2%'
+                )
+                AND DATEDIFF("d", uss.LastScanTime, getdate()) &lt;= @DaysScanned
+                AND rs.Obsolete0 = 0
+        )
+        AND ui.DateRevised BETWEEN @StartDate
+        AND @EndDate
+)
+Select
+    *,
+    (
+        Select
+            count(ucs.ResourceID)
+        From
+            v_Update_ComplianceStatus ucs
+            JOIN v_UpdateInfo ui on ui.CI_ID = ucs.CI_ID
+            and ucs.Status = 2
+            AND ui.IsSuperseded = 0
+            AND ui.CI_ID = su.CI_ID
+            JOIN v_CICategoryInfo_All cica
+            JOIN v_CategoryInfo ci on cica.CategoryInstanceID = ci.CategoryInstanceID
+            AND cica.CategoryInstanceName IN (@Category) on ucs.CI_ID = cica.CI_ID
+        Where
+            ucs.ResourceID IN (
+                SELECT
+                    DISTINCT rs.ResourceID
+                FROM
+                    v_R_System rs
+                    JOIN v_UpdateScanStatus uss on uss.ResourceID = rs.ResourceID
+                WHERE
+                    (
+                        (
+                            @OS = 'Server 2016'
+                            AND rs.Operating_System_Name_and0 like 'Microsoft Windows NT%Server 10%'
+                            AND rs.Build01 &lt; '10.0.17763'
+                        )
+                        OR (
+                            @OS = 'Server 2019'
+                            AND rs.Operating_System_Name_and0 like 'Microsoft Windows NT%Server 10%'
+                            AND rs.Build01 &gt;= '10.0.17763'
+                        )
+                        OR (
+                            @OS NOT IN ('Server 2016', 'Server 2019')
+                            AND rs.Operating_System_Name_and0 like 'Microsoft Windows NT%' + @OS + '%'
+                        )
+                    )
+                    AND (
+                        rs.Operating_System_Name_and0 NOT LIKE 'Microsoft Windows NT%Workstation 5%'
+                        AND rs.Operating_System_Name_and0 NOT LIKE 'Microsoft Windows NT%Workstation 6.2%'
+                    )
+                    AND DATEDIFF("d", uss.LastScanTime, getdate()) &lt;= @DaysScanned
+                    AND rs.Obsolete0 = 0
+            )
+    ) [Required],
+    (
+        Select
+            count(ucs.ResourceID)
+        From
+            v_Update_ComplianceStatus ucs
+            JOIN v_UpdateInfo ui on ui.CI_ID = ucs.CI_ID
+            and ucs.Status = 3
+            AND ui.IsSuperseded = 0
+            AND ui.CI_ID = su.CI_ID
+            JOIN v_CICategoryInfo_All cica
+            JOIN v_CategoryInfo ci on cica.CategoryInstanceID = ci.CategoryInstanceID
+            AND cica.CategoryInstanceName IN (@Category) on ucs.CI_ID = cica.CI_ID
+        Where
+            ucs.ResourceID IN (
+                SELECT
+                    DISTINCT rs.ResourceID
+                FROM
+                    v_R_System rs
+                    JOIN v_UpdateScanStatus uss on uss.ResourceID = rs.ResourceID
+                WHERE
+                    (
+                        (
+                            @OS = 'Server 2016'
+                            AND rs.Operating_System_Name_and0 like 'Microsoft Windows NT%Server 10%'
+                            AND rs.Build01 &lt; '10.0.17763'
+                        )
+                        OR (
+                            @OS = 'Server 2019'
+                            AND rs.Operating_System_Name_and0 like 'Microsoft Windows NT%Server 10%'
+                            AND rs.Build01 &gt;= '10.0.17763'
+                        )
+                        OR (
+                            @OS NOT IN ('Server 2016', 'Server 2019')
+                            AND rs.Operating_System_Name_and0 like 'Microsoft Windows NT%' + @OS + '%'
+                        )
+                    )
+                    AND (
+                        rs.Operating_System_Name_and0 NOT LIKE 'Microsoft Windows NT%Workstation 5%'
+                        AND rs.Operating_System_Name_and0 NOT LIKE 'Microsoft Windows NT%Workstation 6.2%'
+                    )
+                    AND DATEDIFF("d", uss.LastScanTime, getdate()) &lt;= @DaysScanned
+                    AND rs.Obsolete0 = 0
+            )
+    ) [Installed]
+from
+    SoftwareUpdates su</CommandText>
+        <rd:UseGenericDesigner xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="CI_ID">
+          <DataField>CI_ID</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Title">
+          <DataField>Title</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName>
+        </Field>
+        <Field Name="ArticleID">
+          <DataField>ArticleID</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName>
+        </Field>
+        <Field Name="BulletinID">
+          <DataField>BulletinID</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName>
+        </Field>
+        <Field Name="DateRevised">
+          <DataField>DateRevised</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Required">
+          <DataField>Required</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="CategoryInstanceName">
+          <DataField>CategoryInstanceName</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName>
+        </Field>
+        <Field Name="Deployed">
+          <DataField>Deployed</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName>
+        </Field>
+        <Field Name="Installed">
+          <DataField>Installed</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="Categories">
+      <Query>
+        <DataSourceName>CM</DataSourceName>
+        <CommandText>select distinct CategoryInstanceName from v_CICategoryInfo_All
+where CategoryTypeName = 'UpdateClassification'
+order by CategoryInstanceName</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="CategoryInstanceName">
+          <DataField>CategoryInstanceName</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Textbox Name="ReportTitle">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>All Updates Date Range</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>22pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:WatermarkTextbox xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Title</rd:WatermarkTextbox>
+            <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">ReportTitle</rd:DefaultName>
+            <Top>0.13542in</Top>
+            <Left>3.38888in</Left>
+            <Height>0.85417in</Height>
+            <Width>3.84152in</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <VerticalAlign>Middle</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="ReportTitle2">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=Parameters!StartDate.Value &amp; " - " &amp; Parameters!EndDate.Value</Value>
+                    <Style>
+                      <FontFamily>Calibri</FontFamily>
+                      <FontSize>24pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Right</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:WatermarkTextbox xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Title</rd:WatermarkTextbox>
+            <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">ReportTitle</rd:DefaultName>
+            <Top>0.13542in</Top>
+            <Left>7.29985in</Left>
+            <Height>0.85417in</Height>
+            <Width>3.80209in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <VerticalAlign>Middle</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Tablix Name="Tablix1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>3.17833in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.46875in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.26042in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox4">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Title.Value</SortExpression>
+                            <SortTarget>Applicable_Updates</SortTarget>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Title</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox4</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#d9d9d9</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox6">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!ArticleID.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Article ID</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox6</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#d9d9d9</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox8">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!BulletinID.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Bulletin ID</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox8</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#d9d9d9</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox10">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!DateRevised.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Date Released</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox10</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#d9d9d9</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox2">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Deployed.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Deployed</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#d9d9d9</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox1">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Required.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Required</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#d9d9d9</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox3">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Installed.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Installed</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox3</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#d9d9d9</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox5">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!CategoryInstanceName.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Category</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#d9d9d9</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Title">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Title.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <TextDecoration>Underline</TextDecoration>
+                                    <Color>Blue</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Title</rd:DefaultName>
+                          <ActionInfo>
+                            <Actions>
+                              <Action>
+                                <Drillthrough>
+                                  <ReportName>/ConfigMgr_dc1/Software Updates - A Compliance/Compliance 2 - Specific software update</ReportName>
+                                  <Parameters>
+                                    <Parameter Name="CollID">
+                                      <Value>SMS00001</Value>
+                                    </Parameter>
+                                    <Parameter Name="UpdateFilter">
+                                      <Value>=Fields!Title.Value</Value>
+                                    </Parameter>
+                                  </Parameters>
+                                </Drillthrough>
+                              </Action>
+                            </Actions>
+                          </ActionInfo>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "#d9d9d9")</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ArticleID">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ArticleID.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">ArticleID</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "#d9d9d9")</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="BulletinID">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!BulletinID.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">BulletinID</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "#d9d9d9")</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="DateRevised">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!DateRevised.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">DateRevised</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "#d9d9d9")</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Deployed">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Deployed.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Deployed</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "#d9d9d9")</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Required">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Required.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Required</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "#d9d9d9")</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Installed">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Installed.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Installed</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "#d9d9d9")</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="CategoryInstanceName">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!CategoryInstanceName.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">CategoryInstanceName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "#d9d9d9")</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="Details" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <RepeatColumnHeaders>true</RepeatColumnHeaders>
+            <RepeatRowHeaders>true</RepeatRowHeaders>
+            <FixedColumnHeaders>true</FixedColumnHeaders>
+            <FixedRowHeaders>true</FixedRowHeaders>
+            <DataSetName>Applicable_Updates</DataSetName>
+            <SortExpressions>
+              <SortExpression>
+                <Value>=Fields!Required.Value</Value>
+                <Direction>Descending</Direction>
+              </SortExpression>
+              <SortExpression>
+                <Value>=Fields!Installed.Value</Value>
+                <Direction>Descending</Direction>
+              </SortExpression>
+              <SortExpression>
+                <Value>=Fields!Title.Value</Value>
+              </SortExpression>
+            </SortExpressions>
+            <Top>1.22792in</Top>
+            <Left>0.19444in</Left>
+            <Height>0.5in</Height>
+            <Width>10.9075in</Width>
+            <ZIndex>2</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Image Name="PatchMyPCLogo">
+            <Source>Embedded</Source>
+            <Value>PatchMyPCLogo</Value>
+            <Top>0.13542in</Top>
+            <Left>0.19444in</Left>
+            <Height>0.85417in</Height>
+            <Width>3.125in</Width>
+            <ZIndex>3</ZIndex>
+            <ToolTip>Patch My PC Logo</ToolTip>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Image>
+        </ReportItems>
+        <Height>1.89459in</Height>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Body>
+      <Width>11.22694in</Width>
+      <Page>
+        <PageFooter>
+          <Height>0.37708in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Textbox Name="Textbox7">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>Sub - All Updates Date Range v1.0</Value>
+                      <Style>
+                        <FontStyle>Italic</FontStyle>
+                        <FontSize>8pt</FontSize>
+                        <Color>LightGrey</Color>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Right</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox7</rd:DefaultName>
+              <Top>0.05556in</Top>
+              <Left>8.20708in</Left>
+              <Height>0.2625in</Height>
+              <Width>3.01986in</Width>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+          </ReportItems>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageFooter>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="DaysScanned">
+      <DataType>Integer</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>14</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="StartDate">
+      <DataType>DateTime</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=CDate(DateAdd("m",-12,DateSerial(Year(Now), Month(Now), 1)))</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Start Date</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="EndDate">
+      <DataType>DateTime</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=DateSerial(YEAR(Now()), MONTH(Now()),1).AddMonths(1).AddDays(-1)</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>End Date</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="OS">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>Workstation</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Select an Operating System</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>Server</Value>
+            <Label>Server</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Workstation</Value>
+            <Label>Workstation</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Server 5.2</Value>
+            <Label>Server 2003</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Server 6.0</Value>
+            <Label>Server 2008</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Server 6.1</Value>
+            <Label>Server 2008 R2</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Server 6.2</Value>
+            <Label>Server 2012</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Server 6.3</Value>
+            <Label>Server 2012 R2</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Server 2016</Value>
+            <Label>Server 2016</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Server 2019</Value>
+            <Label>Server 2019</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Workstation 6.1</Value>
+            <Label>Windows 7</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Workstation 6.3</Value>
+            <Label>Windows 8.1</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Workstation 10</Value>
+            <Label>Windows 10</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="Category">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>Security Updates</Value>
+          <Value>Critical Updates</Value>
+          <Value>Update Rollups</Value>
+          <Value>Updates</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Category</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>Categories</DataSetName>
+          <ValueField>CategoryInstanceName</ValueField>
+          <LabelField>CategoryInstanceName</LabelField>
+        </DataSetReference>
+      </ValidValues>
+      <MultiValue>true</MultiValue>
+    </ReportParameter>
+    <ReportParameter Name="Required">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <DefaultValue>
+        <Values>
+          <Value>0</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Required</Prompt>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+  </ReportParameters>
+  <EmbeddedImages>
+    <EmbeddedImage Name="PatchMyPCLogo">
+      <MIMEType>image/png</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <rd:ReportUnitType xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">http://sccm/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">e2773c4a-48af-4a98-a731-c4e3376ee37d</rd:ReportID>
+</Report>

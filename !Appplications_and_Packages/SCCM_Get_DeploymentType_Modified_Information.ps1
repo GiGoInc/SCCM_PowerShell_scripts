@@ -1,8 +1,11 @@
-﻿C:
+C:
+}
+    }
+C:
 CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 $AppName = Get-Content "C:\!Powershell\!SCCM_PS_scripts\Get_DeploymentType_Modified_Information_AppNames.txt"
                 $Log = "C:\!Powershell\!SCCM_PS_scripts\Get_DeploymentType_Modified_Information_log.csv"

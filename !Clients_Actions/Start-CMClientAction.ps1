@@ -1,4 +1,7 @@
-﻿##########################################################
+##########################################################
+
+}
+##########################################################
 #Script Title: Start SCCM Client Action PowerShell Tool 
 #Script File Name: Start-CMClientAction.ps1 
 #Author: Ron Ratzlaff  
@@ -123,7 +126,7 @@ Function Start-CMClientAction
           31 - {00000000-0000-0000-0000-000000000106} Software Metering Usage Report Cycle 
           32 - {00000000-0000-0000-0000-000000000107} Windows Installer Source List Update Cycle 
           33 - {00000000-0000-0000-0000-000000000108} Software Updates Assignments Evaluation Cycle - (ConfigMgr Control Panel Applet - Software Updates Deployment Evaluation Cycle) 
-          34 - {00000000-0000-0000-0000-000000000109} Branch Distribution Point Maintenance Task 
+          34 - {00000000-0000-0000-0000-000000000109} RemoteLocale Distribution Point Maintenance Task 
           35 - {00000000-0000-0000-0000-000000000110} DCM Policy 
           36 - {00000000-0000-0000-0000-000000000111} Send Unsent State Message 
           37 - {00000000-0000-0000-0000-000000000112} State System Policy Cache Cleanout 

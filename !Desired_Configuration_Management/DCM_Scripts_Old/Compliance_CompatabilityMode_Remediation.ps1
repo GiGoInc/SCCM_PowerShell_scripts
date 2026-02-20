@@ -1,4 +1,7 @@
-﻿# "Compatibility Mode" Remediation Script
+# "Compatibility Mode" Remediation Script
+}
+    $_.Exception.Message
+# "Compatibility Mode" Remediation Script
 
 try
 {

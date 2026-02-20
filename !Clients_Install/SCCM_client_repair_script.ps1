@@ -1,9 +1,12 @@
 <#
+#>
+
+<#
 
     This script seems to be incomplete....not sure where the logpath / computername stuff is coming from. 
 
     Commented out script for your own protection
-    - Isaac
+    - SuperUser
 #>
 
 <#
@@ -19,7 +22,7 @@ Param([switch]$Auto)
 ##  Declare some variables
 [array]$ComputerNames = @()
 $LogFilePath = 'C:\Windows\CCM\Logs'
- $SCCMServer = 'SCCMSERVER'
+ $SCCMServer = 'SERVER'
 
    $ScriptPath = 'C:\Windows\Logs\Software\WMI_Fixes'
     $TimeStamp = (Get-Date -UFormat "%Y-%m-%d-%H%M")

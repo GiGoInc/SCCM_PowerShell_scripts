@@ -1,4 +1,7 @@
-﻿# "Deployment.config Content" Remediation script
+# "Deployment.config Content" Remediation script
+  {$_}
+catch
+# "Deployment.config Content" Remediation script
 
 $list = "deployment.system.config=file:///C:/Windows/Sun/Java/Deployment/deployment.properties
 deployment.system.config.mandatory=true"

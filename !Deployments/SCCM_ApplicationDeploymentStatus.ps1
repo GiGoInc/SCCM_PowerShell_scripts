@@ -1,4 +1,7 @@
-﻿<#
+<#
+"Elapsed Time: $(($endDTM-$startDTM).totalseconds) seconds"
+# Echo Time elapsed
+<#
 
 This script gets the Deployment status of a ConfigMgr 2012 Application
  
@@ -10,7 +13,7 @@ $Grid = "Yes" # Out-Gridview, Yes or No
  
 # Database info
  
-$dataSource = "sccmserver\ConfigMgr_SS1"
+$dataSource = "SERVER\ConfigMgr_XX1"
 $database = "ID5C6358F24BB64a1bA16E8D96795D8602"
  
 # Get Start Time

@@ -1,4 +1,10 @@
-﻿Function Trigger-AppInstallation
+Function Trigger-AppInstallation
+
+
+Function Trigger-AppInstallation
+
+
+Function Trigger-AppInstallation
 {
     Param
     (
@@ -56,23 +62,23 @@ Function Trigger-PackageInstallation
 }
 
 
-Trigger-PackageInstallation -Computername '42snm12' -AppName "Windows Update Agent - x86 Patches" -Method 'Install'
+Trigger-PackageInstallation -Computername 'COMPUTER16' -AppName "Windows Update Agent - x86 Patches" -Method 'Install'
 
 
-$Package =(Get-CimInstance -ClassName CCM_SoftwareDistribution -Namespace "ROOT\ccm\policy\machine\actualconfig" -ComputerName '42snm12' | Where-Object {$_.PKG_MIFName -like "Windows Update Agent - x86 Patches"})
+$Package =(Get-CimInstance -ClassName CCM_SoftwareDistribution -Namespace "ROOT\ccm\policy\machine\actualconfig" -ComputerName 'COMPUTER16' | Where-Object {$_.PKG_MIFName -like "Windows Update Agent - x86 Patches"})
 
-ROOT\ccm\Policy\Machine\ActualConfig:CCM_SoftwareDistribution.ADV_AdvertisementID="SS1201AC",PKG_PackageID="SS10054E",PRG_ProgramID="Install"
-
-
-\\42SNM12\ROOT\ccm\ClientSDK:CCM_Application.Id="ScopeId_B524C55D-6E5C-465E-82C3-E2B262C19608/Application_d6580735-e460-41e3-8d1a-fa43737f7b88",IsMachineTarget=true,Revision="6"
-
-\\42SNM12\ROOT\ccm\policy\machine\actualconfig:CCM_SoftwareDistribution.ADV_AdvertisementID="SS1201AC",PKG_PackageID="SS10054E",PRG_ProgramID="Install"
+ROOT\ccm\Policy\Machine\ActualConfig:CCM_SoftwareDistribution.ADV_AdvertisementID="XX1201AC",PKG_PackageID="XX123456",PRG_ProgramID="Install"
 
 
-\\42SNM12\ROOT\ccm\Policy\Machine\RequestedConfig:CCM_SoftwareDistribution.PolicyID="SS1201AC-SS10054E-60F8A6B9",PolicyInstanceID="{FED49C53-5C0B-4BC8-84F9-D53B5287EB83}",PolicyRuleID="{bf5d2f29-5acb-4cd9-ae16-361e86c0854a}",PolicySource="SMS:SS1",PolicyVersion="3.00"
+\\COMPUTER16\ROOT\ccm\ClientSDK:CCM_Application.Id="ScopeId_B524C55D-6E5C-465E-82C3-E2B262C19608/Application_d6580735-e460-41e3-8d1a-fa43737f7b88",IsMachineTarget=true,Revision="6"
+
+\\COMPUTER16\ROOT\ccm\policy\machine\actualconfig:CCM_SoftwareDistribution.ADV_AdvertisementID="XX1201AC",PKG_PackageID="XX123456",PRG_ProgramID="Install"
 
 
-$Computername = '42snm12'
+\\COMPUTER16\ROOT\ccm\Policy\Machine\RequestedConfig:CCM_SoftwareDistribution.PolicyID="XX1201AC-XX123456-60F8A6B9",PolicyInstanceID="{FED49C53-5C0B-4BC8-84F9-D53B5287EB83}",PolicyRuleID="{bf5d2f29-5acb-4cd9-ae16-361e86c0854a}",PolicySource="SMS:XX1",PolicyVersion="3.00"
+
+
+$Computername = 'COMPUTER16'
 $PRG_ProgramName = 'Install'
 
 $Package | Out-file 'D:\PKGINFO.txt'

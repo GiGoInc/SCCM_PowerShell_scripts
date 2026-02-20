@@ -1,4 +1,7 @@
-﻿#Load Powershell from SCCM Console
+#Load Powershell from SCCM Console
+
+}
+#Load Powershell from SCCM Console
 #You can specify Distribution Point and Package ID in .csv file like below:
 #   SERVER	        PKGID
 #   XYZ.contoso.com	MK10046C
@@ -6,7 +9,7 @@
  
 
 
-$SiteCode = "SS1"
+$SiteCode = "XX1"
 $Folder = 'D:\Powershell\!SCCM_PS_scripts'
 $ImportFile = "$Folder\Refresh_multiple_package_on_multiple_servers.csv"
 $ResultFile = "$Folder\Refresh_multiple_package_on_multiple_servers--Results.txt"

@@ -1,11 +1,14 @@
-﻿. C:\Scripts\!Modules\ListAll_SSRS_Subscriptions_for_specific_User.ps1
+. C:\Scripts\!Modules\ListAll_SSRS_Subscriptions_for_specific_User.ps1
+}
+     "$Report,$Description,$SubscriptionID" | Add-Content ".\SCCM_Report_Subscriptions_for_$user.csv"
+. C:\Scripts\!Modules\ListAll_SSRS_Subscriptions_for_specific_User.ps1
 
-$user = 'user1'
+$user = 'SUPERUSER'
 
 "Report,Description,SubscriptionID" | Set-Content ".\SCCM_Report_Subscriptions_for_$user.csv"
 
 
-$A = CheckReportSubscriptions -currentOwner "Domain\$user" -server "sccmserverdb/reportserver" -site "/"
+$A = CheckReportSubscriptions -currentOwner "DOMAIN\$user" -server "SERVER/reportserver" -site "/"
 ForEach ($item in $A)
 {
               $Path = $item.Path 

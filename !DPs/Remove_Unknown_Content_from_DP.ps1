@@ -1,4 +1,7 @@
-﻿Function Remove-SCCMDPContent
+Function Remove-SCCMDPContent
+D:
+#>
+Function Remove-SCCMDPContent
 {
 <#
 .Synopsis
@@ -100,8 +103,8 @@
 }
 
 # UPDATE THESE VARIABLES FOR YOUR ENVIRONMENT
-[string]$SiteServer = "SCCMSERVER.Domain.Com"
-[string]$SiteCode = "SS1"
+[string]$SiteServer = "SERVER.DOMAIN.COM"
+[string]$SiteCode = "XX1"
 
 # Get all valid packages from the primary site server
 $Namespace = "root\SMS\Site_" + $SiteCode
@@ -110,12 +113,12 @@ Import-Module ($Env:SMS_ADMIN_UI_PATH.Substring(0,$Env:SMS_ADMIN_UI_PATH.Length-
 Set-Location -Path "$(Get-PSDrive -PSProvider CMSite):\" -ErrorAction Stop
 
 ############################################################################################################################
-$CheckDP = 'msbism01.Domain.Com'
+$CheckDP = 'SERVER.DOMAIN.COM'
 ############################################################################################################################
 
-#Get-WmiObject -ComputerName 'SCCMSERVER' -Namespace root\sms\site_$SiteCode -Class sms_packagestatusDistPointsSummarizer | Where-Object State -EQ 3 | Where-Object SourceNALPath -Match $DPFQDN
-#$Failures = Get-WmiObject -ComputerName 'SCCMSERVER' -Namespace root\sms\site_$SiteCode -Class sms_packagestatusDistPointsSummarizer | Where-Object {$_.State -EQ 3 -or $_.State -eq 8} | Where-Object SourceNALPath -Match $CheckDP
-$Failures = Get-WmiObject -ComputerName 'SCCMSERVER' -Namespace root\sms\site_$SiteCode -Class sms_packagestatusDistPointsSummarizer | Where-Object {$_.State -eq 3} | Where-Object SourceNALPath -Match $CheckDP
+#Get-WmiObject -ComputerName 'SERVER' -Namespace root\sms\site_$SiteCode -Class sms_packagestatusDistPointsSummarizer | Where-Object State -EQ 3 | Where-Object SourceNALPath -Match $DPFQDN
+#$Failures = Get-WmiObject -ComputerName 'SERVER' -Namespace root\sms\site_$SiteCode -Class sms_packagestatusDistPointsSummarizer | Where-Object {$_.State -EQ 3 -or $_.State -eq 8} | Where-Object SourceNALPath -Match $CheckDP
+$Failures = Get-WmiObject -ComputerName 'SERVER' -Namespace root\sms\site_$SiteCode -Class sms_packagestatusDistPointsSummarizer | Where-Object {$_.State -eq 3} | Where-Object SourceNALPath -Match $CheckDP
 Write-Host "Found $($Failures.count) in state '3' packages"
 ForEach ($Failure in $Failures)
 {
@@ -126,7 +129,7 @@ ForEach ($Failure in $Failures)
 }
 
 
-$Failures = Get-WmiObject -ComputerName 'SCCMSERVER' -Namespace root\sms\site_$SiteCode -Class sms_packagestatusDistPointsSummarizer | Where-Object {$_.State -eq 8} | Where-Object SourceNALPath -Match $CheckDP
+$Failures = Get-WmiObject -ComputerName 'SERVER' -Namespace root\sms\site_$SiteCode -Class sms_packagestatusDistPointsSummarizer | Where-Object {$_.State -eq 8} | Where-Object SourceNALPath -Match $CheckDP
 Write-Host "Found $($Failures.count) in state '8' packages"
 ForEach ($Failure in $Failures)
 {
@@ -137,7 +140,7 @@ ForEach ($Failure in $Failures)
 }
 
 <#
-$Sucesses = Get-WmiObject -ComputerName 'SCCMSERVER' -Namespace root\sms\site_$SiteCode -Class sms_packagestatusDistPointsSummarizer | Where-Object  {$_.State -ne 3 -and $_.State -ne 8} | Where-Object SourceNALPath -Match $CheckDP
+$Sucesses = Get-WmiObject -ComputerName 'SERVER' -Namespace root\sms\site_$SiteCode -Class sms_packagestatusDistPointsSummarizer | Where-Object  {$_.State -ne 3 -and $_.State -ne 8} | Where-Object SourceNALPath -Match $CheckDP
 Write-Host "Found $($Sucesses.count) sucessful packages"
 ForEach ($Sucess in $Sucesses)
 {

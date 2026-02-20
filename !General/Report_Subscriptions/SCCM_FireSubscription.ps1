@@ -1,4 +1,7 @@
-﻿Function FireSubscription
+Function FireSubscription
+}
+    $subscriptions | select Status, Path, report, Description, Owner, SubscriptionID, EventType, lastexecuted | where {$_.SubscriptionID -eq $subscriptionid} 
+Function FireSubscription
 {
     # Parameters  
     #    server         - server and instance name (e.g. myserver/reportserver or myserver/reportserver_db2)  

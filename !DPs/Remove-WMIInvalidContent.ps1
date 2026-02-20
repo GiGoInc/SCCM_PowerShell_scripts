@@ -1,4 +1,7 @@
-﻿    <#
+    <#
+}
+###################################################################################################
+    <#
     .Synopsis
        Repairs the "The package data in WMI is not consistent to PkgLib" errors after ConfigMgr2012R2 upgrade
     .DESCRIPTION
@@ -8,7 +11,7 @@
  Detailed description of this issue: http://blogs.technet.com/b/configmgrteam/archive/2012/05/07/troubleshooting-content-mismatch-warnings-on-a-distribution-point-in-system-center-2012-configuration-manager.aspx?wa=wsignin1.0
  Script is to be used at own risk
     .EXAMPLE
-       Remove-WMIInvalidContent.ps1 -Siteserver myserver.my.Domain.Com -Sitecode AAA
+       Remove-WMIInvalidContent.ps1 -Siteserver myserver.mydomain.com -Sitecode AAA
     .LINK
         http://gallery.technet.microsoft.com/Powershell-script-to-fix-81dc4e69
     .NOTES
@@ -39,7 +42,7 @@ foreach ($DistributionPoint in $DistributionPoints)
     $InvalidPackages = @()
     $DistributionPointName = $DistributionPoint.ServerName
 ###################################################################################################
-If ($DistributionPointName -eq 'sccmserver3.Domain.Com')
+If ($DistributionPointName -eq 'SERVER.DOMAIN.COM')
 {
 ###################################################################################################
 

@@ -1,6 +1,9 @@
-﻿        $Appname = Read-Host -Prompt 'Application Name'
+        $Appname = Read-Host -Prompt 'Application Name'
+      
+
+        $Appname = Read-Host -Prompt 'Application Name'
    $SourceFolder = Read-Host -Prompt 'Source folder name, like "Image Center 2016".'
- $SourceLocation = "\\sccmserver\Packages\$SourceFolder"
+ $SourceLocation = "\\SERVER\Packages\$SourceFolder"
       $DTRunTime = Read-Host -Prompt 'Approximate runtime for application install (minutes)'
    $DTMaxRunTime = Read-Host -Prompt 'Maximum runtime for application install (minutes)'
 

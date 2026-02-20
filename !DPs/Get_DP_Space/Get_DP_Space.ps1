@@ -1,8 +1,13 @@
-ï»¿$SDate = $(Get-Date)
+$SDate = $(Get-Date)
+$SDate = $(Get-Date)
+Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`r`n" -ForegroundColor Cyan
+$SDate = $(Get-Date)
 $SSDate = $(Get-Date)
 Write-Host "$SDate -- Script starting..." -ForegroundColor Magenta
 #######################################
-. "C:\Scripts\!Modules\GoGoSCCM_Module_client.ps1"$SiteCode = Get-PSDrive -PSProvider CMSITESet-Location -Path "$($SiteCode.Name):\"
+. "C:\Scripts\!Modules\GoGoSCCM_Module_client.ps1"
+$SiteCode = Get-PSDrive -PSProvider CMSITE
+Set-Location -Path "$($SiteCode.Name):\"
 #######################################
 $Folder = 'D:\Powershell\!SCCM_PS_scripts\!DPs\Get_DP_Space'
 $ADateStart = $(Get-Date -format yyyy-MM-dd)+'__'+ $(Get-Date -UFormat %R).Replace(':','.')
@@ -10,7 +15,9 @@ $ADateStart = $(Get-Date -format yyyy-MM-dd)+'__'+ $(Get-Date -UFormat %R).Repla
     $TSLog = "$Folder\Get_DP_Space_TS_Results.csv"
 $FinalFile = "$Folder\Get_DP_Space-Results--$ADateStart.xlsx"
 #########################################################################################
-Write-Host "Getting DP list..." -ForegroundColor cyan	$DPsInfo = Get-CMDistributionPoint -AllSite$DPs = $($DPsInfo.NetworkOSPath).replace('\\','')
+Write-Host "Getting DP list..." -ForegroundColor cyan	
+$DPsInfo = Get-CMDistributionPoint -AllSite
+$DPs = $($DPsInfo.NetworkOSPath).replace('\\','')
 $DPs | Set-Content "$Folder\Get_DP_Space--DP_List.txt"
 #########################################################################################
 'DP,Drive Letter,Total Space (GB),Free Space (GB)' | Set-Content $Log
@@ -35,9 +42,9 @@ $DPs | % {
                     inner join v_DistributionPointInfo B on A.NALPath = B.NALPath
                     where B.ServerName in ('$_')"
     
-          $SQL_DB = 'CM_SS1'
-      $SQL_Server = 'sccmserverdb'
-    $SQL_Instance = 'sccmserverdb'
+          $SQL_DB = 'CM_XX1'
+      $SQL_Server = 'SERVER'
+    $SQL_Instance = 'SERVER'
     $SQL_Check = Invoke-Sqlcmd -AbortOnError `
         -ConnectionTimeout 60 `
         -Database $SQL_DB  `
@@ -58,7 +65,7 @@ $DPs | % {
 ######################################################################################	
 ######################################################################################
 $SEDate = (GET-DATE)
-$Span = NEW-TIMESPAN â€“Start $SSDate â€“End $SEDate
+$Span = NEW-TIMESPAN –Start $SSDate –End $SEDate
 $Min = $Span.minutes
 $Sec = $Span.Seconds
 Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`r`n" -ForegroundColor Cyan

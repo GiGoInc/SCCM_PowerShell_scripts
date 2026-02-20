@@ -1,4 +1,7 @@
-ÔªøWrite-Host '2017-03-29 --- This script does not work right, possibly needs to be run from the server or in the SCCM space?' -ForegroundColor Red
+Write-Host '2017-03-29 --- This script does not work right, possibly needs to be run from the server or in the SCCM space?' -ForegroundColor Red
+#>
+}
+Write-Host '2017-03-29 --- This script does not work right, possibly needs to be run from the server or in the SCCM space?' -ForegroundColor Red
 
 break
 
@@ -21,14 +24,14 @@ param
         $ping = New-Object System.Net.NetworkInformation.Ping
         $ping.Send("$_", 5000)})]
 	[ValidateNotNullOrEmpty()]
-	[string]$SMSProvider = 'SCCMSERVER'
+	[string]$SMSProvider = 'SERVER'
 )
 
 
 Function Get-SiteCode
 {
-    $wqlQuery = ‚ÄúSELECT * FROM SMS_ProviderLocation‚Äù
-    $a = Get-WmiObject -Query $wqlQuery -Namespace ‚Äúroot\sms‚Äù -ComputerName $SMSProvider
+    $wqlQuery = ìSELECT * FROM SMS_ProviderLocationî
+    $a = Get-WmiObject -Query $wqlQuery -Namespace ìroot\smsî -ComputerName $SMSProvider
     $a | ForEach-Object {
         if($_.ProviderForLocalSite)
             {

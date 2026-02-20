@@ -1,4 +1,7 @@
-﻿#try
+#try
+}
+    }
+#try
 #{
 # make sure we have access to CM commands before we continue
 Import-Module ($Env:SMS_ADMIN_UI_PATH.Substring(0,$Env:SMS_ADMIN_UI_PATH.Length-5) + '\ConfigurationManager.psd1')
@@ -19,14 +22,14 @@ $DistributionPoints = Get-WMIObject -ComputerName $SiteServer -Namespace $Namesp
 Write-Host ([string]($DistributionPoints.count) + " distribution points found.")
 Write-Host ""
 
-$IDs = 'SS100003', `
-'SS100350', `
-'SS1004A6', `
-'SS100581', `
-'SS1004E2', `
-'SS10045F', `
-'SS100611', `
-'SS10060D'
+$IDs = 'XX100003', `
+'XX100350', `
+'XX123456', `
+'XX100581', `
+'XX123456', `
+'XX123456', `
+'XX100611', `
+'XX10060D'
 
 
 clear

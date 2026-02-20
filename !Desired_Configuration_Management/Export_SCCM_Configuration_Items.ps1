@@ -1,4 +1,7 @@
-ï»¿<#
+<#
+Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan
+$Sec = $Span.Seconds
+<#
 .Synopsis
    Exports all scripts (discovery and remediation) used in all SCCM Compliance Setting Configuration Items
 .DESCRIPTION
@@ -29,7 +32,7 @@ Function Remove-InvalidFileNameChars {
 Function RunTime
 {
     $End = (GET-DATE)
-    $TS = NEW-TIMESPAN â€“Start $Start â€“End $End
+    $TS = NEW-TIMESPAN –Start $Start –End $End
     $Min = $TS.minutes
     $Sec = $TS.Seconds
     Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan
@@ -54,10 +57,10 @@ Function RunTime
       }
 
     # SCCM SQL Server (and instance where applicable)
-      $SQLServer = 'sccmserver'
+      $SQLServer = 'SERVER'
     
     # SCCM Database name
-      $Database = 'CM_SS1'
+      $Database = 'CM_XX1'
 
     # CAB List Log
       $CABLog = "$Folder\CAB_Files.csv"
@@ -367,7 +370,7 @@ $5Minutes = (get-date).AddMinutes(10).ToString("HH:mm")
 
 
 $EDate = (GET-DATE)
-$Span = NEW-TIMESPAN â€“Start $SDate â€“End $EDate
+$Span = NEW-TIMESPAN –Start $SDate –End $EDate
 $Min = $Span.minutes
 $Sec = $Span.Seconds
 Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan

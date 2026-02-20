@@ -1,4 +1,7 @@
-﻿ # Get current working paths
+ # Get current working paths
+ # SIG  # End signature block
+ # 40SOtcm2bNCtOUY=
+ # Get current working paths
 $CurrentDirectory = split-path $MyInvocation.MyCommand.Path
 
 $sessions = Get-Content "$CurrentDirectory\SCCM_clean_CACHE_using_PSSESSION_based_on_PC_list--PCList.txt" | % { New-PSSession -ComputerName $_ -ThrottleLimit 60 }

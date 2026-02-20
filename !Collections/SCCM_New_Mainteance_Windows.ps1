@@ -1,10 +1,13 @@
 D:
+#>
+RemoteLocale Workstation Test - Central Underwriting Workstations Test - 3rd Saturday	XX10043B
+D:
 CD 'D:\Program Files\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
-$COLLID = "SS10043A"
+$COLLID = "XX10043A"
 $Day2 = "5"
 $Day3 = "6"
 $Day4 = "7"
@@ -38,23 +41,23 @@ $Collection = Get-CMDeviceCollection -Name "MW 2 - LOB Servers"
 New-CMMaintenanceWindow -CollectionID $Collection.CollectionID -Schedule $Schedule -Name "TEST 3"
 
 
-Branch Workstation Test - 15th	SS100429
-Branch Workstation Test - 16th	SS10042A
-Branch Workstation Test - 17th	SS10042B
-Branch Workstation Test - 18th	SS10042C
-Branch Workstation Test - 19th	SS10042D
-Branch Workstation Test - 20th	SS10042E
-Branch Workstation Test - 21st	SS10042F
-Branch Workstation Test - 22nd	SS100430
-Branch Workstation Test - 23rd	SS100431
-Branch Workstation Test - 24th	SS100432
-Branch Workstation Test - 25th	SS100433
-Branch Workstation Test - 26th	SS100434
-Branch Workstation Test - 27th	SS100435
-Branch Workstation Test - 28th	SS100436
-Branch Workstation Test - 1st	SS100437
-Branch Workstation Test - 2nd	SS100438
-Branch Workstation Test - 3rd	SS100439
-Branch Workstation Test - 4th	SS10043A
-Branch Workstation Test - Central Underwriting Workstations Test - 3rd Saturday	SS10043B
+RemoteLocale Workstation Test - 15th	XX100429
+RemoteLocale Workstation Test - 16th	XX10042A
+RemoteLocale Workstation Test - 17th	XX123456
+RemoteLocale Workstation Test - 18th	XX10042C
+RemoteLocale Workstation Test - 19th	XX10042D
+RemoteLocale Workstation Test - 20th	XX10042E
+RemoteLocale Workstation Test - 21st	XX10042F
+RemoteLocale Workstation Test - 22nd	XX123456
+RemoteLocale Workstation Test - 23rd	XX100431
+RemoteLocale Workstation Test - 24th	XX100432
+RemoteLocale Workstation Test - 25th	XX100433
+RemoteLocale Workstation Test - 26th	XX100434
+RemoteLocale Workstation Test - 27th	XX100435
+RemoteLocale Workstation Test - 28th	XX100436
+RemoteLocale Workstation Test - 1st	XX100437
+RemoteLocale Workstation Test - 2nd	XX100438
+RemoteLocale Workstation Test - 3rd	XX100439
+RemoteLocale Workstation Test - 4th	XX10043A
+RemoteLocale Workstation Test - Central Underwriting Workstations Test - 3rd Saturday	XX10043B
 #>

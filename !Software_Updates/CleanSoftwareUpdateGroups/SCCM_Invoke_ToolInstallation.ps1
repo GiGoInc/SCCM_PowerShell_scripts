@@ -1,4 +1,7 @@
-﻿<#
+<#
+
+}
+<#
 .Synopsis
    Installs or uninstalls the Clean Software Update Groups console extension for ConfigMgr.
 .DESCRIPTION

@@ -1,4 +1,7 @@
-﻿#Start PInvoke Code 
+#Start PInvoke Code 
+$colMessages | Export-CSV -path $stringOutputCSV 
+
+#Start PInvoke Code 
 $sigFormatMessage = @' 
 [DllImport("kernel32.dll")] 
 public static extern uint FormatMessage(uint flags, IntPtr source, uint messageId, uint langId, StringBuilder buffer, uint size, string[] arguments); 

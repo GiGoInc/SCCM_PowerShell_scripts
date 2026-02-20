@@ -1,0 +1,1964 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Description>This report returns the software update compliance data for all computers.  To limit the amount of  information returned, you can specify the software update classification.</Description>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_">
+      <DataSourceReference>/ConfigMgr_DC1/{5C6358F2-4BB6-4a1b-A16E-8D96795D8602}</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>16ade74d-6f0d-4f02-85fc-c55475e845dc</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet0">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@UpdateClass">
+            <Value>=Parameters!UpdateClass.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@CollID">
+            <Value>=Parameters!CollID.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@Vendor">
+            <Value>=Parameters!Vendor.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>--Declare @UpdateClass varchar(80) = 'Security Updates'
+--Declare @Collid varchar(80) = 'SMS00001'
+--Declare @Vendor varchar(80) = 'Microsoft'
+
+select  Rsys.Name0, Rsys.Creation_date0, Rsys.Operating_System_Name_and0, 
+     osys.buildnumber0, 
+
+    case fcm.isclient
+	  When 0 then 'No'
+	  When 1 then 'Yes'
+	end as 'IsClient',
+           catinfo.CategoryInstanceName as Vendor, 
+            catinfo2.CategoryInstanceName as 'Category', 
+            Sum(case when css.Status=3 then 1 else 0  end) as Installed, 
+            Sum(case when css.Status=2 then 1 else 0  end) as Required, 
+            SUM(case when DATEDIFF(dd,ui.Daterevised,GetDate()) &gt;  60 and css.Status=2 then 1 else 0  end) as 'Older than 60 days', 
+    SUM(case when DATEDIFF(dd,ui.Daterevised,GetDate()) &gt;  180 and css.Status=2 then 1 else 0  end) as 'Older than 180 days',
+ uss.LastScanTime, 
+ CSYS.Model0,
+case enc.chassistypes0
+            when 1 then 'Other'
+            when 2 then 'Unknown'
+            when 3 then 'Desktop'
+            when 4 then 'Low Profile Desktop'
+            when 5 then 'Pizza Box'
+            when 6 then 'Mini Tower'
+            when 7 then 'Tower'
+            when 8 then 'Portable'
+            when 9 then 'Laptop'
+            when 10 then 'Laptop'
+            when 11 then 'Hand Held'
+            when 12 then 'Docking Station'
+            when 13 then 'All in One'
+            when 14 then 'Sub Notebook'
+            when 15 then 'Space-Saving'
+            when 16 then 'Lunch Box'
+            when 17 then 'Main System Chassis'
+            when 18 then 'Expansion Chassis'
+            when 19 then 'SubChassis'
+            when 20 then 'Bus Expansion Chassis'
+            when 21 then 'Peripheral Chassis'
+            when 22 then 'Storage Chassis'
+            when 23 then 'Rack Mount Chassis'
+            when 24 then 'Sealed-Case PC'
+            else 'Unknown'
+        End As 'Chassis',
+  PCBIO.SerialNumber0
+           
+from v_UpdateComplianceStatus css 
+join v_R_System Rsys on css.ResourceID = RSys.ResourceID 
+Join v_FullCollectionMembership fcm on Rsys.ResourceID = fcm.ResourceID
+LEFT JOIN  V_GS_System_Enclosure enc on RSys.ResourceID = enc.Resourceid
+LEFT JOIN  v_GS_COMPUTER_SYSTEM  CSYS on RSYS.ResourceID = CSYS.ResourceID
+LEFT JOIN  v_GS_Operating_SYSTEM  OSYS on RSYS.ResourceID = OSYS.ResourceID
+LEFT JOIN  v_GS_PC_BIOS PCBIO on PCBIO.ResourceID = RSYS.ResourceID
+
+
+LEFT Join v_UpdateScanStatus uss on RSYS.ResourceID = uss.ResourceID
+join v_UpdateInfo ui on ui.CI_ID=css.CI_ID 
+join v_CICategories_All catall on catall.CI_ID=ui.CI_ID  
+join v_CategoryInfo catinfo on catall.CategoryInstance_UniqueID = catinfo.CategoryInstance_UniqueID and catinfo.CategoryTypeName='Company'  
+join v_CICategories_All catall2 on catall2.CI_ID=ui.CI_ID  
+join v_CategoryInfo catinfo2 on catall2.CategoryInstance_UniqueID = catinfo2.CategoryInstance_UniqueID and catinfo2.CategoryTypeName='UpdateClassification'  
+ 
+left join ( 
+                        select atc.CI_ID, Deadline=min(a.EnforcementDeadline) from v_CIAssignment a 
+                        join v_CIAssignmentToCI atc on atc.AssignmentID=a.AssignmentID 
+                        group by atc.CI_ID) cdl   on cdl.CI_ID=css.CI_ID 
+where   ((css.Status=2) or (css.Status=3)) 
+
+and (@UpdateClass = '' or catinfo2.CategoryInstanceName = @UpdateClass) 
+and fcm.CollectionID = @CollID
+and catinfo.CategoryInstanceName like @Vendor
+ 
+group by Rsys.Name0, Rsys.Creation_Date0, Rsys.Operating_System_Name_and0, fcm.isclient, Rsys.Build01,
+catinfo.CategoryInstanceName, catinfo2.CategoryInstanceName, enc.chassistypes0, CSYS.Model0, osys.BuildNumber0, PCBIO.SerialNumber0,
+uss.LastScanTime
+order by  'Older than 60 days' Desc,  Required Desc</CommandText>
+        <Timeout>30</Timeout>
+      </Query>
+      <Fields>
+        <Field Name="Name0">
+          <DataField>Name0</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Creation_date0">
+          <DataField>Creation_date0</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Operating_System_Name_and0">
+          <DataField>Operating_System_Name_and0</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="buildnumber0">
+          <DataField>buildnumber0</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="IsClient">
+          <DataField>IsClient</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Vendor">
+          <DataField>Vendor</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Category">
+          <DataField>Category</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Installed">
+          <DataField>Installed</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Required">
+          <DataField>Required</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Older_than_60_days">
+          <DataField>Older than 60 days</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Older_than_180_days">
+          <DataField>Older than 180 days</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="LastScanTime">
+          <DataField>LastScanTime</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Model0">
+          <DataField>Model0</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Chassis">
+          <DataField>Chassis</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SerialNumber0">
+          <DataField>SerialNumber0</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="filterwildcard">
+            <Value />
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>begin 
+ if (@filterwildcard = '') 
+  select distinct CategoryInstanceName as UpdateClassification from v_CategoryInfo where CategoryTypeName='UpdateClassification' order by CategoryInstanceName 
+ else 
+  select distinct CategoryInstanceName as UpdateClassification from v_CategoryInfo where CategoryTypeName='UpdateClassification'and CategoryInstanceName like @filterwildcard 
+  order by CategoryInstanceName 
+end</CommandText>
+        <Timeout>30</Timeout>
+      </Query>
+      <Fields>
+        <Field Name="UpdateClassification">
+          <DataField>UpdateClassification</DataField>
+        </Field>
+        <Field Name="UpdateClassification_cdcffbfeddd0e">
+          <DataField>UpdateClassification</DataField>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="Collections">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <CommandText>SELECT
+  v_Collections.CollectionName
+  ,v_Collections.SiteID
+FROM
+  V_Collections
+WHERE
+  v_Collections.CollectionType = 2
+Order By v_Collections.CollectionName</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="CollectionName">
+          <DataField>CollectionName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SiteID">
+          <DataField>SiteID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="Table0">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.25in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2.94792in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.25in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.25in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.25in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.25in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.25in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.25in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.67916in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.70833in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.09583in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.01458in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Header_Table0_Name0">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Name0.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Name</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <TopBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>#8dc63f</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Header_Table0_Operating_System_Name_and0">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Operating_System_Name_and0.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Operating System Name</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <TopBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>#8dc63f</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox3">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Release ID</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox3</rd:DefaultName>
+                          <Style>
+                            <TopBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>#8dc63f</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Header_Table0_Vendor">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Vendor.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Vendor</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <TopBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>#8dc63f</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Header_Table0_Category">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Category.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Category</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <TopBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>#8dc63f</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Header_Table0_Installed">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Installed.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Installed</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <TopBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>#8dc63f</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Header_Table0_Required">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Required.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Required</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <TopBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>#8dc63f</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Header_Table0_Olderthan0days">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Older_than_60_days.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Older than 60 days</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>#8dc63f</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Header_Table0_Olderthan0days_dd0fbbbc0b">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Older_than_180_days.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Older than 180 days</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>#8dc63f</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Last Scan Time</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox1</rd:DefaultName>
+                          <Style>
+                            <TopBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>#8dc63f</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox7">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Creation Date</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox7</rd:DefaultName>
+                          <Style>
+                            <TopBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>#8dc63f</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Chassis</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
+                          <Style>
+                            <TopBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>#8dc63f</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox5">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Serial Number</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <TopBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Double</Style>
+                              <Width>2pt</Width>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>#8dc63f</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Name">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Name0.Value</Value>
+                                  <ActionInfo>
+                                    <Actions>
+                                      <Action>
+                                        <Drillthrough>
+                                          <ReportName>/ConfigMgr_THQ/Custom Reports/Compliance 6 - Specific computer just required</ReportName>
+                                          <Parameters>
+                                            <Parameter Name="MachineName">
+                                              <Value>=Fields!Name0.Value</Value>
+                                            </Parameter>
+                                            <Parameter Name="Vendor">
+                                              <Value>=Fields!Vendor.Value</Value>
+                                            </Parameter>
+                                            <Parameter Name="UpdateClass">
+                                              <Value>=Fields!Category.Value</Value>
+                                            </Parameter>
+                                          </Parameters>
+                                        </Drillthrough>
+                                      </Action>
+                                    </Actions>
+                                  </ActionInfo>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <ActionInfo>
+                            <Actions>
+                              <Action>
+                                <Drillthrough>
+                                  <ReportName>/ConfigMgr_DC1/Model Managed Services/Software Updates/MTS - Specific computer just required</ReportName>
+                                  <Parameters>
+                                    <Parameter Name="MachineName">
+                                      <Value>=Fields!Name0.Value</Value>
+                                    </Parameter>
+                                    <Parameter Name="Vendor">
+                                      <Value>=Fields!Vendor.Value</Value>
+                                    </Parameter>
+                                    <Parameter Name="UpdateClass">
+                                      <Value>=Fields!Category.Value</Value>
+                                    </Parameter>
+                                  </Parameters>
+                                </Drillthrough>
+                              </Action>
+                            </Actions>
+                          </ActionInfo>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="OS">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Operating_System_Name_and0.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <TopBorder>
+                              <Style>None</Style>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="buildnumber0">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!buildnumber0.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>buildnumber0</rd:DefaultName>
+                          <Style>
+                            <TopBorder>
+                              <Style>None</Style>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Vendor">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Vendor.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <TopBorder>
+                              <Style>None</Style>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Category">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Category.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <TopBorder>
+                              <Style>None</Style>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Installed">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Installed.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <TopBorder>
+                              <Style>None</Style>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Required">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Required.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <TopBorder>
+                              <Style>None</Style>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Olderthan60days">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Older_than_60_days.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <TopBorder>
+                              <Style>None</Style>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Details_Table0_Olderthan0days_dd0fbbbc0b">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Older_than_180_days.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <TopBorder>
+                              <Style>None</Style>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LastScanTime">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!LastScanTime.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>LastScanTime</rd:DefaultName>
+                          <Style>
+                            <TopBorder>
+                              <Style>None</Style>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Creation_date0">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Creation_date0.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Creation_date0</rd:DefaultName>
+                          <Style>
+                            <TopBorder>
+                              <Style>None</Style>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Chassis">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Chassis.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Chassis</rd:DefaultName>
+                          <Style>
+                            <TopBorder>
+                              <Style>None</Style>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="SerialNumber0">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!SerialNumber0.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <TextDecoration>None</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>SerialNumber0</rd:DefaultName>
+                          <Style>
+                            <TopBorder>
+                              <Style>None</Style>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Color>Silver</Color>
+                              <Style>Solid</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <VerticalAlign>Top</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="Table0_Details_Group">
+                    <DataElementName>Detail</DataElementName>
+                  </Group>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                  <DataElementName>Detail_Collection</DataElementName>
+                  <DataElementOutput>Output</DataElementOutput>
+                  <KeepTogether>true</KeepTogether>
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>DataSet0</DataSetName>
+            <Left>0.5in</Left>
+            <Height>0.5in</Height>
+            <Width>20.19582in</Width>
+            <Style>
+              <Border>
+                <Style>Solid</Style>
+              </Border>
+              <TopBorder>
+                <Style>None</Style>
+              </TopBorder>
+              <BottomBorder>
+                <Style>None</Style>
+              </BottomBorder>
+              <LeftBorder>
+                <Style>None</Style>
+              </LeftBorder>
+              <RightBorder>
+                <Style>None</Style>
+              </RightBorder>
+              <FontFamily>Tahoma</FontFamily>
+              <FontSize>8pt</FontSize>
+              <FontWeight>Normal</FontWeight>
+              <TextDecoration>None</TextDecoration>
+              <TextAlign>General</TextAlign>
+              <VerticalAlign>Top</VerticalAlign>
+            </Style>
+          </Tablix>
+        </ReportItems>
+        <Height>2.08333in</Height>
+        <Style />
+      </Body>
+      <Width>20.86041in</Width>
+      <Page>
+        <PageHeader>
+          <Height>0.55208in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Textbox Name="ReportNameLabel">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>Report Name:</Value>
+                      <Style>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontWeight>Bold</FontWeight>
+                        <TextDecoration>None</TextDecoration>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>General</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <Top>0.25in</Top>
+              <Left>0.5in</Left>
+              <Height>0.25in</Height>
+              <Width>1.25in</Width>
+              <Style>
+                <TopBorder>
+                  <Style>None</Style>
+                </TopBorder>
+                <BottomBorder>
+                  <Style>None</Style>
+                </BottomBorder>
+                <LeftBorder>
+                  <Style>None</Style>
+                </LeftBorder>
+                <RightBorder>
+                  <Style>None</Style>
+                </RightBorder>
+                <VerticalAlign>Top</VerticalAlign>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="ReportNameTextBox">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=Globals!ReportName</Value>
+                      <Style>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontWeight>Bold</FontWeight>
+                        <TextDecoration>None</TextDecoration>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>General</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <Top>0.25in</Top>
+              <Left>1.75in</Left>
+              <Height>0.25in</Height>
+              <Width>7.3125in</Width>
+              <ZIndex>1</ZIndex>
+              <Style>
+                <TopBorder>
+                  <Style>None</Style>
+                </TopBorder>
+                <BottomBorder>
+                  <Style>None</Style>
+                </BottomBorder>
+                <LeftBorder>
+                  <Style>None</Style>
+                </LeftBorder>
+                <RightBorder>
+                  <Style>None</Style>
+                </RightBorder>
+                <VerticalAlign>Top</VerticalAlign>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+          </ReportItems>
+          <Style />
+        </PageHeader>
+        <PageFooter>
+          <Height>0.375in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Textbox Name="ExecTimeTextBox">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>="This report ran on " + Globals!ExecutionTime</Value>
+                      <Style>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontWeight>Normal</FontWeight>
+                        <TextDecoration>None</TextDecoration>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>General</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <Top>0.125in</Top>
+              <Left>0.5in</Left>
+              <Height>0.25in</Height>
+              <Width>3in</Width>
+              <Style>
+                <TopBorder>
+                  <Style>None</Style>
+                </TopBorder>
+                <BottomBorder>
+                  <Style>None</Style>
+                </BottomBorder>
+                <LeftBorder>
+                  <Style>None</Style>
+                </LeftBorder>
+                <RightBorder>
+                  <Style>None</Style>
+                </RightBorder>
+                <VerticalAlign>Top</VerticalAlign>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="PageNumTextBox">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=Globals!PageNumber</Value>
+                      <Style>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontWeight>Normal</FontWeight>
+                        <TextDecoration>None</TextDecoration>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Right</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <Top>0.125in</Top>
+              <Left>10.75in</Left>
+              <Height>0.25in</Height>
+              <Width>1.125in</Width>
+              <ZIndex>1</ZIndex>
+              <Style>
+                <TopBorder>
+                  <Style>None</Style>
+                </TopBorder>
+                <BottomBorder>
+                  <Style>None</Style>
+                </BottomBorder>
+                <LeftBorder>
+                  <Style>None</Style>
+                </LeftBorder>
+                <RightBorder>
+                  <Style>None</Style>
+                </RightBorder>
+                <VerticalAlign>Top</VerticalAlign>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+          </ReportItems>
+          <Style />
+        </PageFooter>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="UpdateClass">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>Security Updates</Value>
+        </Values>
+      </DefaultValue>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>Update Class</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DataSet1</DataSetName>
+          <ValueField>UpdateClassification</ValueField>
+          <LabelField>UpdateClassification_cdcffbfeddd0e</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="CollID">
+      <DataType>String</DataType>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>Collection</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>Collections</DataSetName>
+          <ValueField>SiteID</ValueField>
+          <LabelField>CollectionName</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="Vendor">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>%</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Vendor</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>%</Value>
+            <Label>All</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>7-Zip%</Value>
+            <Label>7-Zip</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Adobe%</Value>
+            <Label>Adobe</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Google%</Value>
+            <Label>Google</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Keepass%</Value>
+            <Label>Keepass</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Notepad%</Value>
+            <Label>Notepad++</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Microsoft%</Value>
+            <Label>MIcrosoft</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>2</NumberOfColumns>
+      <NumberOfRows>2</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>UpdateClass</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>CollID</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>1</RowIndex>
+          <ParameterName>Vendor</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <EmbeddedImages>
+    <EmbeddedImage Name="icon">
+      <MIMEType>image/gif</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>http://msdcsccmdb1/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>34fb546b-e499-4aff-9e26-866cbfe06c95</rd:ReportID>
+</Report>

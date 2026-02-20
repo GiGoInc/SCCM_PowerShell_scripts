@@ -1,4 +1,7 @@
-﻿# "Deployment.properties Content" Remediation Script
+# "Deployment.properties Content" Remediation Script
+  {$_}
+catch
+# "Deployment.properties Content" Remediation Script
 
 $list = "deployment.javaws.autodownload=NEVER
 deployment.javaws.autodownload.locked

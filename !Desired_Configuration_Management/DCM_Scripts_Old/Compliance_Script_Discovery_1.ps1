@@ -1,4 +1,7 @@
-﻿If(!(Test-Path 'C:\Windows\Logs\Software')){New-Item -Path 'C:\Windows\Logs\Software' -ItemType Directory -Force}
+If(!(Test-Path 'C:\Windows\Logs\Software')){New-Item -Path 'C:\Windows\Logs\Software' -ItemType Directory -Force}
+}
+    "$(Get-Date -format MM/dd/yyy)`t*`t$(Get-Date -format HH:mm:ss)   ****   Discovery - Non-Compliant - Found $count items in the ccmcache totalling $total MB." | Add-Content $log
+If(!(Test-Path 'C:\Windows\Logs\Software')){New-Item -Path 'C:\Windows\Logs\Software' -ItemType Directory -Force}
 $log = 'C:\Windows\Logs\Software\SCCM_client_cache_cleanup.log'
 
 #######################################################################################################		

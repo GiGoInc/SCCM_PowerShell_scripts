@@ -1,4 +1,7 @@
-﻿<#
+<#
+}
+    write-host "All devices are covered by a Boundary Group" -foregroundcolor green
+<#
 .SYNOPSIS
     Identifies clients that are not covered by a Boundary Group.
 

@@ -1,18 +1,21 @@
-﻿<#
-    Create Scheduled Task on SCCMSERVER
+<#
+#>
+           \"c:\log data\today.xml\"" ... 
+<#
+    Create Scheduled Task on SERVER
 
     The below options create a scheduled task that...
-    Runs under the scorch_account account
-    on SCCMSERVER ($Computer)
+    Runs under the PRIVUSER1 account
+    on SERVER ($Computer)
     On Monday to Thursday($DaystoRun)
     at 6:30pm ($StartTime)
     and is executed from the 03/28/2017 ($StartDate) to the 04/12/2017 ($EndDate)
     and then will delete itself
 #>
 
-      $Computer = 'SCCMSERVER'
-      $UserName = 'DOMAIN\scorchaccount_account'
-      $Password = "corp456"
+      $Computer = 'SERVER'
+      $UserName = 'DOMAIN\PRIVUSER1'
+      $Password = "DOMAINPart2456"
 $DeploymentName = "Add Collections to Deployment Collection - PhishMe"
       $Schedule = 'DAILY'
        $TasktoRun = 'powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File E:\Scripts\Deployments_PhishMe.ps1'

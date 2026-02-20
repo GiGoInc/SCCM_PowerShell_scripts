@@ -1,8 +1,11 @@
 D:
+# UserNotification = DisplaySoftwareCenterOnly
+# UseMeteredNetwork = $True
+D:
 CD 'D:\Program Files\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 $File = "E:\Packages\Powershell_Scripts\appdeploys.txt"
 
@@ -15,8 +18,8 @@ function AppDeploy ($Lines)
 	
 	$ADate = Get-Date -UFormat "%Y/%m/%d"
 	$ATime = Get-Date -UFormat "%R"
-	# $CollName = "Test - Isaac's VMs"
-	# $CollID = "SS100176"
+	# $CollName = "Test - SuperUser's VMs"
+	# $CollID = "XX100176"
 	# $AppName = "FileMaker Pro 12"
 	$DAction = "Install"
 	$Comm = "Deployment from POWERSHELL to $CollName of $AppName"

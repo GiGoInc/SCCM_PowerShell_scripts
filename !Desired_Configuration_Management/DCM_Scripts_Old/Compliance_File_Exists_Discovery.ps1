@@ -1,4 +1,7 @@
-﻿# Compliance Check if file exists - Discovery
+# Compliance Check if file exists - Discovery
+  {write-host "Not-Compliant"}
+else
+# Compliance Check if file exists - Discovery
 
 $Path1 = "$env:windir\System32\Macromed\Flash"
 $Path2 = "$env:windir\SYSWOW64\Macromed\Flash"

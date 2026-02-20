@@ -1,4 +1,7 @@
-﻿Function Retire-CMApplication
+Function Retire-CMApplication
+###################################################
+
+Function Retire-CMApplication
 {
     [CmdletBinding()]
     param (
@@ -16,7 +19,7 @@
     # checking retired status, setting to active so that we can make changes
             if ($RetiringApp.IsExpired)
             {
-                $appWMI = gwmi -ComputerName 'sccm1' -Namespace Root\SMS\Site_SS1 -class SMS_ApplicationLatest -Filter "LocalizedDisplayName = '$app'"
+                $appWMI = gwmi -ComputerName 'SERVER' -Namespace Root\SMS\Site_XX1 -class SMS_ApplicationLatest -Filter "LocalizedDisplayName = '$app'"
                 $appWMI.SetIsExpired($false) | Out-Null
                 Write-Host "Setting Status of $app to Active so that changes can be made.`n"
             }
@@ -83,8 +86,8 @@
             # # retire the app
             #if (!$RetiringApp.IsExpired)
             #{
-            #    #$appWMI = gwmi -ComputerName 'sccm1' -Namespace Root\SMS\Site_SS1 -class SMS_ApplicationLatest -Filter "LocalizedDisplayName = 'Retired-$app'"
-            #    $appWMI = gwmi -ComputerName 'sccm1' -Namespace Root\SMS\Site_SS1 -class SMS_ApplicationLatest -Filter "LocalizedDisplayName = '$app'"
+            #    #$appWMI = gwmi -ComputerName 'SERVER' -Namespace Root\SMS\Site_XX1 -class SMS_ApplicationLatest -Filter "LocalizedDisplayName = 'Retired-$app'"
+            #    $appWMI = gwmi -ComputerName 'SERVER' -Namespace Root\SMS\Site_XX1 -class SMS_ApplicationLatest -Filter "LocalizedDisplayName = '$app'"
             #    $appWMI.SetIsExpired($true) | Out-Null
             #    Write-Host "Set status to Retired.`n"
             #}
@@ -105,7 +108,7 @@
         { }
 
     # retire the app
-        $appWMI = gwmi -ComputerName 'sccm1' -Namespace Root\SMS\Site_SS1 -class SMS_ApplicationLatest -Filter "LocalizedDisplayName = '$app'"
+        $appWMI = gwmi -ComputerName 'SERVER' -Namespace Root\SMS\Site_XX1 -class SMS_ApplicationLatest -Filter "LocalizedDisplayName = '$app'"
         $appWMI.SetIsExpired($true) | Out-Null
         Write-Host "Set status to Retired.`n" -ForegroundColor Green
 
@@ -166,7 +169,7 @@ catch
 }
 ########################################################################################################################################################
 
-# Retire-CMApplication -RetiringApps 'Attachmate EXTRA X-treme 9.1 - Host Sessions','Firefox x64','Internet Explorer 11','Internet Explorer 8 for Windows Server 2003','MS Streets and Trips 2013','Mitel Contact Center Solutions Client Component Pack','Morning Check Tools','NTABL - Stucky client','Online Banking Solution Encrypted Keyboard Driver','Oracle Crystal Ball','PERFORM.360','Pervasive PSQL v11 Client','Retired-AMS 360 Client Rev 4','Retired-CRA Interactive Geocoder Hotfix','Retired-McAfee FramePackage Agent','Retired-zoom','SharePoint Designer','Sharepoint printer fix','TestNow'
+# Retire-CMApplication -RetiringApps 'Attachmate EXTRA X-treme 9.1 - Host Sessions','Firefox x64','Internet Explorer 11','Internet Explorer 8 for Windows Server 2003','MS Streets and Trips 2013','Mitel Contact Center Solutions Client Component Pack','Morning Check Tools','NTABL - Stucky client','Online Part2ing Solution Encrypted Keyboard Driver','Oracle Crystal Ball','PERFORM.360','Pervasive PSQL v11 Client','Retired-AMS 360 Client Rev 4','Retired-CRA Interactive Geocoder Hotfix','Retired-McAfee FramePackage Agent','Retired-zoom','SharePoint Designer','Sharepoint printer fix','TestNow'
 
 ###################################################
 

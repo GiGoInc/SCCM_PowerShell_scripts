@@ -1,4 +1,10 @@
 #	2015-04-22	IBL	This script is working as expected.
+#>
+
+#	2015-04-22	IBL	This script is working as expected.
+#>
+
+#	2015-04-22	IBL	This script is working as expected.
 #		This script assumes that you only have one deployment for the Collection Name
 #		It takes a Collection Name and rescheduled the deployment enforcement time for one minute in the future, which kicks the deployment off "immediately"
 # 
@@ -6,8 +12,8 @@
 D:
 CD 'D:\Program Files\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 
 $File = "E:\Packages\Powershell_Scripts\CollectionNames.txt"
@@ -34,7 +40,7 @@ CD E:
 <#
 AssignmentID        : 16778022
 CI_ID               : 17014841
-CollectionID        : SS100468
+CollectionID        : XX100468
 CollectionName      : Test - IE 10 fix
 CreationTime        : 4/3/2015 4:00:01 AM
 DeploymentID        : {61DDAED7-7B85-4C52-970B-2D50373A3DA0}
@@ -52,7 +58,7 @@ NumberSuccess       : 10
 NumberTargeted      : 32
 NumberUnknown       : 0
 ObjectTypeID        : 200
-PackageID           : SS100048
+PackageID           : XX100048
 PolicyModelID       : 16807754
 ProgramName         :
 SoftwareName        : Internet Explorer 10
@@ -61,7 +67,7 @@ SummaryType         : 1
 
 AssignmentID        : 16778028
 CI_ID               : 17014841
-CollectionID        : SS100470
+CollectionID        : XX100470
 CollectionName      : Sunday 4-19
 CreationTime        : 4/20/2015 2:04:47 AM
 DeploymentID        : {19A493DF-8C2C-49A1-86AB-21F882EB9DA9}
@@ -79,7 +85,7 @@ NumberSuccess       : 2
 NumberTargeted      : 121
 NumberUnknown       : 3
 ObjectTypeID        : 200
-PackageID           : SS100048
+PackageID           : XX100048
 PolicyModelID       : 16807754
 ProgramName         :
 SoftwareName        : Internet Explorer 10
@@ -88,7 +94,7 @@ SummaryType         : 1
 
 AssignmentID        : 16778030
 CI_ID               : 17014841
-CollectionID        : SS100471
+CollectionID        : XX100471
 CollectionName      : Tuesday 4-21
 CreationTime        : 4/20/2015 2:07:35 AM
 DeploymentID        : {2B3F7953-4EB2-4D3C-A2D2-92DC7BF8EC64}
@@ -106,7 +112,7 @@ NumberSuccess       : 11
 NumberTargeted      : 118
 NumberUnknown       : 5
 ObjectTypeID        : 200
-PackageID           : SS100048
+PackageID           : XX100048
 PolicyModelID       : 16807754
 ProgramName         :
 SoftwareName        : Internet Explorer 10
@@ -115,7 +121,7 @@ SummaryType         : 1
 
 AssignmentID        : 16778029
 CI_ID               : 17014841
-CollectionID        : SS100472
+CollectionID        : XX100472
 CollectionName      : Thursday 04-23
 CreationTime        : 4/20/2015 2:06:29 AM
 DeploymentID        : {D1BF8E72-0C44-4981-A7E9-B3A7228E15AB}
@@ -133,7 +139,7 @@ NumberSuccess       : 8
 NumberTargeted      : 113
 NumberUnknown       : 3
 ObjectTypeID        : 200
-PackageID           : SS100048
+PackageID           : XX100048
 PolicyModelID       : 16807754
 ProgramName         :
 SoftwareName        : Internet Explorer 10
@@ -142,7 +148,7 @@ SummaryType         : 1
 
 AssignmentID        : 16778027
 CI_ID               : 17014841
-CollectionID        : SS100473
+CollectionID        : XX100473
 CollectionName      : Saturday 4-25
 CreationTime        : 4/20/2015 2:03:26 AM
 DeploymentID        : {272A8B4F-838F-4BD9-8BC4-858DCB917788}
@@ -160,7 +166,7 @@ NumberSuccess       : 3
 NumberTargeted      : 103
 NumberUnknown       : 4
 ObjectTypeID        : 200
-PackageID           : SS100048
+PackageID           : XX100048
 PolicyModelID       : 16807754
 ProgramName         :
 SoftwareName        : Internet Explorer 10

@@ -1,4 +1,7 @@
-﻿[Threading.Thread]::CurrentThread.CurrentCulture = 'en-US'
+[Threading.Thread]::CurrentThread.CurrentCulture = 'en-US'
+
+$Cells.EntireColumn.AutoFit()
+[Threading.Thread]::CurrentThread.CurrentCulture = 'en-US'
 $XLSX = New-Object -ComObject "Excel.Application"
 $XLSX.Visible = $True
 $NewWorkBook = $XLSX.Workbooks.Add()
@@ -20,7 +23,7 @@ $Row = 1
         $Cells.item($Row,6).Font.Bold = $True
 $Row++
 
-$BoundaryQuery = Get-WmiObject -Namespace "Root\SMS\Site_SS1" -Class SMS_Boundary -ComputerName SCCMSERVER
+$BoundaryQuery = Get-WmiObject -Namespace "Root\SMS\Site_XX1" -Class SMS_Boundary -ComputerName SERVER
 
 foreach($item in $BoundaryQuery)
 {

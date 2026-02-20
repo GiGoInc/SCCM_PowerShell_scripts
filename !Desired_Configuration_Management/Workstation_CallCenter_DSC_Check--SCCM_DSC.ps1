@@ -1,4 +1,10 @@
-﻿$Computer = "alc1sp08"
+$Computer = "alc1sp08"
+}
+     $AR
+$Computer = "alc1sp08"
+}
+     $AR
+$Computer = "alc1sp08"
 
     #Create an empty dynamic array
     $Output = @()
@@ -8,7 +14,7 @@
     $Chrome = $null
     $Five9 = $null
     $Attachmate = $null
-    $Salespro = $null
+    $APP1 = $null
     $AR = $null
 
 	############################################################################################################
@@ -174,18 +180,18 @@
 
 	
 	############################################################################################################
-	# SalesPro pointing to either LAC2BR01 or LACIBR01
-		$output += 'SalesPro - '
+	# APP1 pointing to either COMPUTER129 or COMPUTER132
+		$output += 'APP1 - '
 
 		If (!(Test-Path "\\$computer\C$\Usr\Local\BPWCTL.EXE"))
 		{
-            $Salespro = "No_Salespro_install"
-			$Output += ("$Salespro")
+            $APP1 = "No_APP1_install"
+			$Output += ("$APP1")
 		}
         Else
 		{
-            $Salespro = "Salespro_installed"
-			$Output += ("$Salespro")
+            $APP1 = "APP1_installed"
+			$Output += ("$APP1")
 		}
 
 	# ############################################################################################################
@@ -245,14 +251,14 @@
 
 
 
-If ($mostRecent -ge '8.0.152' -and $Chrome -ge '67.0.3396.79' -and $Five9 -eq '10.0.1' -and $Attachmate -eq '9.1.1071.0' -and $Salespro -eq 'Salespro_installed' -and $AR -ge '11.0.10.32')
+If ($mostRecent -ge '8.0.152' -and $Chrome -ge '67.0.3396.79' -and $Five9 -eq '10.0.1' -and $Attachmate -eq '9.1.1071.0' -and $APP1 -eq 'APP1_installed' -and $AR -ge '11.0.10.32')
 {
     'Compliant'
     $mostRecent
      $Chrome
      $Five9 
      $Attachmate
-     $Salespro
+     $APP1
      $AR
 }
 Else
@@ -262,6 +268,6 @@ Else
      $Chrome
      $Five9 
      $Attachmate
-     $Salespro
+     $APP1
      $AR
 }

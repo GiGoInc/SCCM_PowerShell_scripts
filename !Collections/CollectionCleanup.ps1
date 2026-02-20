@@ -1,4 +1,7 @@
-﻿PARAM(
+PARAM(
+CleanupDirectMembershipsInCollection -SiteCode $SiteCode -CollectionID $CollectionID
+
+PARAM(
     [Parameter(Mandatory=$True,HelpMessage="Please Enter Site Server Site code")]
         $SiteCode,
     [Parameter(Mandatory=$True,HelpMessage="Please Enter CollectionID")]     

@@ -1,4 +1,7 @@
 $File = "D:\Powershell\!SCCM_PS_scripts\!Clients_Actions\SCCM_Schedule_Client_Action_Remotely_working--PCList.txt"
+# {00000000-0000-0000-0000-000000000107}	Windows Installer Source List Update Cycle
+# {00000000-0000-0000-0000-000000000041}	User Policy Agent Cleanup
+$File = "D:\Powershell\!SCCM_PS_scripts\!Clients_Actions\SCCM_Schedule_Client_Action_Remotely_working--PCList.txt"
  
 function RunFunc ($Lines)
 {
@@ -40,7 +43,7 @@ function RunFunc ($Lines)
 # {00000000-0000-0000-0000-000000000123}	Application manager global evaluation action
 # {00000000-0000-0000-0000-000000000121}	Application manager policy action
 # {00000000-0000-0000-0000-000000000122}	Application manager user policy action
-# {00000000-0000-0000-0000-000000000109}	Branch Distribution Point Maintenance Task
+# {00000000-0000-0000-0000-000000000109}	RemoteLocale Distribution Point Maintenance Task
 # {00000000-0000-0000-0000-000000000037}	Clearing proxy settings cache
 # {00000000-0000-0000-0000-000000000012}	Client Machine Authentication
 # {00000000-0000-0000-0000-000000000110}	DCM policy

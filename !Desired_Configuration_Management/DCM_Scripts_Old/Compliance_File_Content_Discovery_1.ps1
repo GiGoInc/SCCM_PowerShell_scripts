@@ -1,4 +1,7 @@
-﻿# Compliance File Content - Discovery
+# Compliance File Content - Discovery
+{write-host "Not Compliant"}
+Else
+# Compliance File Content - Discovery
 
 $Path1 = "$env:windir\System32\Macromed\Flash"
 $Path2 = "$env:windir\SYSWOW64\Macromed\Flash"

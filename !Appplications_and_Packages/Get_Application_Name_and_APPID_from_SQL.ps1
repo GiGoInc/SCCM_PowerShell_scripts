@@ -1,5 +1,8 @@
-﻿# Use saved password are $Cred
-$user = 'DOMAIN\user1'
+# Use saved password are $Cred
+$GetRowInfo_QueryInvoke | Out-File $Log
+
+# Use saved password are $Cred
+$user = 'DOMAIN\SUPERUSER'
 # Check for Password file
     If (!(Test-Path 'D:\Powershell\tsa_securestring.txt'))
     {
@@ -27,10 +30,10 @@ $cred = New-Object System.Management.Automation.PsCredential $user,(Get-Content 
 
 $Log = 'D:\Powershell\!SCCM_PS_scripts\!Appplications_and_Packages\Get_Application_Name_and_APPID_from_SQL--Results.txt'
 
-$GetRowInfo_DB =       'CM_SS1'
-$GetRowInfo_Server =   'sccmserver'
+$GetRowInfo_DB =       'CM_XX1'
+$GetRowInfo_Server =   'SERVER'
 $GetRowInfo_Query =    "SELECT DISTINCT ApplicationName,APPCI FROM fn_appdtclientsummarizedstate(1033) Order By ApplicationName"
-$GetRowInfo_Instance = 'sccmserver'
+$GetRowInfo_Instance = 'SERVER'
 
 
 # Run SQl

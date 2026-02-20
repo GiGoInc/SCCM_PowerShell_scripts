@@ -1,5 +1,8 @@
-ï»¿$SiteServer = 'SCCMSERVER.Domain.Com'
-$SiteCode = 'SS1'
+$SiteServer = 'SERVER.DOMAIN.COM'
+#>
+$SMSMemebers = Get-WmiObject -ComputerName $SiteServer -Credential $cred -Namespace  "ROOT\SMS\site_$SiteCode" -Query "SELECT * FROM SMS_FullCollectionMembership WHERE CollectionID= $CollectionID order by name" | select Name
+$SiteServer = 'SERVER.DOMAIN.COM'
+$SiteCode = 'XX1'
 #$cred = Get-credential
 $SCCMColls = 'D:\Powershell\!SCCM_PS_scripts\!Collections\SCOrch_Get_Collection_Members--Results.csv'
 If (Test-Path $SCCMColls){Remove-Item $SCCMColls}
@@ -9,7 +12,7 @@ $CollectionNames = gc "D:\Powershell\!SCCM_PS_scripts\!Collections\SCOrch_Get_Co
 Function RunTime
 {
     $End = (GET-DATE)
-    $TS = NEW-TIMESPAN â€“Start $Start â€“End $End
+    $TS = NEW-TIMESPAN –Start $Start –End $End
     $Min = $TS.minutes
     $Sec = $TS.Seconds
     Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan
@@ -39,9 +42,9 @@ Start-Sleep -Seconds 2
 
 
 <#
-$SiteServer = 'SCCMSERVER.Domain.Com'
-$SiteCode = 'SS1'
-$CollectionID = 'SS100669'
+$SiteServer = 'SERVER.DOMAIN.COM'
+$SiteCode = 'XX1'
+$CollectionID = 'XX100669'
 $cred = Get-credential 
 #Retrieve SCCM collection by name 
 $Collection = get-wmiobject -ComputerName $siteServer -NameSpace "ROOT\SMS\site_$SiteCode" -Class SMS_Collection -Credential $cred  | where {$_.Name -eq "$CollectionName"} 

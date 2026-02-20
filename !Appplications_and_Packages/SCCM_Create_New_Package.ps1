@@ -1,7 +1,10 @@
-﻿C:
+C:
+#>
+    }
+C:
 CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
+Set-Location XX1:
 
 $Deets = 'Win10 Driver - D15 Dock;\\cmcontent\DriversSource\Win10-D15-Dock', `
          'Win10 Driver - Dell Latitude 5290 2n1 -- A07;\\cmcontent\DriversSource\Win10_Dell_5290--2n1--A07', `
@@ -37,15 +40,15 @@ ForEach ($Item in $Deets)
     New-CMPackage -Name $Name -Path $Path
     $PKGID = $(Get-CMPackage -Name $Name).packageID
     Set-CMPackage -Name $Name -EnableBinaryDeltaReplication $True -MulticastAllow $True
-    Move-CMObject -FolderPath "SS1:\Package\Driver Packages" -ObjectId $PKGID
+    Move-CMObject -FolderPath "XX1:\Package\Driver Packages" -ObjectId $PKGID
 
-    $DPs = 'SCCMPXE1.Domain.Com','SCCMSERVER.Domain.Com','SCCM01.Domain.Com','PXE1.Domain.Com'
+    $DPs = 'SERVER.DOMAIN.COM','SERVER.DOMAIN.COM','SERVER.DOMAIN.COM','SERVER.DOMAIN.COM'
     ForEach ($DP in $DPs){Start-CMContentDistribution -PackageId "$PKGID" -DistributionPointName $DP}
 }
 
 
 <#
-    $Packages = 'SS1006E4','SS1006E5','SS1006E1','SS1006E6','SS1006E7','SS1006E8','SS1006E9','SS1006EA','SS1006EB','SS1006EC','SS1006ED','SS1006EE','SS1006EF','SS1006F0','SS1006F1','SS1006F2','SS1006F3','SS1006F4','SS1006F5','SS1006F6','SS1006F7','SS1006F8','SS1006F9','SS1006FA','SS1006FB','SS1006FC'
+    $Packages = 'XX1006E4','XX1006E5','XX1006E1','XX1006E6','XX1006E7','XX1006E8','XX1006E9','XX1006EA','XX1006EB','XX1006EC','XX1006ED','XX1006EE','XX1006EF','XX1006F0','XX1006F1','XX1006F2','XX1006F3','XX1006F4','XX1006F5','XX1006F6','XX1006F7','XX1006F8','XX1006F9','XX1006FA','XX1006FB','XX1006FC'
     ForEach ($Package in $Packages)
     {
         # $PKG = Get-CMPackage -Id $Package

@@ -1,4 +1,7 @@
-﻿# "override.ini Content" Remediation Script
+# "override.ini Content" Remediation Script
+  {$_}
+catch
+# "override.ini Content" Remediation Script
 
 $list = '[XRE]
 EnableProfileMigrator=false'

@@ -1,4 +1,7 @@
-﻿$AppName = "WMF 5.0"
+$AppName = "WMF 5.0"
+}
+    $DCollID = (Get-CMCollection -Name $DCollName).CollectionID
+$AppName = "WMF 5.0"
 
 $CollNames = "$AppName - Group 01", `
              "$AppName - Group 02", `
@@ -18,8 +21,8 @@ $Comments = "Created automagically by PowerShell on $(get-date -format MM/dd/yyy
     C:
     CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
     Import-Module ".\ConfigurationManager.psd1"
-    Set-Location SS1:
-    CD SS1:
+    Set-Location XX1:
+    CD XX1:
 
 ForEach ($DCollName in $CollNames)
 {

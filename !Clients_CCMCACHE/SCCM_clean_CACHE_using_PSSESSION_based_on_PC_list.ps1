@@ -1,4 +1,7 @@
-Ôªø$sessions = Get-Content "C:\!Powershell\!SCCM_PS_scripts\Cleanup_SCCM_cache\pc.txt" | % { New-PSSession -ComputerName $_ -ThrottleLimit 60 }
+$sessions = Get-Content "C:\!Powershell\!SCCM_PS_scripts\Cleanup_SCCM_cache\pc.txt" | % { New-PSSession -ComputerName $_ -ThrottleLimit 60 }
+#>
+}
+$sessions = Get-Content "C:\!Powershell\!SCCM_PS_scripts\Cleanup_SCCM_cache\pc.txt" | % { New-PSSession -ComputerName $_ -ThrottleLimit 60 }
 
 foreach($session in $sessions)
 {
@@ -80,7 +83,7 @@ foreach($session in $sessions)
             		$ElementsToRemove = $CacheElements | where {$_.contentid -eq $ElementID.Name -and $_.ContentVer-ne $Max}
             		foreach ($Element in $ElementsToRemove)
             		{
-            			Write-Host ‚ÄúDeleting‚Äù$Element.ContentID‚Äùwith version‚Äù$Element.ContentVersion -ForegroundColor Red
+            			Write-Host ìDeletingî$Element.ContentIDîwith versionî$Element.ContentVersion -ForegroundColor Red
             			
             			Remove-Item $Element.Location -recurse
             			$Element.Delete()

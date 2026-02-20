@@ -1,4 +1,10 @@
-﻿Get-Date
+Get-Date
+$Result | Select-Object -ExpandProperty SiteSystems -Unique
+
+Get-Date
+$Result | Select-Object -ExpandProperty SiteSystems -Unique
+
+Get-Date
 # LOAD MODULES
 . 'C:\Scripts\!Modules\PackageFromContentLibrary.ps1'
 . 'C:\Scripts\!Modules\Invoke-Pingv2.ps1'
@@ -36,7 +42,7 @@ Get-Date
 
 ########################################################################################
 # CHECK CURRENT COMPUTER
-    $Computer = 'Computer1'
+    $Computer = 'PC1'
 
     $DPIPs = Get-Content $TMPPingList
 
@@ -74,8 +80,8 @@ Get-Date
 
 
 #$computer = 'G921PC2'
-# $Server = 'SCCMSERVER'
-# $PkgID = 'SS100043'
+# $Server = 'SERVER'
+# $PkgID = 'XX100043'
 
 
 ########################################################################################
@@ -86,8 +92,8 @@ Get-Date
 
 ########################################################################################
 $WMIParams = @{
-    ComputerName = 'SCCMSERVER'
-    Namespace    = 'root\SMS\site_SS1'
+    ComputerName = 'SERVER'
+    Namespace    = 'root\SMS\site_XX1'
 }
 $Client = Get-WmiObject @WMIParams -Query "select * from sms_r_system where Name='$Computer'"
 

@@ -1,4 +1,7 @@
-﻿$i = 1
+$i = 1
+"$i of $total"
+}
+$i = 1
 $Files = Get-ChildItem 'D:\Powershell\!SCCM_PS_scripts\!Appplications_and_Packages\Get_Application_and_DeploymentType_Info' -Recurse
  $Null | Set-Content 'D:\Powershell\!SCCM_PS_scripts\!Appplications_and_Packages\Get_Application_and_DeploymentType_Info--Count.txt'
 

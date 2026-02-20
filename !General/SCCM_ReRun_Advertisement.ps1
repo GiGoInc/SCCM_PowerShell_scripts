@@ -1,4 +1,7 @@
-﻿# // Kudos
+# // Kudos
+(Get-Content $File) | foreach-Object {invoke-command -ScriptBlock ${function:ReadLines} -ArgumentList $_}
+
+# // Kudos
 # // Author: Marco Di Feo
 # // Website: http://www.marco-difeo.de
 # // Scriptname: rerun_sccm_advertisement_on_client.ps1
@@ -11,8 +14,8 @@
 # // #######################################################################################
 
 # // Your SCCM advertisementID
-$ADVID = "SS1201AD"
-# $ADVID = "SS1201AC"
+$ADVID = "XX1201AD"
+# $ADVID = "XX1201AC"
 
 # // Computername on which the magic takes place ( . is the local computer)
 $File = ".\RemoteComputers.txt"

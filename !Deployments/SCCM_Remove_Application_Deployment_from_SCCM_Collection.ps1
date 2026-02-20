@@ -1,8 +1,11 @@
 D:
+#  -WhatIf						I.E. - CommonParameters
+#  -Confirm						I.E. - 
+D:
 CD 'D:\Program Files\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 $File = "E:\Packages\applist.txt"
 
@@ -11,8 +14,8 @@ function DeployRemove ($AppName)
 {
 	$ADate = Get-Date -UFormat "%Y/%m/%d"
 	$ATime = Get-Date -UFormat "%R"
-	$CollName = "Test - Isaac's VMs"
-	$CollID = "SS100176"
+	$CollName = "Test - SuperUser's VMs"
+	$CollID = "XX100176"
 	#$AppName = "Dymo Labels"
 	$DAction = "Install"
 	$Comm = "Deployment from POWERSHELL to $CollName of $AppName"

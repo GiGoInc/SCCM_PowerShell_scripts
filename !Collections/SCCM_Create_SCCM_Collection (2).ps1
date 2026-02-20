@@ -1,9 +1,12 @@
  #SCCM Module
+CD C:
+
+ #SCCM Module
 C:
 CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 
  # Collections Update Schedules
@@ -20,7 +23,7 @@ ForEach ($CollName in $CollList)
 New-CMDeviceCollection -Name $CollName -LimitingCollectionName "All Windows Workstation or Professional Systems (DC0)" -RefreshSchedule $Schedule1 -RefreshType Both -Comment $Comments
 
  # Defined Query Rule for Device Collections
- #Add-CMDeviceCollectionQueryMembershipRule -CollectionName "Test - All Dell TS Machines" -QueryExpression "select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System inner join SMS_G_System_CorpName on SMS_G_System_CorpName.ResourceID = SMS_R_System.ResourceId where SMS_G_System_CorpName.TS_Name Like '%'" -RuleName "QueryRuleName1"
+ #Add-CMDeviceCollectionQueryMembershipRule -CollectionName "Test - All Dell TS Machines" -QueryExpression "select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System inner join SMS_G_System_DOMAINHolding on SMS_G_System_DOMAINHolding.ResourceID = SMS_R_System.ResourceId where SMS_G_System_DOMAINHolding.TS_Name Like '%'" -RuleName "QueryRuleName1"
 
 }
 

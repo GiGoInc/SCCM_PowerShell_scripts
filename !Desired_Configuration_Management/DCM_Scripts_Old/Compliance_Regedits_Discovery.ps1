@@ -1,4 +1,7 @@
-﻿# "Registry" Discovery Script
+# "Registry" Discovery Script
+}
+    Write-Host 'Error finding OS level'
+# "Registry" Discovery Script
 
 $OSArchitecture = Get-WmiObject -Class Win32_OperatingSystem | Select-Object OSArchitecture
 $ErrorActionPreference = "Stop"

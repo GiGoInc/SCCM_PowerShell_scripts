@@ -1,4 +1,7 @@
 <#
+"$CurrentDirectory\$ScriptName`tran $min minutes and $sec seconds." | Add-Content $Log
+$sec = $t.seconds
+<#
 .Synopsis
 This script runs the Invoke-Parallel.ps1 module.
 

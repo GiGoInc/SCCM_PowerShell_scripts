@@ -1,4 +1,7 @@
-﻿# "Set Service and state" Remediation Script
+# "Set Service and state" Remediation Script
+Catch{$_.Exception.Message}
+}
+# "Set Service and state" Remediation Script
 
 $DN1 = 'Google Update Service (gupdate)'
 $Name1 = 'gupdate'

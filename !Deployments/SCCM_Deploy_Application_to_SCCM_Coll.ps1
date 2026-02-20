@@ -1,18 +1,29 @@
-#	2014-10-08	IBL	This script is working as expected.
+<#
 
-#	$CollName = "Test - Isaac's VMs"
-#	$CollID = "SS100176"
-#	$File = "E:\Packages\Powershell_Scripts\applist.txt"
+#  -WhatIf									I.E. - CommonParameters
+<#
+    2014-10-08	IBL	This script is working as expected.
+    
+    $CollName = "Test - SuperUser's VMs"
+    $CollID = "XX100176"
+    $File = "E:\Packages\Powershell_Scripts\applist.txt"
+#>
 
-D:
-CD 'D:\Program Files\Microsoft Configuration Manager\AdminConsole\bin'
+cls
+C:
+CD 'C:\Program Files (x86)\ConfigMgr Console\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Start-Sleep -Milliseconds 500
+## Connect to ConfigMgr Site 
+Set-Location XX1:
+CD XX1:
+############################################################
+############################################################
+$ADate = Get-Date -Format "yyyy_MM-dd_hh-mm-ss"
 
     $File = "E:\Packages\Powershell_Scripts\applist.txt"
-$CollName = "Test - Isaac's VMs"
-  $CollID = "SS100176"
+$CollName = "Test - SuperUser's VMs"
+  $CollID = "XX100176"
 	
 function AppDeploy ($AppName)
 {
@@ -47,7 +58,7 @@ Start-CMApplicationDeployment @DeploymentHash
 }
 
 				
-(Get-Content $File) | foreach-Object {invoke-command -ScriptBlock ${function:AppDeploy} -ArgumentList $_}
+(Get-Content $File) | foreach-Object {Invoke-Command -ScriptBlock ${function:AppDeploy} -ArgumentList $_}
 
 
 

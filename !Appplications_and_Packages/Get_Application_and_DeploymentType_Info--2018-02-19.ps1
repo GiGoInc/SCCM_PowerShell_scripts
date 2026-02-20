@@ -1,4 +1,7 @@
-﻿cls
+cls
+} else {Write-Host " oScope object Creation failed"; exit}
+# Finish
+cls
 <#
 2018-02-19 3pm -- Partially works. Testing script to find alternate (faster) output to Get-CMApplication
 
@@ -7,9 +10,9 @@
     #####################################################
     
      
-    [string]$sSCCMServerName           = "SCCMSERVER"
-    [string]$SMSSiteCode               = "SS1"
-    [string]$sSCCMUsername             = "DOMAIN\user1"
+    [string]$sSCCMServerName           = "SERVER"
+    [string]$SMSSiteCode               = "XX1"
+    [string]$sSCCMUsername             = "DOMAIN\SUPERUSER"
     [string]$sSCCMPassword             = "(PASSWORD)"
      
       
@@ -55,8 +58,8 @@
 #>
 
 
-[string]$sSCCMServerName           = "SCCMSERVER"
-[string]$SMSSiteCode               = "SS1"
+[string]$sSCCMServerName           = "SERVER"
+[string]$SMSSiteCode               = "XX1"
 
 $sPath  = [string]::Format("\\{0}\ROOT\sms\site_{1}", $sSCCMServerName, $SMSSiteCode)
 $oScope = new-object System.Management.ManagementScope -ArgumentList $sPath

@@ -1,11 +1,14 @@
-﻿<#
+<#
+GetFolderInfo -FolderName $FolderName -Server $server -SiteCode $SiteCode
+
+<#
  
 This script gets the total size of all the content files for each deployment type for each application in the console folder you specify.
  
 #>
  
-$Server = "sccm1"
-$SiteCode = "SS1"
+$Server = "SERVER"
+$SiteCode = "XX1"
 
  
 # import assemblies

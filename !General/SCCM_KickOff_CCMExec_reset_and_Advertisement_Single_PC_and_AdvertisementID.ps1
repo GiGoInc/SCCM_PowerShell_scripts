@@ -1,5 +1,8 @@
-﻿# PC = 5JNNM12 or blnnm12
-# ADVID = SS100310
+# PC = 5JNNM12 or blnnm12
+#>
+    Get-Service -Name LanmanWorkstation -ComputerName $PC
+# PC = 5JNNM12 or blnnm12
+# ADVID = XX123456
 # Advertisement Name = Optiplex E5540 - NIC update
 
 

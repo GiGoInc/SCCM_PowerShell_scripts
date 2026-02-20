@@ -1,4 +1,7 @@
 cls
+#		############################################
+#		 
+cls
 
 # Add Required Type Libraries
     [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ManagementProvider.dll")) | Out-Null
@@ -17,8 +20,8 @@ cls
     # Add-Type -Path "D:\Program Files\Microsoft Configuration Manager\AdminConsole\bin\AdminUI.AppManFoundation.dll"
     [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "AdminUI.AppManFoundation.dll")) | Out-Null
  
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 $DeploymentTypes = Get-CMDeploymentType -ApplicationName "Test - Fake App"
 
@@ -48,10 +51,10 @@ $oOperands = select-object Microsoft.ConfigurationManagement.DesiredConfiguratio
 [string]$sApplicationDestription   = "Fake App Description"
 [string]$sApplicationVersion       = "1.0"
 [string]$sApplicationPublisher     = "Fake Inc"
-[string]$ApplicationOwner          = "user1"
+[string]$ApplicationOwner          = "SUPERUSER"
  
-[string]$sSCCMServerName           = "SCCMSERVER"
-[string]$sSCCMUsername             = "user1"
+[string]$sSCCMServerName           = "SERVER"
+[string]$sSCCMUsername             = "SUPERUSER"
 [string]$sSCCMPassword             = "SCCMPassword"
  
 #####################################################

@@ -1,4 +1,7 @@
-﻿# "mozilla.cfg Content" Remediation Script
+# "mozilla.cfg Content" Remediation Script
+  {$_}
+catch
+# "mozilla.cfg Content" Remediation Script
 
 $list = '//Firefox Default Settings
 

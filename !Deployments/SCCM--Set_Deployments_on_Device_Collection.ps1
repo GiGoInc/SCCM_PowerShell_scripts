@@ -1,8 +1,11 @@
-﻿C:
+C:
+CD D:
+}
+C:
 CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 $List = "D:\Powershell\!SCCM_PS_scripts\!Deployments\SCCM--Set_Deployments_on_Device_Collection--PCList.txt"
 

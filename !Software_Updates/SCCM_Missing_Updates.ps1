@@ -1,6 +1,9 @@
-$GetRowInfo_Server = 'sccmserverdb'
-$GetRowInfo_Instance = 'sccmserverdb'
-$GetRowInfo_DB = 'CM_SS1'
+$GetRowInfo_Server = 'SERVER'
+    
+    
+$GetRowInfo_Server = 'SERVER'
+$GetRowInfo_Instance = 'SERVER'
+$GetRowInfo_DB = 'CM_XX1'
 
 $GetRowInfo_Query = "SELECT dbo.v_R_System.Netbios_Name0 AS [Computer Name]
     ,COUNT(dbo.v_UpdateComplianceStatus.Status) AS [Updates Missing]

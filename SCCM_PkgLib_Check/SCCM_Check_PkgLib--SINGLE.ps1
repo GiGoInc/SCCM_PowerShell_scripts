@@ -1,4 +1,7 @@
-ï»¿Function Ignore-SelfSignedCerts
+Function Ignore-SelfSignedCerts
+#}
+    Write-Host "`t$min minutes and $sec seconds." -ForegroundColor Magenta
+Function Ignore-SelfSignedCerts
 {
     try
     {
@@ -44,11 +47,11 @@ $LogFolder = "D:\Powershell\!SCCM_PS_scripts\SCCM_PkgLib_Check"
 #$DPList | Out-File "$DPsFile"
 #$DPs = Get-Content $DPsFile
 
-$DP = 'sccmserver.Domain.DOMAIN'
+$DP = 'SERVER.DOMAIN.COM'
 
 ######################################################################################################################################
-$Username = 'domain\service_scorch_account'
-$Password = 'ScorchPassword' | ConvertTo-SecureString -AsPlainText -Force 
+$Username = 'DOMAIN\SVCUSER1'
+$Password = '(password)' | ConvertTo-SecureString -AsPlainText -Force 
 $Cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Username, $Password
 #####################################################################################################################################
 #ForEach ($DP in $DPs)
@@ -102,7 +105,7 @@ $Cred = New-Object -TypeName System.Management.Automation.PSCredential -Argument
     }
     # FINALLY - Write Time
     $ADateE = Get-Date
-    $t = NEW-TIMESPAN â€“Start $ADateS â€“End $ADateE | Select Minutes,Seconds
+    $t = NEW-TIMESPAN –Start $ADateS –End $ADateE | Select Minutes,Seconds
     $min = $t.Minutes
     $sec = $t.seconds
     Write-Host "`nScript ran against $DP :" -NoNewline

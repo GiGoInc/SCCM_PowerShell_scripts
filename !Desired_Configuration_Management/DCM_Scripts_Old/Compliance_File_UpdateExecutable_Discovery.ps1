@@ -1,4 +1,7 @@
-﻿# "Files Exists" Discovery Script
+# "Files Exists" Discovery Script
+  {write-host "Compliant"}
+else
+# "Files Exists" Discovery Script
 
 $GUFilex64 = 'C:\Program Files (x86)\Google\Update\GoogleUpdate.exe'
 $GUFilex86 = 'C:\Program Files\Google\Update\GoogleUpdate.exe'

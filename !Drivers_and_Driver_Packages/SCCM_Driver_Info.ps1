@@ -1,8 +1,11 @@
-﻿# Import Module
+# Import Module
+Start-Sleep -Seconds 5
+D:
+# Import Module
 $CMModulepath = $Env:SMS_ADMIN_UI_PATH.ToString().Substring(0, $Env:SMS_ADMIN_UI_PATH.Length - 5) + "\ConfigurationManager.psd1"
 Import-Module $CMModulepath -force
 # Change the site Code
-CD SS1:
+CD XX1:
 
 $ADate = Get-Date -Format "yyyy_MM-dd_hh-mm-ss"
 # Log File

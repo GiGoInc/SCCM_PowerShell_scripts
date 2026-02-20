@@ -1,4 +1,7 @@
 cls
+}                
+    "$PkgName,$PkgID,$PkgSP,$PkgSD,$PkgLR" -join "," | Add-Content $DestFile                
+cls
 
 # Add Required Type Libraries
     [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ManagementProvider.dll")) | Out-Null
@@ -6,8 +9,8 @@ cls
     [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.Extender.dll")) | Out-Null
     [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.MsiInstaller.dll")) | Out-Null
  
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 
 # Variables

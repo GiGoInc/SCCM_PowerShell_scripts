@@ -1,8 +1,11 @@
-# $SiteCode = "SS1"
+# $SiteCode = "XX1"
+$Deployment.Put()
+$Deployment.UseGMTTimes                     = $true
+# $SiteCode = "XX1"
 $ADate = Get-Date -UFormat "%Y/%m/%d"
 $ATime = Get-Date -UFormat "%R"
-$CollName = "Test - Isaac's VMs"
-$CollID = "SS100176"
+$CollName = "Test - SuperUser's VMs"
+$CollID = "XX100176"
 $AppName = "Dymo Labels"
 $DAction = "Install"
 $Comm = "Deployment from POWERSHELL to $CollName of $AppName"

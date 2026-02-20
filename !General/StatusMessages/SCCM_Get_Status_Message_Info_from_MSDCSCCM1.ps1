@@ -1,4 +1,7 @@
-﻿param( 
+param( 
+$colMessages | Export-CSV -path $stringOutputCSV 
+ 
+param( 
     [Parameter(Mandatory=$True)] 
     [string]$stringPathToDLL, 
     [Parameter(Mandatory=$True)] 

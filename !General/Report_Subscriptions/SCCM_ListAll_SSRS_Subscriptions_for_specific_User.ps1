@@ -1,4 +1,7 @@
-﻿Function CheckReportSubscriptions
+Function CheckReportSubscriptions
+}
+    $subscriptions | select Path, report, Description, Owner, SubscriptionID, lastexecuted,Status | where {$_.owner -eq $currentOwner}
+Function CheckReportSubscriptions
 {
     # Parameters:  
     #    currentOwner - DOMAIN\USER that owns the subscriptions you wish to change  

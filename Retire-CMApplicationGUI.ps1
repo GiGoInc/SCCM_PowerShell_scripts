@@ -1,4 +1,7 @@
-﻿# references for building forms
+# references for building forms
+}
+exit
+# references for building forms
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 
@@ -27,7 +30,7 @@ function Retire-CMApplication
             # checking retired status, setting to active so that we can make changes
             if ($RetiringApp.IsExpired)
             {
-                $appWMI = gwmi -ComputerName 'sccm1' -Namespace Root\SMS\Site_SS1 -class SMS_ApplicationLatest -Filter "LocalizedDisplayName = '$app'"
+                $appWMI = gwmi -ComputerName 'SERVER' -Namespace Root\SMS\Site_XX1 -class SMS_ApplicationLatest -Filter "LocalizedDisplayName = '$app'"
                 $appWMI.SetIsExpired($false) | Out-Null
                 Update-Log "Setting Status of $app to Active so that changes can be made.`n"
             }
@@ -94,7 +97,7 @@ function Retire-CMApplication
             # retire the app
             if (!$RetiringApp.IsExpired)
             {
-                $appWMI = gwmi -ComputerName 'sccm1' -Namespace Root\SMS\Site_SS1 -class SMS_ApplicationLatest -Filter "LocalizedDisplayName = 'Retired-$app'"
+                $appWMI = gwmi -ComputerName 'SERVER' -Namespace Root\SMS\Site_XX1 -class SMS_ApplicationLatest -Filter "LocalizedDisplayName = 'Retired-$app'"
                 $appWMI.SetIsExpired($true) | Out-Null
                 Update-Log "Set status to Retired.`n"
             }

@@ -1,4 +1,7 @@
-﻿# "Deployment.properties Content" Discovery Script
+# "Deployment.properties Content" Discovery Script
+  }
+      {write-host "Not Compliant"}
+# "Deployment.properties Content" Discovery Script
 
 $list = "deployment.javaws.autodownload=NEVER
 deployment.javaws.autodownload.locked

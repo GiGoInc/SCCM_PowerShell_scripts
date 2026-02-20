@@ -1,11 +1,14 @@
 cls
+# Finish
+############################################
+cls
 
 #	#####################################################
 #	
 #	 
-	[string]$sSCCMServerName           = "SCCMSERVER"
-	[string]$SMSSiteCode               = "SS1"
-#	[string]$sSCCMUsername             = "DOMAIN\user1"
+	[string]$sSCCMServerName           = "SERVER"
+	[string]$SMSSiteCode               = "XX1"
+#	[string]$sSCCMUsername             = "DOMAIN\SUPERUSER"
 #	[string]$sSCCMPassword             = "(PASSWORD)"
 #	 
 #	  

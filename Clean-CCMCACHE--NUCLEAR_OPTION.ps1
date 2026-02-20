@@ -1,7 +1,10 @@
-Ôªø#([wmiclass]"ROOT\ccm:SMS_Client").GetAssignedSite().sSiteCode
+#([wmiclass]"ROOT\ccm:SMS_Client").GetAssignedSite().sSiteCode
+"Cleaned Items:" + $Cleaned
+}
+#([wmiclass]"ROOT\ccm:SMS_Client").GetAssignedSite().sSiteCode
 #([wmi]"ROOT\ccm:SMS_Client=@").ClientVersion
 #([wmiclass]"ROOT\ccm:SMS_Client").GetAssignedSite().sSiteCode
-#([wmi]"ROOT\ccm:SMS_Authority.Name='SMS:SS1'").CurrentManagementPoint
+#([wmi]"ROOT\ccm:SMS_Authority.Name='SMS:XX1'").CurrentManagementPoint
 $WMICheck = get-wmiobject -query "SELECT * FROM CacheInfoEx" -namespace "ROOT\ccm\SoftMgmtAgent"
 ForEach ($Item in $WMICheck)
 {
@@ -31,7 +34,7 @@ foreach ($ElementID in $ElementGroup)
         $ElementsToRemove = $CacheElements | where {$_.contentid -eq $ElementID.Name -and $_.ContentVer-ne $Max}
         foreach ($Element in $ElementsToRemove) 
         {
-            write-host ‚ÄúDeleting‚Äù$Element.ContentID‚Äùwith version‚Äù$Element.ContentVersion -ForegroundColor Red
+            write-host ìDeletingî$Element.ContentIDîwith versionî$Element.ContentVersion -ForegroundColor Red
 
             Remove-Item $Element.Location -recurse
             $Element.Delete()

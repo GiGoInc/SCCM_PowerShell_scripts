@@ -1,4 +1,7 @@
-﻿Function Get_SCCM_IPAddress_Boundary
+Function Get_SCCM_IPAddress_Boundary
+Get_SCCM_IPAddress_Boundary -SiteServer SERVER -IPAddress 192.20.125
+
+Function Get_SCCM_IPAddress_Boundary
 {
 <#
 .Synopsis
@@ -121,4 +124,4 @@ END
 
 }
 
-Get_SCCM_IPAddress_Boundary -SiteServer SCCMSERVER -IPAddress 172.20.125
+Get_SCCM_IPAddress_Boundary -SiteServer SERVER -IPAddress 192.20.125

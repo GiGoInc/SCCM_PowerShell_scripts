@@ -1,4 +1,10 @@
-﻿<#
+<#
+Exit
+Read-Host -Prompt 'Press Enter to exit...'
+<#
+Exit
+Read-Host -Prompt 'Press Enter to exit...'
+<#
 Object 						Class 								InstanceKey / Property    Example
 Application 				SMS_ApplicationLatest 				ModelName                 ScopeId_B524C55D-6E5C-465E-82C3-E2B262C19608/Application_3fe8b1b5-d8d9-4887-b819-a9243a5286c0
 Package 					SMS_Package 						PackageID
@@ -6,7 +12,7 @@ Configuration Baseline 		SMS_ConfigurationBaselineInfo 		ModelName
 Boot Image 					SMS_BootImagePackage 				PackageID
 Driver Package 				SMS_DriverPackage 					PackageID
 Driver 						SMS_Driver 							ModelName
-Collection 					SMS_Collection 						CollectionID              SS1000E8
+Collection 					SMS_Collection 						CollectionID              XX1000E8
 
 Query 						SMS_Query 							QueryID
 Software Metering Rule 		SMS_MeteredProductRule 				SecurityKey

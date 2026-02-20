@@ -1,4 +1,7 @@
-﻿<# Expedited Software updates notes
+<# Expedited Software updates notes
+create-Group
+"@
+<# Expedited Software updates notes
 
 Items needed to deploy update(s):
 Bulletin or Article ID(s)- what updates to be deployed
@@ -7,13 +10,13 @@ Software Update Group (SUG) - bucket for updates the "Deployment Package" will d
     
 Collection - what machines to deploy updates (in SUG) too
     Collection Name = ADR Collection - Manual Approvals
-    Collection ID = SS100172
+    Collection ID = XX100172
 Deployment package - criteria for deployment, you can define when to available/deploy updates and whether to ignore maintenance window or not
 
 Bulletin or Article ID(s)		"MS15-078"
 Software Update Group (SUG)		"ADR: Workstations - Expedited deployment + current date"
 Collection Name					"ADR Collection - Manual Approvals"
-Collection ID					"SS100172"
+Collection ID					"XX100192.
 Deployment package				
 
 #>
@@ -26,7 +29,7 @@ Author: David O'Brien, david.obrien@gmx.de
 Date: 02.12.2012
 #>
 
-$SiteCode = "SS1"
+$SiteCode = "XX1"
 $UpdateGroupName = "
 $Description,
 

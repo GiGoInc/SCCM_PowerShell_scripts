@@ -1,71 +1,45 @@
-<#	
-    $CollName = "Test - Isaac's VMs"
-    $CollID = "SS100176"
-    $File = "E:\Packages\Powershell_Scripts\applist.txt"
-
-
-    Collection	                CollID	    MemberCount
-    INFOSEC - DG01              SS100F57	26
-    INFOSEC - DG02              SS100F88	33
-    INFOSEC - DG03              SS100F94	42
-    INFOSEC - DG04              SS100FB9	92
-    INFOSEC - DG05              SS100FC1	96
-    INFOSEC - DG06              SS100FC6	117
-    INFOSEC - DG07              SS100FCB	167
-    INFOSEC - DG08              SS100FD6	395
-    INFOSEC - DG09              SS100FD7	494
-    INFOSEC - DG10              SS101162	344
-    INFOSEC - DG11              SS101163	465
-    INFOSEC - DG12              SS101164	490
-    INFOSEC - DG13              SS101167	723
-    INFOSEC - DG14              SS101165	302
-    INFOSEC - DG15              SS101166	1092
-    INFOSEC - DG16 - CLEANUP	SS100FFB	289
-
-    'INFOSEC - DG01;SS100F57;Teams;02/13/2022 08:00', `
-    'INFOSEC - DG02;SS100F88;Teams;02/13/2022 08:00', `
-    'INFOSEC - DG03;SS100F94;Teams;02/13/2022 08:00', `
-    'INFOSEC - DG04;SS100FB9;Teams;02/16/2022 20:00', `
-    'INFOSEC - DG05;SS100FC1;Teams;02/21/2022 20:00', `
-    'INFOSEC - DG06;SS100FC6;Teams;02/22/2022 20:00', `
-    'INFOSEC - DG07;SS100FCB;Teams;02/23/2022 20:00', `
-    'INFOSEC - DG08;SS100FD6;Teams;02/23/2022 20:00', `
-    'INFOSEC - DG09;SS100FD7;Teams;02/28/2022 20:00', `
-    'INFOSEC - DG10;SS101162;Teams;02/28/2022 20:00', `
-    'INFOSEC - DG11;SS101163;Teams;02/28/2022 20:00', `
-    'INFOSEC - DG12;SS101164;Teams;03/02/2022 20:00', `
-    'INFOSEC - DG13;SS101167;Teams;03/02/2022 20:00', `
-    'INFOSEC - DG14;SS101165;Teams;03/02/2022 20:00', `
-    'INFOSEC - DG15;SS101166;Teams;03/02/2022 20:00', `
-    'InfoSec - DG16 - Cleanup;SS100FFB;Teams;03/02/2022 20:00'
+$SiteCode = "XX1"
 #>
 
+$SiteCode = "XX1"
+$SiteServer = "SERVER.DOMAIN.COM"
+$SCCMPaths = 'C:\Program Files (x86)\Microsoft Endpoint Manager\AdminConsole\bin\ConfigurationManager.psd1', "$($ENV:SMS_ADMIN_UI_PATH)\..\ConfigurationManager.psd1"            
+$SCCMPaths | % { If (Test-Path "$_") { Import-Module "$_"  -Force }}
+if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
+New-PSDrive -name $SiteCode -psprovider CMSite  -Root $SiteServer }
+Set-Location "$($SiteCode):"
+######################################################################################################
+######################################################################################################
 
-#Get current working paths
-$CurrentDirectory = split-path $MyInvocation.MyCommand.Path
+$Collections = 'WORKSTATION - GROUP 01;CISCO IRONPORT ENCRYPTION PLUGIN', `
+               'WORKSTATION - GROUP 02;CISCO IRONPORT ENCRYPTION PLUGIN', `
+               'WORKSTATION - GROUP 03;CISCO IRONPORT ENCRYPTION PLUGIN', `
+               'WORKSTATION - GROUP 04;CISCO IRONPORT ENCRYPTION PLUGIN', `
+               'WORKSTATION - GROUP 05;CISCO IRONPORT ENCRYPTION PLUGIN', `
+               'WORKSTATION - GROUP 06;CISCO IRONPORT ENCRYPTION PLUGIN'
 
-C:
-CD 'C:\Program Files (x86)\Microsoft Endpoint Manager\AdminConsole\bin\ConfigurationManager'
-Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
-
-# $ItemList = (Collection Name);(Collection ID);(Application Name)
-
-$ItemList = 'InfoSec - DG16 - Cleanup;SS100FFB;Teams;03/02/2022 20:00'
-
-
-ForEach ($Item in $ItemList)
+ForEach ($Coll in $Collections)
 {
-    $CollName = $Item.Split(';')[0]
-      $CollID = $Item.Split(';')[1]
-     $AppName = $Item.Split(';')[2]
-       $DDate = $Item.Split(';')[3]
-
+    $CollName = $Coll.Split(';')[0]
+     $AppName = $Coll.Split(';')[1]
 	   $ADate = Get-Date -UFormat "%Y/%m/%d %R"
-
-    	$DAction = "Instal"
-    	$Comm = "Deployment from POWERSHELL of $AppName to $CollName"
+        If ($CollName -eq 'Workstation - Group 01'){$CollID = 'XX101653'}
+        If ($CollName -eq 'Workstation - Group 02'){$CollID = 'XX101654'}
+        If ($CollName -eq 'Workstation - Group 03'){$CollID = 'XX101655'}
+        If ($CollName -eq 'Workstation - Group 04'){$CollID = 'XX101656'}
+        If ($CollName -eq 'Workstation - Group 05'){$CollID = 'XX101657'}
+        If ($CollName -eq 'Workstation - Group 06'){$CollID = 'XX101658'}
+        $DDate = $null
+        If ($CollName -eq 'Workstation - Group 01'){$DDate = '07/23/2024 20:00'}
+        If ($CollName -eq 'Workstation - Group 02'){$DDate = '07/24/2024 20:00'}
+        If ($CollName -eq 'Workstation - Group 03'){$DDate = '07/25/2024 20:00'}
+        If ($CollName -eq 'Workstation - Group 04'){$DDate = '07/29/2024 20:00'}
+        If ($CollName -eq 'Workstation - Group 05'){$DDate = '07/30/2024 20:00'}
+        If ($CollName -eq 'Workstation - Group 06'){$DDate = '07/31/2024 20:00'}
+    	
+    
+    $DAction = "Uninstall"
+    $Comm = "Deployment from POWERSHELL of $AppName to $CollName"
     
     $DeploymentHash = @{
                         Name = $AppName
@@ -75,7 +49,7 @@ ForEach ($Item in $ItemList)
                         DeadlineDateTime = [DateTime]$DDate
                         DeployAction = $DAction
                         DeployPurpose = 'Required'
-					     EnableSoftDeadline = $True 						
+						EnableSoftDeadline = $True 						
                         FailParameterValue = '99'
                         OverrideServiceWindow = $True
                         PersistOnWriteFilterDevice = $False
@@ -84,28 +58,12 @@ ForEach ($Item in $ItemList)
                         SendWakeupPacket = $True
                         SuccessParameterValue = '90'
                         TimeBaseOn = 'LocalTime'
-						 UseMeteredNetwork = $True
+						UseMeteredNetwork = $True
                         UserNotification = 'HideAll'
                         }
     Write-Host "Collection Info - $CollName`t$DDate"
     Write-Host "Comment - $Comm"
     New-CMApplicationDeployment @DeploymentHash | Out-Null
-
-###########################################################################
-##  EXCLUDE COLLECTION
-###########################################################################
-
-    Add-CMDeviceCollectionExcludeMembershipRule -CollectionName $CollName -ExcludeCollectionName "Teams - Machine-Wide Installer"
-
-
-###########################################################################
-##  SET COLLECTION REFRESH SCHEDULE
-###########################################################################
-
-    $Schedule1 = New-CMSchedule -Start (Get-Date) -RecurInterval Days -RecurCount 1
-    "Setting $CollName - refrsh schedule"
-    Set-CMCollection -Name $CollName -RefreshSchedule $Schedule1 -RefreshType Both
-
 }
 
 <#

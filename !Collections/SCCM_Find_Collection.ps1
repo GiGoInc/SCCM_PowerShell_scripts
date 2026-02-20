@@ -1,7 +1,10 @@
 param($collectionid,$Direction)
+if ($direction -eq "down") {FindCollectionDown $collectionid} 
+if ($direction -eq "up") {FindCollectionUP $collectionid}
+param($collectionid,$Direction)
 
-$script:siteserver = "SCCMSERVER"
-$script:sitecode = "SS1"
+$script:siteserver = "SERVER"
+$script:sitecode = "XX1"
 function FindCollectionDown
 {
 param($parentcollID)

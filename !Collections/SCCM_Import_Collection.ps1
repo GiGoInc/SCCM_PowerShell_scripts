@@ -1,9 +1,12 @@
 D:
+Add-CMUserCollectionQueryMembershipRule -CollectionName "CollectionName3" -QueryExpression "select *  from  SMS_R_User where SMS_R_User.UserGroupName = 'DOMAIN\\SecurityGroup3'" -RuleName "QueryRuleName3"
+Add-CMUserCollectionQueryMembershipRule -CollectionName "CollectionName2" -QueryExpression "select *  from  SMS_R_User where SMS_R_User.UserGroupName = 'DOMAIN\\SecurityGroup2'" -RuleName "QueryRuleName2"
+D:
 CD 'D:\Program Files\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
+Set-Location XX1:
 
-CD SS1:
+CD XX1:
 
 # Collections Update Schedules
 $Schedule1 = New-CMSchedule -Start "01/01/2014 9:00 PM" -DayOfWeek Monday -RecurCount 1 

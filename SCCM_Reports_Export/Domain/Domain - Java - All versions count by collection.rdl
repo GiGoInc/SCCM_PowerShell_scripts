@@ -1,0 +1,832 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource_CM2012_P01">
+      <DataSourceReference>/ConfigMgr_DC1/{5C6358F2-4BB6-4a1b-A16E-8D96795D8602}</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>0d9b7c68-d203-4e23-b96e-c6fa251f7755</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="JavaVersion">
+      <Query>
+        <DataSourceName>DataSource_CM2012_P01</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@Collection">
+            <Value>=Parameters!Collection.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT 
+	arp.DisplayName0 AS 'Java Version',
+	arp.Publisher0 AS 'Publisher',
+	COUNT (DISTINCT sys.ResourceID) AS 'Client Count',
+	(STR((
+	COUNT(sys.ResourceID)*100.0/(
+		SELECT COUNT(arp.ResourceID)
+	
+		FROM v_Add_Remove_Programs arp
+        
+		INNER JOIN v_R_System sys ON arp.ResourceID=sys.ResourceID
+	    join v_FullCollectionMembership fcm on fcm.resourceid=SYS.resourceid
+		WHERE 
+        fcm.Collectionid= @Collection
+        AND
+		arp.DisplayName0 LIKE '%Java%' 
+		AND
+		arp.DisplayName0 NOT LIKE '%Updater%'
+		AND 
+		arp.DisplayName0 NOT LIKE '%FX%'
+		AND 
+		arp.DisplayName0 NOT LIKE '%Development%'
+		AND 
+		arp.DisplayName0 NOT LIKE '%Visual%Studio%'
+		AND 
+		sys.Client0=1 
+		AND
+		((sys.Obsolete0=0) OR (sys.Obsolete0 is not null)))),5,2)) + ' %' AS 'Percent %'
+
+        
+
+FROM
+	v_Add_Remove_Programs arp 
+	INNER JOIN v_R_System sys ON arp.ResourceID=sys.ResourceID
+    join v_FullCollectionMembership fcm on fcm.resourceid=SYS.resourceid
+
+WHERE
+	arp.DisplayName0 LIKE '%Java%'
+    AND
+	arp.DisplayName0 NOT LIKE '%Updater%'
+    AND
+    fcm.Collectionid= @Collection
+	
+GROUP BY
+	arp.DisplayName0,
+	arp.Publisher0
+ORDER BY 
+	COUNT (DISTINCT sys.ResourceID) DESC</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="Java_Version">
+          <DataField>Java Version</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Client_Count">
+          <DataField>Client Count</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="Publisher">
+          <DataField>Publisher</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Percent">
+          <DataField>Percent %</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="JavaVersion_top10">
+      <Query>
+        <DataSourceName>DataSource_CM2012_P01</DataSourceName>
+        <CommandText>SELECT TOP 10 
+	DisplayName0 AS 'Java Version',
+	COUNT (DISTINCT v_R_System.ResourceID) AS 'Version'
+
+FROM
+	v_Add_Remove_Programs 
+	INNER JOIN v_R_System ON v_Add_Remove_Programs.ResourceID = v_R_System.ResourceID
+
+WHERE
+	(v_Add_Remove_Programs.DisplayName0 LIKE '%Java%') 
+	AND
+	(v_Add_Remove_Programs.DisplayName0 NOT LIKE '%Updater%')
+	AND 
+	(v_Add_Remove_Programs.DisplayName0 NOT LIKE '%FX%')
+	AND 
+	(v_Add_Remove_Programs.DisplayName0 NOT LIKE '%Development%')
+	AND 
+	(v_Add_Remove_Programs.DisplayName0 NOT LIKE '%Visual%Studio%')
+	
+GROUP BY
+	DisplayName0
+
+ORDER BY 
+	COUNT (DISTINCT v_R_System.ResourceID) DESC</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="Java_Version">
+          <DataField>Java Version</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Version">
+          <DataField>Version</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="collection">
+      <Query>
+        <DataSourceName>DataSource_CM2012_P01</DataSourceName>
+        <CommandText> select CollectionID, Name from v_Collection Order by Name</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="CollectionID">
+          <DataField>CollectionID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Textbox Name="textbox1">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=Globals!ReportName</Value>
+                    <Style>
+                      <FontFamily>Tahoma</FontFamily>
+                      <FontSize>16pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>textbox1</rd:DefaultName>
+            <Left>0.79514in</Left>
+            <Height>0.60764in</Height>
+            <Width>5.72917in</Width>
+            <Style>
+              <VerticalAlign>Middle</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Tablix Name="Tablix1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>3.72683in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.98353in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.99766in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.82323in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Java Version</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox3">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Publisher</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox3</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox5">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Client Count</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox5</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox10">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Percent</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox10</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Java_Version">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Java_Version.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <TextDecoration>Underline</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Java_Version</rd:DefaultName>
+                          <ActionInfo>
+                            <Actions>
+                              <Action>
+                                <Drillthrough>
+                                  <ReportName>/ConfigMgr_DC1/Hancock CORP/HHC - Java - Installs by version</ReportName>
+                                  <Parameters>
+                                    <Parameter Name="version">
+                                      <Value>=Fields!Java_Version.Value</Value>
+                                    </Parameter>
+                                  </Parameters>
+                                </Drillthrough>
+                              </Action>
+                            </Actions>
+                          </ActionInfo>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Publisher">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Publisher.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Publisher</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Client_Count">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Client_Count.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Client_Count</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Percent">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Percent.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Percent</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "Gainsboro")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="Details" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <KeepTogether>true</KeepTogether>
+            <DataSetName>JavaVersion</DataSetName>
+            <Top>1.47583in</Top>
+            <Left>1.78801in</Left>
+            <Height>0.5in</Height>
+            <Width>7.53125in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Textbox Name="Client_Count2">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Total Count Of Java Clients : </Value>
+                    <Style>
+                      <FontFamily>Tahoma</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=Sum(Fields!Client_Count.Value, "JavaVersion")</Value>
+                    <Style>
+                      <FontFamily>Tahoma</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value xml:space="preserve"> </Value>
+                    <Style>
+                      <FontFamily>Tahoma</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Total Count Of Java Versions : </Value>
+                    <Style>
+                      <FontFamily>Tahoma</FontFamily>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=Count(Fields!Java_Version.Value, "JavaVersion")</Value>
+                    <Style>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Client_Count2</rd:DefaultName>
+            <Top>0.01389in</Top>
+            <Left>6.52431in</Left>
+            <Height>0.59375in</Height>
+            <Width>5.05208in</Width>
+            <ZIndex>2</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <VerticalAlign>Middle</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Line Name="Line7">
+            <Top>0.80917in</Top>
+            <Left>2.68385in</Left>
+            <Height>0in</Height>
+            <Width>5.75in</Width>
+            <ZIndex>3</ZIndex>
+            <Style>
+              <Border>
+                <Style>Solid</Style>
+              </Border>
+            </Style>
+          </Line>
+          <Textbox Name="Textbox9">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>All Java Version Inventory</Value>
+                    <Style>
+                      <FontFamily>Tahoma</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox9</rd:DefaultName>
+            <Top>1.08in</Top>
+            <Left>4.0547in</Left>
+            <Height>0.25in</Height>
+            <Width>2.78125in</Width>
+            <ZIndex>4</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+        </ReportItems>
+        <Height>8.53611in</Height>
+        <Style />
+      </Body>
+      <Width>12.73264in</Width>
+      <Page>
+        <PageFooter>
+          <Height>1in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Line Name="lineFooter_breaker">
+              <Top>0.17639cm</Top>
+              <Left>17.77667cm</Left>
+              <Height>0cm</Height>
+              <Width>-17.77667cm</Width>
+              <Style>
+                <Border>
+                  <Style>Solid</Style>
+                </Border>
+              </Style>
+            </Line>
+            <Textbox Name="txtFooter_TimeTaken">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>="Execution Time: " +
+IIf(System.DateTime.Now.Subtract(Globals!ExecutionTime).TotalSeconds &lt; 1, "0 seconds", 
+(
+IIf(System.DateTime.Now.Subtract(Globals!ExecutionTime).Hours &gt; 0, System.DateTime.Now.Subtract(Globals!ExecutionTime).Hours &amp; " hour(s), ", "") +
+IIf(System.DateTime.Now.Subtract(Globals!ExecutionTime).Minutes &gt; 0, System.DateTime.Now.Subtract(Globals!ExecutionTime).Minutes &amp; " minute(s), ", "") +
+IIf(System.DateTime.Now.Subtract(Globals!ExecutionTime).Seconds &gt; 0, System.DateTime.Now.Subtract(Globals!ExecutionTime).Seconds &amp; " second(s)", ""))
+)</Value>
+                      <Style>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontSize>8pt</FontSize>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Left</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <Top>0.35278cm</Top>
+              <Left>0cm</Left>
+              <Height>0.63492cm</Height>
+              <Width>5.75cm</Width>
+              <ZIndex>1</ZIndex>
+              <Style>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="txtFooter_PrintBy">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>=" Executed by " + User!UserID + " on " + Globals!ExecutionTime.ToString()</Value>
+                      <Style>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontSize>8pt</FontSize>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Right</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <Top>0.35278cm</Top>
+              <Left>5.75cm</Left>
+              <Height>0.63492cm</Height>
+              <Width>12cm</Width>
+              <ZIndex>2</ZIndex>
+              <Style>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+            <Textbox Name="txtFooter_PageNumber">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>="Page " + Globals!PageNumber.ToString() + " of " + Globals!TotalPages.ToString()</Value>
+                      <Style>
+                        <FontFamily>Tahoma</FontFamily>
+                        <FontSize>8pt</FontSize>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style>
+                    <TextAlign>Right</TextAlign>
+                  </Style>
+                </Paragraph>
+              </Paragraphs>
+              <Top>0.9877cm</Top>
+              <Left>10.141cm</Left>
+              <Height>0.63492cm</Height>
+              <Width>7.609cm</Width>
+              <ZIndex>3</ZIndex>
+              <Style>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+          </ReportItems>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageFooter>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="Collection">
+      <DataType>String</DataType>
+      <Prompt>Select a Collection</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>collection</DataSetName>
+          <ValueField>CollectionID</ValueField>
+          <LabelField>Name</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+  </ReportParameters>
+  <ReportParametersLayout>
+    <GridLayoutDefinition>
+      <NumberOfColumns>4</NumberOfColumns>
+      <NumberOfRows>2</NumberOfRows>
+      <CellDefinitions>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>Collection</ParameterName>
+        </CellDefinition>
+      </CellDefinitions>
+    </GridLayoutDefinition>
+  </ReportParametersLayout>
+  <EmbeddedImages>
+    <EmbeddedImage Name="sccm">
+      <MIMEType>image/jpeg</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>http://msdcsccmdb1/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>f89416b6-b37e-4f34-92a7-653354ad35c4</rd:ReportID>
+</Report>

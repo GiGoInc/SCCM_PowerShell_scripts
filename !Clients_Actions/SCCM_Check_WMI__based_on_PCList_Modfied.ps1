@@ -1,4 +1,7 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
+}
+    "$Computer,$IP" | Add-Content $DNSRecords
+[CmdletBinding()]
 param([int]$Timeout = 60,
     [int]$Throttle = 400,
 	$Command = "nothing"

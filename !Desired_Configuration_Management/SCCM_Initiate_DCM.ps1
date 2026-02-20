@@ -1,4 +1,7 @@
 function Invoke-SCCMDCMEvaluation
+# Invoke-SccmBaselineEvaluation localhost 
+}
+function Invoke-SCCMDCMEvaluation
 {
     param (
         [Parameter(Mandatory=$true, HelpMessage="Computer Name",ValueFromPipeline=$true)] $ComputerName

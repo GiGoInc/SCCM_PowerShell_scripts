@@ -1,4 +1,7 @@
-ï»¿# Compliance_Master_Fixes_Discovery.ps1
+# Compliance_Master_Fixes_Discovery.ps1
+
+
+# Compliance_Master_Fixes_Discovery.ps1
     $log = 'C:\Windows\Logs\Software'
     if(!(Test-Path -Path $log )){New-Item -ItemType directory -Path $log}
     
@@ -49,7 +52,7 @@
     {
         $check1 = Get-ItemProperty $RegPath -Name $RegKey1
         $check2 = Get-ItemProperty $RegPath -Name $RegKey2
-        If (($check1.$RegKey1 â€“eq 0) -and ($check2.$RegKey2 â€“eq 1))
+        If (($check1.$RegKey1 –eq 0) -and ($check2.$RegKey2 –eq 1))
         {
             "Compliant:`tRemoteRPC set" | Add-Content $logfile
         }
@@ -57,12 +60,12 @@
         {
         $val1 = $check1.$RegKey1
         $val2 = $check2.$RegKey2
-            If ($check1.$RegKey1 â€“ne 0)
+            If ($check1.$RegKey1 –ne 0)
             {
                 "Non-Compliant:`tRemoteRPC not set. $RegPath\$RegKey1 is not $RegValue1"  | Add-Content $logfile
                 "" | Add-Content $logfile
             }
-            If ($check2.$RegKey2 â€“ne 1)
+            If ($check2.$RegKey2 –ne 1)
             {
                 "Non-Compliant:`tRemoteRPC not set. $RegPath\$RegKey2 is not $RegValue2"  | Add-Content $logfile
                 "" | Add-Content $logfile
@@ -86,7 +89,7 @@
         try
         {
             $check1 = Get-ItemProperty $RegPath -Name $RegKey1
-            If ($check1.$RegKey1 â€“eq 2)
+            If ($check1.$RegKey1 –eq 2)
             {
                 "Compliant:`tRemote Registry Enabled" | Add-Content $logfile
             }
@@ -153,7 +156,7 @@
         try
         {
             $check1 = Get-ItemProperty $RegPath -Name $RegKey1
-            If ($check1.$RegKey1 â€“eq 1)
+            If ($check1.$RegKey1 –eq 1)
             {
                 "Compliant:`tSystem Restore disabled" | Add-Content $logfile
             }
@@ -171,7 +174,7 @@
 
 # Add WKSAdmin to local Administrators group
     $b = net localgroup administrators
-    If($b -contains "Domain\WorkstationAdmins")
+    If($b -contains "DOMAIN\WKSAdmin")
     {
         "Compliant:`tWKSAdmin is part of the local Admin group"  | Add-Content $logfile
     }
@@ -191,7 +194,7 @@
         try
         {
             $check1 = Get-ItemProperty $RegPath -Name $RegKey1
-            If ($check1.$RegKey1 â€“eq 1)
+            If ($check1.$RegKey1 –eq 1)
             {
                 "Compliant:`tWindowsConsumerFeatures are disabled" | Add-Content $logfile
             }
@@ -216,7 +219,7 @@
         try
         {
             $check1 = Get-ItemProperty $RegPath -Name $RegKey1
-            If ($check1.$RegKey1 â€“eq 1)
+            If ($check1.$RegKey1 –eq 1)
             {
                 "Compliant:`tDisplay last logged on username is disabled" | Add-Content $logfile
             }
@@ -241,7 +244,7 @@
         try
         {
             $check1 = Get-ItemProperty $RegPath -Name $RegKey1
-            If ($check1.$RegKey1 â€“eq "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c")
+            If ($check1.$RegKey1 –eq "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c")
             {
                 "Compliant:`tPreferred Power plan is set" | Add-Content $logfile
             }

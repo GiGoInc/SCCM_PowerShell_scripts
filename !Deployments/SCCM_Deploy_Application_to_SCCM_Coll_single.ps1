@@ -1,16 +1,19 @@
 #	2014-10-08	IBL	This script is working as expected.
 
+
+#	2014-10-08	IBL	This script is working as expected.
+
 D:
 CD 'D:\Program Files\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 	$AppName = "Ghostscript for CutePDF 2.71"
 	$ADate = Get-Date -UFormat "%Y/%m/%d"
 	$ATime = Get-Date -UFormat "%R"
-	$CollName = "Test - Isaac's VMs"
-	$CollID = "SS100176"
+	$CollName = "Test - SuperUser's VMs"
+	$CollID = "XX100176"
 	$DAction = "Install"
 	$Comm = "Deployment from POWERSHELL of $AppName to $CollName"
 	

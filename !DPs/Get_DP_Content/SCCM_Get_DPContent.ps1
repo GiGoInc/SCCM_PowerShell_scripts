@@ -1,4 +1,7 @@
-﻿<#
+<#
+#>
+
+<#
 .Synopsis
    Gets the Objects you specify distributed to a Distribution Point
 .DESCRIPTION
@@ -52,7 +55,7 @@ Function Get-DPContent
         #specify the SCCMServer having SMS Namespace provider installed for the site. Default is the local machine.
         [Parameter(Mandatory=$False)]
         [Alias("SMSProvider")]
-        [String]$SCCMServer='sccmserver'
+        [String]$SCCMServer='SERVER'
     )
 
     Begin
@@ -200,12 +203,12 @@ ForEach ($DPname in $DPNames)
 
 
 write-host "Starting $(Get-Date)"
-Get-DPContent -DPname sccmserver -ObjectType Application
-Get-DPContent -DPname sccmserver -ObjectType BootImagePackage
-Get-DPContent -DPname sccmserver -ObjectType SoftwareUpdatePackage
-Get-DPContent -DPname sccmserver -ObjectType DriverPackage
-Get-DPContent -DPname sccmserver -ObjectType ImagePackage
-Get-DPContent -DPname sccmserver -ObjectType Package
+Get-DPContent -DPname SERVER -ObjectType Application
+Get-DPContent -DPname SERVER -ObjectType BootImagePackage
+Get-DPContent -DPname SERVER -ObjectType SoftwareUpdatePackage
+Get-DPContent -DPname SERVER -ObjectType DriverPackage
+Get-DPContent -DPname SERVER -ObjectType ImagePackage
+Get-DPContent -DPname SERVER -ObjectType Package
 write-host "Completed $(Get-Date)"
 
                                 $AName = $App.LocalizedDisplayName 

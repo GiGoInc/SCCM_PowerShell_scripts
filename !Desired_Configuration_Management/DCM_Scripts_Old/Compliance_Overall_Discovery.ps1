@@ -1,4 +1,7 @@
-﻿# "Overall/Combined Checks" Discovery Script
+# "Overall/Combined Checks" Discovery Script
+    {write-host "Not Compliant"}
+Else
+# "Overall/Combined Checks" Discovery Script
 
 $OSArchitecture = Get-WmiObject -Class Win32_OperatingSystem | Select-Object OSArchitecture
 $ErrorActionPreference = "Stop"

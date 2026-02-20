@@ -1,4 +1,7 @@
 ([xml](gc "C:\Program Files (x86)\Configmgr 2012 Toolkit SP1\ClientTools\SendScheduleMessages.xml")).Messages.Message.Guid | Out-GridView -PassThru | %{$result=Invoke-WmiMethod -ComputerName (Read-Host "Computer") -Namespace root\ccm -Class sms_client -Name TriggerSchedule $_.Id;"Ran $($_.DisplayName) on $($result.PSComputerName)"}
+# {00000000-0000-0000-0000-000000000223} 	External event detection
+# {00000000-0000-0000-0000-000000000222} 	Endpoint AM policy reevaluate
+([xml](gc "C:\Program Files (x86)\Configmgr 2012 Toolkit SP1\ClientTools\SendScheduleMessages.xml")).Messages.Message.Guid | Out-GridView -PassThru | %{$result=Invoke-WmiMethod -ComputerName (Read-Host "Computer") -Namespace root\ccm -Class sms_client -Name TriggerSchedule $_.Id;"Ran $($_.DisplayName) on $($result.PSComputerName)"}
 
 
 
@@ -39,7 +42,7 @@
 # {00000000-0000-0000-0000-000000000106} 	Software Metering Usage Report Cycle
 # {00000000-0000-0000-0000-000000000107} 	Windows Installer Source List Update Cycle
 # {00000000-0000-0000-0000-000000000108} 	Software Updates Assignments Evaluation Cycle
-# {00000000-0000-0000-0000-000000000109} 	Branch Distribution Point Maintenance Task
+# {00000000-0000-0000-0000-000000000109} 	RemoteLocale Distribution Point Maintenance Task
 # {00000000-0000-0000-0000-000000000110} 	DCM policy
 # {00000000-0000-0000-0000-000000000111} 	Send Unsent State Message
 # {00000000-0000-0000-0000-000000000112} 	State System policy cache cleanout

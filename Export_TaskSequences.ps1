@@ -1,4 +1,7 @@
-ï»¿cls
+cls
+Write-Host "Total Runtime: $min minutes and $sec seconds."
+Write-Host "Script - Completed: $ADateE" -ForegroundColor Cyan
+cls
 . GoGo_SCCM_Module.ps1
 $ADateS = Get-Date
 Write-Host "Script - Start: $ADateS1" -ForegroundColor Green
@@ -8,7 +11,7 @@ Write-Host "Script - Start: $ADateS1" -ForegroundColor Green
     Write-Host "Script - Start: $ADateS1" -ForegroundColor Green
     $TSNames = Get-CMTaskSequence | select name
     $ADateE1 = Get-Date
-    $t = NEW-TIMESPAN â€“Start $ADateS1 â€“End $ADateE1 | select Minutes,Seconds
+    $t = NEW-TIMESPAN –Start $ADateS1 –End $ADateE1 | select Minutes,Seconds
     $min = $t.Minutes
     $sec = $t.seconds
     Write-Host "Completed: $ADateE1" -ForegroundColor Cyan
@@ -33,14 +36,14 @@ Write-Host "Script - Start: $ADateS1" -ForegroundColor Green
         Export-CMTaskSequence -WithDependence $False -WithContent $False -Name "$N" -ExportFilePath "$P"
         $i++
         $ADateE3 = Get-Date
-        $t = NEW-TIMESPAN â€“Start $ADateS3 â€“End $ADateE3 | select Minutes,Seconds
+        $t = NEW-TIMESPAN –Start $ADateS3 –End $ADateE3 | select Minutes,Seconds
         $min = $t.Minutes
         $sec = $t.seconds
         Write-Host "`tZip - Completed: $ADateE3" -ForegroundColor Red
         Write-Host "`tZip - Rutime: $min minutes and $sec seconds."
     }
     $ADateE2 = Get-Date
-    $t = NEW-TIMESPAN â€“Start $ADateS2 â€“End $ADateE2 | select Minutes,Seconds
+    $t = NEW-TIMESPAN –Start $ADateS2 –End $ADateE2 | select Minutes,Seconds
     $min = $t.Minutes
     $sec = $t.seconds
     Write-Host "Zip Build - Completed: $ADateE2" -ForegroundColor Cyan
@@ -132,7 +135,7 @@ Write-Host "Script - Start: $ADateS1" -ForegroundColor Green
     GetZipFiles 
 ############################################################################
 $ADateE = Get-Date
-$t = NEW-TIMESPAN â€“Start $ADateS â€“End $ADateE | select Minutes,Seconds
+$t = NEW-TIMESPAN –Start $ADateS –End $ADateE | select Minutes,Seconds
 $min = $t.Minutes
 $sec = $t.seconds
 Write-Host "Script - Completed: $ADateE" -ForegroundColor Cyan

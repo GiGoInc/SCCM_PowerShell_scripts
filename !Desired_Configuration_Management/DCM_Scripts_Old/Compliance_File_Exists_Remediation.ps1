@@ -1,4 +1,7 @@
-﻿# Compliance Check if file exists - Remediation
+# Compliance Check if file exists - Remediation
+    { $_.Exception.Message }
+    catch
+# Compliance Check if file exists - Remediation
 
 $Path1 = "$env:windir\System32\Macromed\Flash"
 $Path2 = "$env:windir\SYSWOW64\Macromed\Flash"

@@ -1,23 +1,26 @@
-﻿$CollNames = "Workstations - Non-Branch - Group 21", `
-             "Workstations - Non-Branch - Group 22", `
-             "Workstations - Non-Branch - Group 23", `
-             "Workstations - Non-Branch - Group 24", `
-             "Workstations - Non-Branch - Group 25", `
-             "Workstations - Non-Branch - Group 26", `
-             "Workstations - Non-Branch - Group 27", `
-             "Workstations - Non-Branch - Group 28", `
-             "Workstations - Non-Branch - Group 29"
+$CollNames = "Workstations - Non-RemoteLocale - Group 21", `
+}
+    $DCollID = (Get-CMCollection -Name $DCollName).CollectionID
+$CollNames = "Workstations - Non-RemoteLocale - Group 21", `
+             "Workstations - Non-RemoteLocale - Group 22", `
+             "Workstations - Non-RemoteLocale - Group 23", `
+             "Workstations - Non-RemoteLocale - Group 24", `
+             "Workstations - Non-RemoteLocale - Group 25", `
+             "Workstations - Non-RemoteLocale - Group 26", `
+             "Workstations - Non-RemoteLocale - Group 27", `
+             "Workstations - Non-RemoteLocale - Group 28", `
+             "Workstations - Non-RemoteLocale - Group 29"
 
 
 
-$Comments = 'Divided Non-Branch machines into smaller groups, 100 approx each'
+$Comments = 'Divided Non-RemoteLocale machines into smaller groups, 100 approx each'
 
 # Load SCCM Module
     C:
     CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
     Import-Module ".\ConfigurationManager.psd1"
-    Set-Location SS1:
-    CD SS1:
+    Set-Location XX1:
+    CD XX1:
 
 
 ForEach ($DCollName in $CollNames)

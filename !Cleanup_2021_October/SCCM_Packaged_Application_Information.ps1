@@ -1,18 +1,21 @@
-ï»¿cls
+cls
+Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan
+$Sec = $TS.Seconds
+cls
 ##############################
 # Add Required Type Libraries
     [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ManagementProvider.dll")) | Out-Null
     [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.dll")) | Out-Null
     [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.Extender.dll")) | Out-Null
     [System.Reflection.Assembly]::LoadFrom((Join-Path (Get-Item $env:SMS_ADMIN_UI_PATH).Parent.FullName "Microsoft.ConfigurationManagement.ApplicationManagement.MsiInstaller.dll")) | Out-Null
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 ##############################
 C:
 CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 ##############################
 
 # Variables
@@ -33,7 +36,7 @@ If (Test-Path -Path $DestFile){Remove-Item -Path $DestFile -Force}
     $CMA = Get-CMApplication -Name * #| Select-Object LocalizedDisplayName,PackageID,CreatedBy,DateCreated,DateLastModified,LastModifiedBy
 
     $CMAEnd = (GET-DATE)
-    $TS = NEW-TIMESPAN â€“Start $CMAStart â€“End $CMAEnd
+    $TS = NEW-TIMESPAN –Start $CMAStart –End $CMAEnd
     $Min = $TS.minutes
     $Sec = $TS.Seconds
     Write-Host "$(Get-Date)`tChecking Applications ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan
@@ -76,7 +79,7 @@ If (Test-Path -Path $DestFile){Remove-Item -Path $DestFile -Force}
     }
 
 $BEnd = (GET-DATE)
-$TS = NEW-TIMESPAN â€“Start $BStart â€“End $BEnd
+$TS = NEW-TIMESPAN –Start $BStart –End $BEnd
 $Min = $TS.minutes
 $Sec = $TS.Seconds
 Write-Host "$(Get-Date)`tChecking Applications properties ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan
@@ -86,7 +89,7 @@ $CStart = Get-Date
     Write-host "Checking Packages..." -ForegroundColor Green
     $C = Get-CMPackage -Name * # | Select-Object Name,PackageID,SourceDate,PkgSourcePath
 $CEnd = (GET-DATE)
-$TS = NEW-TIMESPAN â€“Start $CStart â€“End $CEnd
+$TS = NEW-TIMESPAN –Start $CStart –End $CEnd
 $Min = $TS.minutes
 $Sec = $TS.Seconds
 Write-Host "$(Get-Date)`tChecking Packages ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan
@@ -106,7 +109,7 @@ ForEach ($D in $C)
 }
 $obj | Add-Content $DestFile
 $DEnd = (GET-DATE)
-$TS = NEW-TIMESPAN â€“Start $DStart â€“End $DEnd
+$TS = NEW-TIMESPAN –Start $DStart –End $DEnd
 $Min = $TS.minutes
 $Sec = $TS.Seconds
 Write-Host "$(Get-Date)`tProcess ran for $min minutes and $sec seconds`n`n" -ForegroundColor Cyan

@@ -1,4 +1,7 @@
-Ôªø$computer = '1NLML12'
+$computer = '1NLML12'
+Exit-PSSession
+
+$computer = '1NLML12'
 
 Start-Process C:\WINDOWS\SYSWOW64\cmtrace.exe "\\$COMPUTER\C$\wINDOWS\CCM\LOGS\CAS.LOG"
 
@@ -45,7 +48,7 @@ Enter-PSSession -ComputerName $computer
 			$ElementsToRemove = $CacheElements | where {$_.contentid -eq $ElementID.Name -and $_.ContentVer-ne $Max}
 			foreach ($Element in $ElementsToRemove)
 			{
-				Write-Host ‚ÄúDeleting‚Äù$Element.ContentID‚Äùwith version‚Äù$Element.ContentVersion -ForegroundColor Red
+				Write-Host ìDeletingî$Element.ContentIDîwith versionî$Element.ContentVersion -ForegroundColor Red
 				
 				Remove-Item $Element.Location -recurse
 				$Element.Delete()

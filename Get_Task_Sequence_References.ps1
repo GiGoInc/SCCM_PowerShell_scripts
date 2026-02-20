@@ -1,7 +1,10 @@
-﻿Function ConvertFrom-CMApplicationCIUniqueID ($CIUniqueID)
+Function ConvertFrom-CMApplicationCIUniqueID ($CIUniqueID)
+}
+    $Output | out-file 'D:\Powershell\!SCCM_PS_scripts\Get_Task_Sequence_References---Results.csv'
+Function ConvertFrom-CMApplicationCIUniqueID ($CIUniqueID)
 {
-    $SiteCode = 'SS1'
-    $SiteServer = 'sccm1'
+    $SiteCode = 'XX1'
+    $SiteServer = 'SERVER'
     <# .SYNOPSIS Convert a CI Unique ID to Application Name and Version in ConfigMgr 2012 .DESCRIPTION This script will convert a CI Unique ID shown in for example the AppIntentEval.log client log file to an Application Name and Version in ConfigMgr 2012 .PARAMETER SiteServer Site server name with SMS Provider installed .PARAMETER CIUniqueID Specify the CI_UniqueID for the application to be translated .EXAMPLE .\ConvertFrom-CMApplicationCIUniqueID.ps1 -SiteServer CM01 -CIUniqueID "Application_f7cdd400-ed5a-473b-a1ce-d3a0cc6643d2" -Verbose Converts the CI Unique ID (part of) 'Application_f7cdd400-ed5a-473b-a1ce-d3a0cc6643d2' on a Primary Site server called 'CM01': .NOTES Script name: ConvertFrom-CMApplicationCIUniqueID.ps1 Author: Nickolaj Andersen Contact: @NickolajA DateCreated: 2015-02-10 #>
     # [CmdletBinding(SupportsShouldProcess=$true)]
     # [OutputType([PSObject])]
@@ -61,8 +64,8 @@
 C:
 CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 
 $output = @()
@@ -84,14 +87,14 @@ ForEach ($TS in $TSes)
             $output += "$TSName`t$RefPack`t$ProgramDisplayName"
         }
     }
-    $SQL_Query = "select v_tasksequenceReferencesInfo.referencepackageid,v_tasksequenceReferencesInfo.referencename  FROM [CM_SS1].[dbo].[v_tasksequenceReferencesInfo] join v_tasksequencePackage On v_tasksequenceReferencesInfo.packageID = v_tasksequencePackage.packageid where v_tasksequencePackage.name =  '$TSName'"
+    $SQL_Query = "select v_tasksequenceReferencesInfo.referencepackageid,v_tasksequenceReferencesInfo.referencename  FROM [CM_XX1].[dbo].[v_tasksequenceReferencesInfo] join v_tasksequencePackage On v_tasksequenceReferencesInfo.packageID = v_tasksequencePackage.packageid where v_tasksequencePackage.name =  '$TSName'"
     $SQLInfo = Invoke-Sqlcmd -AbortOnError `
                   -ConnectionTimeout 60 `
-                  -Database 'CM_SS1'  `
-                  -HostName 'sccmdb1'  `
+                  -Database 'CM_XX1'  `
+                  -HostName 'SERVER'  `
                   -Query $SQL_Query `
                   -QueryTimeout 600 `
-                  -ServerInstance 'sccmdb1'
+                  -ServerInstance 'SERVER'
 
     ForEach ($SItem in $SQLInfo)
     {

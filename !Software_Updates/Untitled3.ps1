@@ -1,4 +1,7 @@
-﻿$DownloadPath = "D:\Projects\SCCM_Stuff\SCCM_Monthly_Application_Update_from_SoftwareUpdates"
+$DownloadPath = "D:\Projects\SCCM_Stuff\SCCM_Monthly_Application_Update_from_SoftwareUpdates"
+Set-CMDeploymentType -ApplicationName <String> -InputObject <IResultObject> [-Priority <PriorityChangeType> {Decrease | Increase} ] [-Confirm] [-WhatIf] [ <CommonParameters>]
+Parameter Set: SetByValuePriority
+$DownloadPath = "D:\Projects\SCCM_Stuff\SCCM_Monthly_Application_Update_from_SoftwareUpdates"
 $FolderLog = "$DownloadPath\Dirs.txt"
 $NewFolders = Get-Content $FolderLog
 
@@ -15,7 +18,7 @@ Remove-CMDeploymentType -ApplicationName "a_Fake_Application" -DeploymentTypeNam
 
 $clause1 = New-CMDetectionClauseFile -ExpectedValue '17.011.30105' -ExpressionOperator 'GreaterEquals' -FileName 'AcroRd32.exe' -Path "%ProgramFiles%\Adobe\Acrobat Reader 2017\Reader" -PropertyType 'Version' -Value
 Add-CMDeploymentType -ApplicationName "a_Fake_Application" `
--ContentLocation "\\sccmserver\packages\Adobe_Acrobat\2017_Std\" `
+-ContentLocation "\\SERVER\packages\Adobe_Acrobat\2017_Std\" `
 -DeploymentTypeName "Fake Install" `
 -InstallCommand "msiexec /i `"acropro.msi`" TRANSFORMS=AcroPro.mst ALLUSERS=1 REBOOT=REALLYSUPPRESS /l C:\Windows\Logs\Software\Acrobat2017Std.log /qn" `
 -RebootBehavior "BasedOnExitCode" `
@@ -23,16 +26,16 @@ Add-CMDeploymentType -ApplicationName "a_Fake_Application" `
 -AddDetectionClause ($clause1)
 
 
-Add-CMDeploymentType -DeploymentTypeName "Fake Installer" -InstallationProgram "msiexec /i `"acropro.msi`" TRANSFORMS=AcroPro.mst ALLUSERS=1 REBOOT=REALLYSUPPRESS /l C:\Windows\Logs\Software\Acrobat2017Std.log /qn" -ApplicationName a_Fake_Application -ContentLocation \\sccmserver\packages\Adobe_Acrobat\2017_Std\
+Add-CMDeploymentType -DeploymentTypeName "Fake Installer" -InstallationProgram "msiexec /i `"acropro.msi`" TRANSFORMS=AcroPro.mst ALLUSERS=1 REBOOT=REALLYSUPPRESS /l C:\Windows\Logs\Software\Acrobat2017Std.log /qn" -ApplicationName a_Fake_Application -ContentLocation \\SERVER\packages\Adobe_Acrobat\2017_Std\
 
 
 $clause1 = New-CMDetectionClauseFile -ExpectedValue '17.011.30105' -ExpressionOperator 'GreaterEquals' -FileName 'AcroRd32.exe' -Path "%ProgramFiles%\Adobe\Acrobat Reader 2017\Reader" -PropertyType 'Version' -Value
 # $app | Add-CMMsiDeploymentType -ContentLocation "\\myserver\mypath\mymsi.msi" -Force -AddDetectionClause ($clause1)
 
 
-Add-CMDeploymentType -ContentLocation \\sccmserver\packages\fake_Install_for_Testing\ -ApplicationName a_Fake_Application -DeploymentTypeName "Fake Install" -add
+Add-CMDeploymentType -ContentLocation \\SERVER\packages\fake_Install_for_Testing\ -ApplicationName a_Fake_Application -DeploymentTypeName "Fake Install" -add
 
-Set-CMDeploymentType -ApplicationName a_Fake_Application -DeploymentTypeName "Fake Install" -AdministratorComment "Fake Install for TS Testing" -ContentLocation \\sccmserver\packages\fake_Install_for_Testing\ -NewDeploymentTypeName "Fakey Fake Install"
+Set-CMDeploymentType -ApplicationName a_Fake_Application -DeploymentTypeName "Fake Install" -AdministratorComment "Fake Install for TS Testing" -ContentLocation \\SERVER\packages\fake_Install_for_Testing\ -NewDeploymentTypeName "Fakey Fake Install"
 
 
 $clause1 = New-CMDetectionClauseFile -ExpectedValue '17.011.30105' -ExpressionOperator 'GreaterEquals' -FileName 'AcroRd32.exe' -Path "%ProgramFiles%\Adobe\Acrobat Reader 2017\Reader" -PropertyType 'Version' -Value

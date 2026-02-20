@@ -1,7 +1,10 @@
 # Site configuration
+}
+    Write-host "Application name: $($Application.LocalizedDisplayName). Dependent TaskSequence is: $TaskSquenceName." -ForegroundColor Green
+# Site configuration
 $ApplicationName = "Image Centre 2016" #Name of the application
-$SiteServer = "sccm1" #Your site server name
-$SiteCode ="SS1" #Your site code
+$SiteServer = "SERVER" #Your site server name
+$SiteCode ="XX1" #Your site code
 
 # Customizations
 $initParams = @{}

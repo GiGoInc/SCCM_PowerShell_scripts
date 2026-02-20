@@ -1,0 +1,746 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
+  <Description>Sub-linked report</Description>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="CM">
+      <DataSourceReference>/ConfigMgr_dc1/{5C6358F2-4BB6-4a1b-A16E-8D96795D8602}</DataSourceReference>
+      <rd:SecurityType xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">None</rd:SecurityType>
+      <rd:DataSourceID xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">d615fa05-2a34-4688-b764-a681bfd66ea4</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="ComputerDetail">
+      <Query>
+        <DataSourceName>CM</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@version">
+            <Value>=Parameters!version.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@product">
+            <Value>=Parameters!product.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@ID">
+            <Value>=Parameters!ID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT DISTINCT
+               rs.Netbios_Name0 AS 'PC Name', 
+               arp.DisplayName0 AS 'Product',
+               arp.Version0 AS 'Version',
+               OS.Caption0 as OSName,
+               ws.LastHWScan
+
+FROM
+
+    v_Add_Remove_Programs arp
+    Join v_R_System rs ON rs.ResourceID = arp.ResourceID
+	Join v_Gs_Operating_System OS on rs.resourceid = OS.ResourceID
+    join v_GS_WORKSTATION_STATUS ws on ws.ResourceID = rs.ResourceID
+	INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.ResourceID=arp.ResourceID
+
+WHERE
+
+	arp.Version0 like @version
+	AND 
+ 	arp.DisplayName0 like @product
+	AND
+	(CollectionID = @ID)
+
+ORDER BY
+
+               rs.Netbios_Name0</CommandText>
+        <rd:UseGenericDesigner xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="ComputerName">
+          <DataField>PC Name</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName>
+        </Field>
+        <Field Name="Product">
+          <DataField>Product</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName>
+        </Field>
+        <Field Name="Version">
+          <DataField>Version</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName>
+        </Field>
+        <Field Name="OSName">
+          <DataField>OSName</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName>
+        </Field>
+        <Field Name="LastHWScan">
+          <DataField>LastHWScan</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.DateTime</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="CollectionDropDown">
+      <Query>
+        <DataSourceName>CM</DataSourceName>
+        <CommandText>Select 
+CollectionID, 
+Name 
+from 
+v_Collection
+ORDER BY Name</CommandText>
+        <rd:UseGenericDesigner xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="CollectionID">
+          <DataField>CollectionID</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName>
+        </Field>
+        <Field Name="Name">
+          <DataField>Name</DataField>
+          <rd:TypeName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="Tablix3">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>1.4875in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2.83055in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.55in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.20625in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2.05832in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.28745in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox18">
+                          <UserSort>
+                            <SortExpression>=Fields!ComputerName.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Computer Name</Value>
+                                  <Style>
+                                    <FontFamily>Cambria</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox18</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#949ca4</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#d9d9d9</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox19">
+                          <UserSort>
+                            <SortExpression>=Fields!Product.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Display Name</Value>
+                                  <Style>
+                                    <FontFamily>Cambria</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox19</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#949ca4</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#d9d9d9</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox21">
+                          <UserSort>
+                            <SortExpression>=Fields!Version.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Display Version</Value>
+                                  <Style>
+                                    <FontFamily>Cambria</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox21</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#949ca4</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#d9d9d9</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox23">
+                          <UserSort>
+                            <SortExpression>=Fields!OSName.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Operating System</Value>
+                                  <Style>
+                                    <FontFamily>Cambria</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox23</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#949ca4</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#d9d9d9</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox25">
+                          <UserSort>
+                            <SortExpression>=Fields!LastHWScan.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Last Hardware Scan</Value>
+                                  <Style>
+                                    <FontFamily>Cambria</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox25</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#949ca4</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#d9d9d9</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.28646in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ComputerName1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ComputerName.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">ComputerName1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "#d9d9d9")</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Product">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Product.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Product</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "#d9d9d9")</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Version1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Version.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Version1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "#d9d9d9")</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="OSName1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!OSName.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">OSName1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "#d9d9d9")</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="LastHWScan1">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!LastHWScan.Value</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">LastHWScan1</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "#d9d9d9")</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="Details1" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <DataSetName>ComputerDetail</DataSetName>
+            <Top>0.98958in</Top>
+            <Left>0.45486in</Left>
+            <Height>0.57391in</Height>
+            <Width>11.13262in</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Tablix>
+          <Textbox Name="textbox1">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>List of </Value>
+                    <Style>
+                      <FontSize>11pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=Parameters!product.Value</Value>
+                    <Style>
+                      <FontSize>11pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value> Version </Value>
+                    <Style>
+                      <FontSize>11pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                      <TextDecoration>None</TextDecoration>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=Parameters!version.Value</Value>
+                    <Style>
+                      <FontSize>11pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value> Installed for Collection </Value>
+                    <Style>
+                      <FontSize>11pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=Parameters!ID.Value</Value>
+                    <Style>
+                      <FontSize>11pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">textbox1</rd:DefaultName>
+            <Top>0.42125in</Top>
+            <Left>3.7361in</Left>
+            <Height>0.30792in</Height>
+            <Width>7.85138in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <VerticalAlign>Middle</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox1">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Unique Devices: </Value>
+                    <Style>
+                      <FontSize>11pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>=CountDistinct(Fields!ComputerName.Value, "ComputerDetail")</Value>
+                    <Style>
+                      <FontSize>11pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Textbox1</rd:DefaultName>
+            <Top>0.13084in</Top>
+            <Left>3.7361in</Left>
+            <Height>0.25458in</Height>
+            <Width>2.21181in</Width>
+            <ZIndex>2</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <VerticalAlign>Middle</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Image Name="PatchMyPCLogo">
+            <Source>Embedded</Source>
+            <Value>PatchMyPCLogo</Value>
+            <Left>0.45486in</Left>
+            <Height>0.85417in</Height>
+            <Width>3.125in</Width>
+            <ZIndex>3</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Image>
+        </ReportItems>
+        <Height>4.33in</Height>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Body>
+      <Width>11.9104in</Width>
+      <Page>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="version">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>%</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Display Version:</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="ID">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>SMS00001</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Collection:</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>CollectionDropDown</DataSetName>
+          <ValueField>CollectionID</ValueField>
+          <LabelField>Name</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="product">
+      <DataType>String</DataType>
+      <Prompt>Display Name:</Prompt>
+    </ReportParameter>
+  </ReportParameters>
+  <EmbeddedImages>
+    <EmbeddedImage Name="PatchMyPCLogo">
+      <MIMEType>image/jpeg</MIMEType>
+      <ImageData>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</ImageData>
+    </EmbeddedImage>
+  </EmbeddedImages>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">http://cm12PR1.contoso.local/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">ef153555-2614-43be-9e80-0f49ef28a332</rd:ReportID>
+</Report>

@@ -1,4 +1,7 @@
-﻿<#
+<#
+$collectionArr | Sort-Object -Property "CollectionName"
+}
+<#
 	.SYNOPSIS
 	Lists all device collections in a given folder
 

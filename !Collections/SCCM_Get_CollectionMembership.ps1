@@ -1,5 +1,8 @@
-﻿$Server = "SCCMSERVER"
-$site = "SS1"
+$Server = "SERVER"
+}
+    $array
+$Server = "SERVER"
+$site = "XX1"
 
 Function Get-Collections 
 {

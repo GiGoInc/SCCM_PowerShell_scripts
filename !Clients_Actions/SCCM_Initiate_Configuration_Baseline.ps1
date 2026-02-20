@@ -1,4 +1,7 @@
 $FileLocation = "D:\Powershell\!SCCM_PS_scripts\!Clients_Actions\SCCM_Initiate_Configuration_Baseline_output.txt"
+$R | Format-Table
+$R = $MC.InvokeMethod($Method, $InParams, $null)
+$FileLocation = "D:\Powershell\!SCCM_PS_scripts\!Clients_Actions\SCCM_Initiate_Configuration_Baseline_output.txt"
 
 $A = Get-Date
 $Date = $a.ToShortDateString()

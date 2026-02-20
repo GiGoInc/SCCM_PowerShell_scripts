@@ -1,4 +1,10 @@
-﻿# Load SQL 2014 Module
+# Load SQL 2014 Module
+Write-Host $Log -ForegroundColor Green
+Write-Host "`nOutput written to: " -NoNewline
+# Load SQL 2014 Module
+Write-Host $Log -ForegroundColor Green
+Write-Host "`nOutput written to: " -NoNewline
+# Load SQL 2014 Module
 If (Test-Path "C:\Program Files\Microsoft SQL Server\120\Tools\PowerShell\Modules\SQLPS\SQLPS.PS1")
 {
     # Write-host "Loading SQL 2014 x64 Module" -ForegroundColor Cyan
@@ -13,11 +19,11 @@ If (Test-Path "C:\Program Files (x86)\Microsoft SQL Server\130\Tools\PowerShell\
 }
 
 
-$Computer = 'Computer1'
+$Computer = 'PC1'
 $System = gwmi -computer $computer Win32_ComputerSystem # normally non-terminating
 $User = $System.UserName
 
-# $User = 'DOMAIN\user2'
+# $User = 'DOMAIN\aUSER1'
 
 $LogFolder = 'C:\Temp\'
 $LogFile = $Computer + "__" + $User.replace('DOMAIN\','') + "--All_Deployments_to_Computer_and_User--Results.csv"
@@ -26,9 +32,9 @@ If(!(Test-Path $LogFolder)){New-Item -ItemType Directory -Path $LogFolder}
 
 
 ##############################################################################
-      $GetSQLInfo_DB = 'CM_SS1'
-  $GetSQLInfo_Server = 'sccmserver'
-$GetSQLInfo_Instance = 'sccmserver'
+      $GetSQLInfo_DB = 'CM_XX1'
+  $GetSQLInfo_Server = 'SERVER'
+$GetSQLInfo_Instance = 'SERVER'
 
 ##############################################################################
 # All package and program deployments to a specified computer 

@@ -10,6 +10,6 @@ rem --- /R : Overwrites read-only files.
 
 
 
-xcopy thevalueofus.jpg "C:\Windows" /H /Y /Q /R
-xcopy TheValueOfUs1280.jpg "C:\Windows" /H /Y /Q /R
+xcopy slogan.jpg "C:\Windows" /H /Y /Q /R
+xcopy slogan1280.jpg "C:\Windows" /H /Y /Q /R
 REG ADD "HKCU\Control Panel\Colors" /v "Background" /t REG_SZ /d "0 78 152" /f

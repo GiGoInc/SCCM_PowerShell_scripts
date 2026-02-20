@@ -1,4 +1,7 @@
-﻿# "local-settings.js Content" Remediation Script
+# "local-settings.js Content" Remediation Script
+  {$_}
+catch
+# "local-settings.js Content" Remediation Script
 
 $list = 'pref("general.config.filename", "mozilla.cfg");
 pref("general.config.obscure_value", 0);'

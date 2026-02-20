@@ -1,4 +1,7 @@
-﻿#Example 1
+#Example 1
+Add-CollectionExcludeRule -SiteServer Server100 -SiteCode PRI -CollectionName "OSD Bare Metal" -ExCollectionName "New Dev Col"
+}
+#Example 1
 $CollectionName = "OSD Bare Metal"
 $ExclusionCollectionName = "New Dev Col"
 $ParentCollection = Get-WmiObject -Namespace "root\sms\Site_PRI" -Class SMS_Collection -Filter "Name='$CollectionName'"

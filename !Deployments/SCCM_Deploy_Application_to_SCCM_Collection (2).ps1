@@ -1,5 +1,8 @@
- #	$CollName = "Test - Isaac's VMs"
- #	$CollID = "SS100176"
+ #	$CollName = "Test - SuperUser's VMs"
+ #>
+
+ #	$CollName = "Test - SuperUser's VMs"
+ #	$CollID = "XX100176"
  #	$File = "E:\Packages\Powershell_Scripts\applist.txt"
 
 
@@ -9,8 +12,8 @@ $CurrentDirectory = split-path $MyInvocation.MyCommand.Path
 C:
 CD 'C:\Program Files (x86)\Microsoft Configuration Manager\AdminConsole\bin'
 Import-Module ".\ConfigurationManager.psd1"
-Set-Location SS1:
-CD SS1:
+Set-Location XX1:
+CD XX1:
 
 
 $File = Get-Content ("$CurrentDirectory\!Deploy_Application_to_SCCM_Collection_PCList.txt")

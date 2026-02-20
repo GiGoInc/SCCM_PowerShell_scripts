@@ -1,6 +1,12 @@
-﻿# UPDATE THESE VARIABLES FOR YOUR ENVIRONMENT
-[string]$SiteServer = "SCCMSERVER.Domain.Com"
-[string]$SiteCode = "SS1"
+# UPDATE THESE VARIABLES FOR YOUR ENVIRONMENT
+}
+###################################################################################################
+# UPDATE THESE VARIABLES FOR YOUR ENVIRONMENT
+}
+###################################################################################################
+# UPDATE THESE VARIABLES FOR YOUR ENVIRONMENT
+[string]$SiteServer = "SERVER.DOMAIN.COM"
+[string]$SiteCode = "XX1"
 [int32]$WarnThreshold = 3
 
 
@@ -120,7 +126,7 @@ foreach ($DistributionPoint in $DistributionPoints)
     $DistributionPointName = $DistributionPoint.ServerName
 
 ###################################################################################################
-If ($DistributionPoint.ServerName -eq 'msbism01.Domain.Com')
+If ($DistributionPoint.ServerName -eq 'SERVER.DOMAIN.COM')
 {
 ###################################################################################################
 
@@ -183,14 +189,14 @@ If ($DistributionPoint.ServerName -eq 'msbism01.Domain.Com')
                 [string]$Value,
                 [parameter(Mandatory=$true, HelpMessage="Choose a location where the log file will be created")]
                 [ValidateNotNullOrEmpty()]
-                [ValidateSet("UserTemp","WindowsTemp","IsaacLog")]
+                [ValidateSet("UserTemp","WindowsTemp","SuperUserLog")]
                 [string]$Location
             )
             # Determine log file location
             switch ($Location) {
                 "UserTemp" { $LogLocation = ($env:TEMP + "\") }
                 "WindowsTemp" { $LogLocation = ($env:SystemRoot + "\Temp\") }
-                "IsaacLog" { $LogLocation = ("\\Computer1\d$\Powershell\!SCCM_PS_scripts\!DPs\") }
+                "SuperUserLog" { $LogLocation = ("\\PC1\d$\Powershell\!SCCM_PS_scripts\!DPs\") }
             }
             # Construct log file name and location
             $LogFile = ($LogLocation + $Name + ".log")
@@ -356,7 +362,7 @@ If ($DistributionPoint.ServerName -eq 'msbism01.Domain.Com')
                         $InvalidPackageID = $_.PackageID
                         $InvalidPackageFileName = $_.FileName
                         Write-Host "Removing invalid package $InvalidPackageID from PkgLib on $Env:COMPUTERNAME " -NoNewline
-                        Write-LogFile -Name "ReplaceContent" -Location IsaacLog -Value "Removing invalid package $InvalidPackageID from PkgLib on $Env:COMPUTERNAME"
+                        Write-LogFile -Name "ReplaceContent" -Location SuperUserLog -Value "Removing invalid package $InvalidPackageID from PkgLib on $Env:COMPUTERNAME"
                         try{
                             Remove-Item -Path "$path\$InvalidPackageFileName" -Force
                         } catch {

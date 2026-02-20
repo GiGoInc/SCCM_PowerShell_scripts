@@ -1,4 +1,7 @@
-ï»¿<#
+<#
+GenerateForm
+Hide-PowerShell
+<#
 Object 						Class 								Property
 Application 				SMS_ApplicationLatest 				ModelName
 Package 					SMS_Package 						PackageID
@@ -23,7 +26,7 @@ Function Get-ObjectLocation
     [string]$InstanceKey
     )
     
-    $ContainerNode = Get-WmiObject -Namespace 'root/SMS/site_SS1' -ComputerName 'SCCMSERVER' -Query "SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='$InstanceKey'"
+    $ContainerNode = Get-WmiObject -Namespace 'root/SMS/site_XX1' -ComputerName 'SERVER' -Query "SELECT ocn.* FROM SMS_ObjectContainerNode AS ocn JOIN SMS_ObjectContainerItem AS oci ON ocn.ContainerNodeID=oci.ContainerNodeID WHERE oci.InstanceKey='$InstanceKey'"
     if ($ContainerNode -ne $null) {
         $ObjectFolder = $ContainerNode.Name
         if ($ContainerNode.ParentContainerNodeID -eq 0) {
@@ -34,7 +37,7 @@ Function Get-ObjectLocation
             $ParentContainerNodeID = $ContainerNode.ParentContainerNodeID
         }
         while ($ParentFolder -eq $true) {
-            $ParentContainerNode = Get-WmiObject -Namespace 'root/SMS/site_SS1' -ComputerName 'SCCMSERVER' -Query "SELECT * FROM SMS_ObjectContainerNode WHERE ContainerNodeID = '$ParentContainerNodeID'"
+            $ParentContainerNode = Get-WmiObject -Namespace 'root/SMS/site_XX1' -ComputerName 'SERVER' -Query "SELECT * FROM SMS_ObjectContainerNode WHERE ContainerNodeID = '$ParentContainerNodeID'"
             $ObjectFolder =  $ParentContainerNode.Name + "\" + $ObjectFolder
             if ($ParentContainerNode.ParentContainerNodeID -eq 0) {
                 $ParentFolder = $false
@@ -204,19 +207,19 @@ Function GenerateForm
 
 Add-Type -AssemblyName PresentationCore
 # Add a helper
-$showWindowAsync = Add-Type â€“memberDefinition @"
+$showWindowAsync = Add-Type –memberDefinition @"
 [DllImport("user32.dll")]
 public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
-"@ -name â€œWin32ShowWindowAsyncâ€ -namespace Win32Functions â€“passThru
+"@ -name “Win32ShowWindowAsync” -namespace Win32Functions –passThru
 
 function Show-PowerShell()
 {
-     [void]$showWindowAsync::ShowWindowAsync((Get-Process â€“id $pid).MainWindowHandle, 10)
+     [void]$showWindowAsync::ShowWindowAsync((Get-Process –id $pid).MainWindowHandle, 10)
 }
 
 function Hide-PowerShell()
 {
-    [void]$showWindowAsync::ShowWindowAsync((Get-Process â€“id $pid).MainWindowHandle, 2)
+    [void]$showWindowAsync::ShowWindowAsync((Get-Process –id $pid).MainWindowHandle, 2)
 }
 
 

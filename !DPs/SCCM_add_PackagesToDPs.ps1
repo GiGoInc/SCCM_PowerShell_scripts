@@ -1,4 +1,7 @@
 ###########################################################
+Write-Output "`r"
+
+###########################################################
 # AUTHOR  : Marius / Hican - http://www.hican.nl - @hicannl
 # DATE    : 30-08-2012
 # COMMENT : This script adds Packages to DistributionPoints

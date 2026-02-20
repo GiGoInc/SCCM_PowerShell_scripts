@@ -1,4 +1,7 @@
 <#
+foreach{$cacheInfo.DeleteCacheElement($_.CacheElementID)} 
+
+<#
 .SYNOPSIS
     Clears all Packages from the Configuration Manager Client Cache.
 .DESCRIPTION

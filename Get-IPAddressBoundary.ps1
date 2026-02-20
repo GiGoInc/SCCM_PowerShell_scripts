@@ -1,4 +1,7 @@
-﻿Function Get-IPAddressBoundary 
+Function Get-IPAddressBoundary 
+Get-IPAddressBoundary -SiteServer SERVER -IPAddress 10.194.2.202
+
+Function Get-IPAddressBoundary 
 {
 <#
 .Synopsis
@@ -123,4 +126,4 @@ END
 
 
 
-Get-IPAddressBoundary -SiteServer sccm1 -IPAddress 10.194.2.202
+Get-IPAddressBoundary -SiteServer SERVER -IPAddress 10.194.2.202

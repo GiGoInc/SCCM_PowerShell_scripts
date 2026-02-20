@@ -1,4 +1,7 @@
-$Computer = 'D7B0M9Z2'
+$Computer = 'COMPUTER77'
+$Content | Add-Content $Log
+'FEATURETYPETEXT,DEPLOYMENTNAME,TARGETNAME,TARGETSUBNAME,COLLECTIONID,COLLECTIONNAME,DEPLOYMENTID,DEPLOYMENTTYPEID' | Set-Content $Log
+$Computer = 'COMPUTER77'
 
 ##########################################################################
 $ADate = Get-Date -Format "yyyy_MM-dd_hh-mm-ss"
@@ -34,9 +37,9 @@ left join v_DeploymentSummary ds on ds.SoftwareName = d.TargetName
 where s.Name0 = '$Computer'
 order by DeploymentName"
 ##########################################################################
-      $SQL_DB = 'CM_SS1'
-  $SQL_Server = 'SCCMDB1'
-$SQL_Instance = 'SCCMDB1'
+      $SQL_DB = 'CM_XX1'
+  $SQL_Server = 'SERVER'
+$SQL_Instance = 'SERVER'
 ##########################################################################
     $SQL_Check = Invoke-Sqlcmd -AbortOnError `
         -ConnectionTimeout 60 `
